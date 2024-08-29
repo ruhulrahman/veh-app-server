@@ -1,0 +1,41 @@
+package com.ibas.brta.vehims.model;
+
+import com.ibas.brta.vehims.listener.UserListener;
+import com.ibas.brta.vehims.model.audit.RecordAudit;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import jakarta.persistence.*;
+
+/**
+ *
+ */
+@Entity
+@Table(name = "x_organizations")
+@Data
+@NoArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@EqualsAndHashCode(callSuper=false)
+
+public class Office extends RecordAudit {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column (name ="name_en")
+    private String name;
+    @Column (name ="name_bn")
+    private String altName;
+    @Column (name ="office_type_id")
+    private Long officeTypeId;
+    @Column (name = "parent_org_id")
+    private Long parentId;
+    @Column (name = "location_id")
+    private Long locationId;
+    @Column (name = "post_code")
+    private String postCode;
+    @Column (name = "address_en")
+    private String address;
+    @Column (name ="altAddress" )
+    private String altAddress;
+}
