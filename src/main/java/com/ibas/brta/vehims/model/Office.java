@@ -12,20 +12,21 @@ import jakarta.persistence.*;
  *
  */
 @Entity
-@Table(name = "x_organizations")
+@Table(name = "c_organizations")
 @Data
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper=false)
-
+@AttributeOverride(name="id", column=@Column(name="org_id"))
 public class Office extends RecordAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column (name ="name_en")
-    private String name;
+    private String nameInEnglish;
     @Column (name ="name_bn")
-    private String altName;
+    private String nameInBangla;
     @Column (name ="office_type_id")
     private Long officeTypeId;
     @Column (name = "parent_org_id")
@@ -35,7 +36,7 @@ public class Office extends RecordAudit {
     @Column (name = "post_code")
     private String postCode;
     @Column (name = "address_en")
-    private String address;
-    @Column (name ="altAddress" )
-    private String altAddress;
+    private String addressInEnglish;
+    @Column (name ="address_bn" )
+    private String addressInBangla;
 }

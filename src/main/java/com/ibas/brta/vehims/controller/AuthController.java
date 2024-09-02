@@ -67,8 +67,6 @@ public class AuthController {
     @CrossOrigin(origins = "*")
     public ResponseEntity<?> authenticateUserV1(@Valid @RequestBody LoginRequest loginRequest) {
 
-        log.error("Inside AuthenticatUserV1:"+loginRequest.getUsernameOrEmail());
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsernameOrEmail(),

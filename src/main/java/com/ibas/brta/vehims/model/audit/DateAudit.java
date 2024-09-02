@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.model.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,10 +11,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.Version;
 import java.io.Serializable;
 import java.time.Instant;
 
@@ -36,12 +33,15 @@ import java.time.Instant;
 public abstract class DateAudit implements Serializable {
 
     @CreatedDate
+    @Column(name ="created_date")
     private Instant createdAt;
 
     @LastModifiedDate
+    @Column (name ="updated_date")
     private Instant updatedAt;
 
     @Version
+    @Column (name = "version_no")
     private int version;
 
 }

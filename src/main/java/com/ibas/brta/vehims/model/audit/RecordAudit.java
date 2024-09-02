@@ -41,36 +41,24 @@ public abstract class RecordAudit extends DateAudit {
 
     @Column(length = 36)
     @NotNull
-//    @GeneratedValue(generator = "UUID")
-//    @GenericGenerator(
-//            name = "UUID",
-//            strategy = "org.hibernate.id.UUIDGenerator")
-    //private String uuid;
 
     private UUID uuid = UUID.randomUUID(); // UUID generated in the constructor
 
     @CreatedBy
+    @Column (name ="create_user_id")
     private Long createdBy;
 
     @LastModifiedBy
+    @Column (name ="update_user_id")
     private Long updatedBy;
 
-    // Active (A) or Inactive (I) or Deleted (D)
-    @Column(name = "rec_stat", nullable = false, length = 1)
+    // Active (A) or Inactive (I) or Deleted (X)
+    @Column(name = "status", nullable = false, length = 1)
     @NotBlank
     private String status;
 
     @NotNull
     private Boolean isActive = true;
-
-//    public RecordAudit() {
-//        this(UUID.randomUUID());
-//    }
-//
-//    public RecordAudit(UUID guid) {
-//        Assert.notNull(guid, "UUID is required.");
-//        setUuid(guid.toString());
-//    }
 
     /**
      * @return Object unique identifier for the object
