@@ -39,10 +39,9 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper=false)
 public abstract class RecordAudit extends DateAudit {
 
-    @Column(length = 36)
-    @NotNull
-
-    private UUID uuid = UUID.randomUUID(); // UUID generated in the constructor
+//    @Column(length = 36)
+//    @NotNull
+//    private UUID uuid = UUID.randomUUID(); // UUID generated in the constructor
 
     @CreatedBy
     @Column (name ="create_user_id")
@@ -53,9 +52,9 @@ public abstract class RecordAudit extends DateAudit {
     private Long updatedBy;
 
     // Active (A) or Inactive (I) or Deleted (X)
-    @Column(name = "status", nullable = false, length = 1)
-    @NotBlank
-    private String status;
+//    @Column(name = "status", nullable = false, length = 1)
+//    @NotBlank
+//    private String status;
 
     @NotNull
     private Boolean isActive = true;
@@ -63,8 +62,8 @@ public abstract class RecordAudit extends DateAudit {
     /**
      * @return Object unique identifier for the object
      */
-    public Object getIdentifier() {
-        return getUuid();
-    }
+//    public Object getIdentifier() {
+//        return getUuid();
+//    }
 
 }

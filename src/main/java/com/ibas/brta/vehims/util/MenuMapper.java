@@ -21,7 +21,6 @@ public class MenuMapper {
         response.setMenuCode(menu.getMenuCode());
         response.setParentMenuId(menu.getParentMenuId());
         response.setMenuUrl(menu.getMenuUrl());
-        response.setRecordStatus(menu.getStatus());
         return response;
     }
 

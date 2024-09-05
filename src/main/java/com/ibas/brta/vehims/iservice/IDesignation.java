@@ -9,7 +9,9 @@ import java.util.Optional;
 public interface IDesignation {
 
     List<Designation> findAllDesignations();
+
     Optional<Designation> findDesignationById(Long id);
+
     Designation saveDesignation(Designation designation);
 
 }

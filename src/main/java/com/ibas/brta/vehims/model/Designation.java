@@ -27,5 +27,6 @@ public class Designation extends RecordAudit implements Serializable {
     @Column(name = "name_bn")
     private String nameInBangla;
     private int levelNumber;
+    @Column (name = "parent_desingation_id")
     private Long parentDesingationId;
 }

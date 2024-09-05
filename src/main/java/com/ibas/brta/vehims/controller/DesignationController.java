@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.controller;
 
 import com.ibas.brta.vehims.exception.AppException;
 import com.ibas.brta.vehims.exception.ErrorDetails;
+import com.ibas.brta.vehims.model.Country;
 import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.model.User;
 import com.ibas.brta.vehims.model.rbac.Role;
@@ -13,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
@@ -37,6 +40,19 @@ public class DesignationController {
                 .fromCurrentContextPath().path("/designations/")
                 .buildAndExpand(_designation.getNameInEng()).toUri();
 
-        return ResponseEntity.created(location).body(ApiResponse.success(_designation.getNameInEng()+" created.", _designation));
+        return ResponseEntity.created(location)
+                .body(ApiResponse.success(_designation.getNameInEng() + " created.", _designation));
     }
+
+    @GetMapping("/v1/designation/list")
+    public ResponseEntity<?> designationList() {
+        List<Designation> _designations = designationService.findAllDesignations();
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/designation/list/")
+                .buildAndExpand(_designations).toUri();
+
+        return ResponseEntity.created(location).body(ApiResponse.success("Fetched list", _designations));
+    }
+
 }

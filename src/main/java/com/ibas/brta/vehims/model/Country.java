@@ -12,7 +12,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = false)
 
-@AttributeOverride(name = "id", column = @Column(name = "designation_id"))
+@AttributeOverride(name = "id", column = @Column(name = "country_id"))
 
 public class Country {
 
