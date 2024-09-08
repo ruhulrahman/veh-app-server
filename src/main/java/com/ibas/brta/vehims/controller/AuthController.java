@@ -35,7 +35,9 @@ import java.net.URI;
 import java.util.Collections;
 
 /**
- * To handle HTTP requests related to user authentication (login) operations and coordinating with the application's business logic.
+ * To handle HTTP requests related to user authentication (login) operations and
+ * coordinating with the application's business logic.
+ * 
  * @author ashshakur.rahaman
  * @version 1.0 Initial version.
  */
@@ -44,90 +46,96 @@ import java.util.Collections;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
-    @Autowired
-    AuthenticationManager authenticationManager;
+        private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+        @Autowired
+        AuthenticationManager authenticationManager;
 
-    @Autowired
-    UserRepository userRepository;
+        @Autowired
+        UserRepository userRepository;
 
-    @Autowired
-    RoleRepository roleRepository;
+        @Autowired
+        RoleRepository roleRepository;
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
+        @Autowired
+        PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JwtTokenProvider tokenProvider;
+        @Autowired
+        JwtTokenProvider tokenProvider;
 
-    @Autowired
-    RefreshTokenService refreshTokenService;
+        @Autowired
+        RefreshTokenService refreshTokenService;
 
-    @PostMapping("/v1/login")
-    @CrossOrigin(origins = "*")
-    public ResponseEntity<?> authenticateUserV1(@Valid @RequestBody LoginRequest loginRequest) {
+        @PostMapping("/v1/login")
+        @CrossOrigin(origins = "*")
+        public ResponseEntity<?> authenticateUserV1(@Valid @RequestBody LoginRequest loginRequest) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getUsernameOrEmail(),
-                        loginRequest.getPassword()
-                )
-        );
+                Authentication authentication = authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                loginRequest.getUsernameOrEmail(),
+                                                loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String jwt = tokenProvider.generateToken(authentication);
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
-    }
-
-    @PostMapping("/v1/rt")
-    public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-        String requestRefreshToken = request.getRefreshToken();
-        // logger.error("Getting Refresh token for:" + requestRefreshToken);
-
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = tokenProvider.generateTokenFromUsername(user.getUsername());
-                    return ResponseEntity
-                            .ok(new AuthenticationResponse(token, requestRefreshToken));
-                })
-                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                        HttpStatus.NO_CONTENT.getReasonPhrase()));
-    }
-
-    @PostMapping("/v1/signup")
-    public ResponseEntity<?> registerUserV1(@Valid @RequestBody SignupRequest signupRequest) {
-
-        log.error("Entering method Register user:"+signupRequest.getUsername());
-
-        if (userRepository.existsByUsername(signupRequest.getUsername())) {
-            return new ResponseEntity(ApiResponse.failure("Signup failed.", new ErrorDetails("CONFLICT", "A user with this username already exists.")),HttpStatus.BAD_REQUEST);
+                String jwt = tokenProvider.generateToken(authentication);
+                return ResponseEntity.ok(new AuthenticationResponse(jwt));
         }
 
-        if (userRepository.existsByEmail(signupRequest.getEmail())) {
-            return new ResponseEntity(ApiResponse.failure("Signup failed.", new ErrorDetails("CONFLICT", "A user with this email already exists.")),HttpStatus.BAD_REQUEST);
+        @PostMapping("/v1/rt")
+        public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+                String requestRefreshToken = request.getRefreshToken();
+                // logger.error("Getting Refresh token for:" + requestRefreshToken);
+
+                return refreshTokenService.findByToken(requestRefreshToken)
+                                .map(refreshTokenService::verifyExpiration)
+                                .map(RefreshToken::getUser)
+                                .map(user -> {
+                                        String token = tokenProvider.generateTokenFromUsername(user.getUsername());
+                                        return ResponseEntity
+                                                        .ok(new AuthenticationResponse(token, requestRefreshToken));
+                                })
+                                .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+                                                HttpStatus.NO_CONTENT.getReasonPhrase()));
         }
 
+        @PostMapping("/v1/signup")
+        public ResponseEntity<?> registerUserV1(@Valid @RequestBody SignupRequest signupRequest) {
 
-            // Creating user's account
-        User user = new User(signupRequest.getName(), signupRequest.getAltName(), signupRequest.getUsername(),
-                signupRequest.getEmail(), signupRequest.getMobile(), signupRequest.getPassword(), Long.parseLong(signupRequest.getDesignationId()), Boolean.FALSE, Boolean.TRUE);
+                log.error("Entering method Register user:" + signupRequest.getUsername());
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+                if (userRepository.existsByUsername(signupRequest.getUsername())) {
+                        return new ResponseEntity(
+                                        ApiResponse.failure("Signup failed.",
+                                                        new ErrorDetails("CONFLICT",
+                                                                        "A user with this username already exists.")),
+                                        HttpStatus.BAD_REQUEST);
+                }
 
-        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                .orElseThrow(() -> new AppException("User Role not set."));
+                if (userRepository.existsByEmail(signupRequest.getEmail())) {
+                        return new ResponseEntity(
+                                        ApiResponse.failure("Signup failed.",
+                                                        new ErrorDetails("CONFLICT",
+                                                                        "A user with this email already exists.")),
+                                        HttpStatus.BAD_REQUEST);
+                }
 
-        user.setRoles(Collections.singleton(userRole));
+                // Creating user's account
+                User user = new User(signupRequest.getNameEn(), signupRequest.getNameBn(), signupRequest.getUsername(),
+                                signupRequest.getEmail(), signupRequest.getMobile(), signupRequest.getPassword(),
+                                Long.parseLong(signupRequest.getDesignationId()), Boolean.FALSE, Boolean.TRUE);
 
-        User result = userRepository.save(user);
+                user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/users/{username}")
-                .buildAndExpand(result.getUsername()).toUri();
+                Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                                .orElseThrow(() -> new AppException("User Role not set."));
 
-        return ResponseEntity.created(location).body(ApiResponse.success("User created."));
-    }
+                user.setRoles(Collections.singleton(userRole));
+
+                User result = userRepository.save(user);
+
+                URI location = ServletUriComponentsBuilder
+                                .fromCurrentContextPath().path("/users/{username}")
+                                .buildAndExpand(result.getUsername()).toUri();
+
+                return ResponseEntity.created(location).body(ApiResponse.success("User created."));
+        }
 }

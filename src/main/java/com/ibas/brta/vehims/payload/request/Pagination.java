@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DesignationRequest extends Pagination {
-    private String nameEn;
-    private String isActive;
+public class Pagination {
+    private int page = 0;
+    private int size = 10;
 }

@@ -9,12 +9,28 @@ package com.ibas.brta.vehims.payload;
 public class UserSummary {
     private Long id;
     private String username;
-    private String name;
+    private String nameEn;
+    private String nameBn;
+    private String email;
 
-    public UserSummary(Long id, String username, String name) {
+    public UserSummary(Long id, String username, String nameEn, String nameBn, String email) {
         this.id = id;
         this.username = username;
-        this.name = name;
+        this.nameEn = nameEn;
+        this.nameBn = nameBn;
+        this.email = email;
+    }
+
+    public String getNameEn() {
+        return nameEn;
+    }
+
+    public String getNameBn() {
+        return nameBn;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Long getId() {
@@ -33,11 +49,16 @@ public class UserSummary {
         this.username = username;
     }
 
-    public String getName() {
-        return name;
+    public void setNameEn(String nameEn) {
+        this.nameEn = nameEn;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNameBn(String nameBn) {
+        this.nameBn = nameBn;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
 }

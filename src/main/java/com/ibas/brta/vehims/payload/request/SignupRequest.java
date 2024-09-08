@@ -20,7 +20,11 @@ import jakarta.validation.constraints.Size;
 public class SignupRequest {
     @NotBlank
     @Size(min = 4, max = 40)
-    private String name;
+    private String nameEn;
+
+    @NotBlank
+    @Size(min = 4, max = 40)
+    private String nameBn;
 
     @NotBlank
     @Size(min = 3, max = 15)
@@ -38,9 +42,6 @@ public class SignupRequest {
     @NotBlank
     @Size(min = 6, max = 20)
     private String password;
-
-    @NotBlank
-    private String altName;
 
     @NotBlank
     private String designationId;

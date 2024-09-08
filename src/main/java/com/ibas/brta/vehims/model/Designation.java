@@ -23,10 +23,10 @@ public class Designation extends RecordAudit implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "name_en", nullable = false, unique = true)
-    private String nameInEng;
+    private String nameEn;
     @Column(name = "name_bn")
-    private String nameInBangla;
+    private String nameBn;
     private int levelNumber;
-    @Column (name = "parent_desingation_id")
+    @Column(name = "parent_desingation_id")
     private Long parentDesingationId;
 }

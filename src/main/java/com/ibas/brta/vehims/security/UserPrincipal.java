@@ -12,7 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
- * To represent and encapsulate the authenticated user's details and authority information.
+ * To represent and encapsulate the authenticated user's details and authority
+ * information.
  *
  * @author ashshakur.rahaman
  * @version 1.0 08/19/24
@@ -21,7 +22,9 @@ import java.util.stream.Collectors;
 public class UserPrincipal implements UserDetails {
     private final Long id;
 
-    private final String name;
+    private final String nameEn;
+
+    private final String nameBn;
 
     private final String username;
 
@@ -33,9 +36,11 @@ public class UserPrincipal implements UserDetails {
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserPrincipal(Long id, String name, String username, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Long id, String nameEn, String nameBn, String username, String email, String password,
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
-        this.name = name;
+        this.nameEn = nameEn;
+        this.nameBn = nameBn;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -43,26 +48,29 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(User user) {
-        List<GrantedAuthority> authorities = user.getRoles().stream().map(role ->
-                new SimpleGrantedAuthority(role.getName().name())
-        ).collect(Collectors.toList());
+        List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name())).collect(Collectors.toList());
 
         return new UserPrincipal(
                 user.getId(),
-                user.getName(),
+                user.getNameEn(),
+                user.getNameBn(),
                 user.getUsername(),
                 user.getEmail(),
                 user.getPassword(),
-                authorities
-        );
+                authorities);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getNameEn() {
+        return nameEn;
+    }
+
+    public String getNameBn() {
+        return nameBn;
     }
 
     public String getEmail() {
@@ -106,8 +114,10 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         UserPrincipal that = (UserPrincipal) o;
         return Objects.equals(id, that.id);
     }

@@ -15,7 +15,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * To handle HTTP requests related to user operations and coordinating with the application's business logic.
+ * To handle HTTP requests related to user operations and coordinating with the
+ * application's business logic.
+ * 
  * @author ashshakur.rahaman
  * @version 1.0 Initial version.
  */
@@ -30,7 +32,8 @@ public class UserController {
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
     public UserSummary getCurrentUser(@CurrentUser UserPrincipal currentUser) {
-        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(), currentUser.getName());
+        UserSummary userSummary = new UserSummary(currentUser.getId(), currentUser.getUsername(),
+                currentUser.getNameEn(), currentUser.getNameBn(), currentUser.getEmail());
         return userSummary;
     }
 
@@ -51,8 +54,8 @@ public class UserController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
 
-
-        UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getName(), user.getCreatedAt());
+        UserProfile userProfile = new UserProfile(user.getId(), user.getUsername(), user.getNameEn(),
+                user.getCreatedAt());
 
         return userProfile;
     }
