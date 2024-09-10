@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "c_designations")
@@ -28,5 +29,14 @@ public class Designation extends RecordAudit implements Serializable {
     private String nameBn;
     private int levelNumber;
     @Column(name = "parent_desingation_id")
-    private Long parentDesingationId;
+    private Long parentDesignationId;
+
+    // Self-referencing relationship: parentDesignationId refers to id of parent
+    // Designation
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parentDesignationId")
+    private Designation parentDesignation;
+
+    @OneToMany(mappedBy = "parentDesignation", cascade = CascadeType.ALL)
+    private List<Designation> subDesignations; // To retrieve sub-designations
 }

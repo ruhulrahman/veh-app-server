@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,33 +18,33 @@ import java.io.Serializable;
 import java.time.Instant;
 
 /**
- * To manage and track audit information related to entity creation and modification times
+ * To manage and track audit information related to entity creation and
+ * modification times
  *
  * @author ashshakur.rahaman
  * @version 1.0 Initial version.
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@JsonIgnoreProperties(
-        value = {"createdAt", "updatedAt"},
-        allowGetters = true
-)
+@JsonIgnoreProperties(value = { "createdAt", "updatedAt" }, allowGetters = true)
 @Data
 @Accessors(chain = true)
 @EnableJpaAuditing
 @Embeddable
 public abstract class DateAudit implements Serializable {
 
-    @CreatedDate
-    @Column(name ="created_date")
-    private Instant createdAt;
+    // @CreatedDate
+    @CreationTimestamp
+    @Column(name = "created_date")
+    private Instant createdDate;
 
-    @LastModifiedDate
-    @Column (name ="updated_date")
-    private Instant updatedAt;
+    // @LastModifiedDate
+    @UpdateTimestamp
+    @Column(name = "updated_date")
+    private Instant updatedDate;
 
     @Version
-    @Column (name = "version_no")
+    @Column(name = "version_no")
     private int version;
 
 }

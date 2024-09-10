@@ -14,7 +14,7 @@ public interface IDesignation {
 
     List<Designation> findAllDesignations();
 
-    Page<Designation> findAllDesignationsWithPagination(DesignationRequest request);
+    List<Designation> getParentDesignationList();
 
     Optional<Designation> findDesignationById(Long id);
 

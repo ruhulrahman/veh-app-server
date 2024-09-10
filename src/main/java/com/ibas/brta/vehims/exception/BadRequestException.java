@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * To indicate that a client's request is malformed or contains invalid data.
+ * 
  * @author ashshakur.rahaman
  * @version 1.0 Initial version.
  */
