@@ -1,5 +1,7 @@
 package com.ibas.brta.vehims.payload.response;
 
+import com.ibas.brta.vehims.model.Designation;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -17,10 +19,10 @@ public class DesignationResponse {
     private String nameBn;
     private int levelNumber;
     private Long parentDesignationId;
-    private DesignationResponse parentDesingation;
+    private Designation parentDesingation;
     private Boolean isActive;
-    private String createdBy;
-    private String updatedBy;
-    private String createdAt;
-    private String updatedAt;
+    // private String createdBy;
+    // private String updatedBy;
+    // private String createdAt;
+    // private String updatedAt;
 }

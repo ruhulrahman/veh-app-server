@@ -28,15 +28,15 @@ public class Designation extends RecordAudit implements Serializable {
     @Column(name = "name_bn")
     private String nameBn;
     private int levelNumber;
-    @Column(name = "parent_desingation_id")
     private Long parentDesignationId;
 
     // Self-referencing relationship: parentDesignationId refers to id of parent
     // Designation
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parentDesignationId")
+    @JoinColumn(name = "parentDesignationId", insertable = false, updatable = false)
+    // @JoinColumn(name = "parent_designation_id")
     private Designation parentDesignation;
 
-    @OneToMany(mappedBy = "parentDesignation", cascade = CascadeType.ALL)
-    private List<Designation> subDesignations; // To retrieve sub-designations
+    // @OneToMany(mappedBy = "parentDesignation", cascade = CascadeType.ALL)
+    // private List<Designation> subDesignations; // To retrieve sub-designations
 }

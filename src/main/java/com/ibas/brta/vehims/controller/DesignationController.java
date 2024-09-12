@@ -12,6 +12,7 @@ import com.ibas.brta.vehims.payload.request.SignupRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.service.DesignationService;
 import com.ibas.brta.vehims.util.AppConstants;
 
@@ -26,7 +27,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,12 +50,22 @@ public class DesignationController {
 
         private static final Logger logger = LoggerFactory.getLogger(DesignationController.class);
 
+        private Long getLoggedinUserId() {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.isAuthenticated()) {
+                        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                        return userPrincipal.getId();
+                }
+                return null;
+        }
+
         @PostMapping("/v1/designation/create")
         public ResponseEntity<?> createDesignationV1(@Valid @RequestBody Designation designation) {
 
                 logger.info("designation ==", designation.getCreatedBy());
 
-                designation.setCreatedBy(2L);
+                // designation.setCreatedBy(2L);
+                designation.setCreatedBy(getLoggedinUserId());
 
                 Designation _designation = designationService.saveDesignation(designation);
 
@@ -63,38 +77,29 @@ public class DesignationController {
                                 .body(ApiResponse.success(_designation.getNameEn() + " created.", _designation));
         }
 
-        // @GetMapping("/v1/designation/list")
-        // public ResponseEntity<?> designationList(@RequestParam DesignationRequest
-        // request) {
-        // Page<Designation> _designations =
-        // designationService.findAllDesignationsWithPagination(request);
-
-        // URI location = ServletUriComponentsBuilder
-        // .fromCurrentContextPath().path("/designation/list/")
-        // .buildAndExpand(_designations).toUri();
-
-        // return ResponseEntity.created(location).body(ApiResponse.success("Fetched
-        // list", _designations));
-        // }
-
         // @PreAuthorize("hasAnyAuthority('READ_OP')")
-        // @GetMapping("/v1/vehicles/data")
-        // public PagedResponse<VehdataResponse> getRecords(
-        // @RequestParam(value = "page", defaultValue =
-        // AppConstants.DEFAULT_PAGE_NUMBER) int page,
-        // @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE)
-        // int size,
-        // @RequestParam(value = "searchkey", defaultValue =
-        // AppConstants.DEFAULT_PARAM_VALUE) String searchkey) {
+        @GetMapping("/v1/admin/configurations/designation/list")
+        public PagedResponse<DesignationResponse> getDesignationListBySearch(
+                        @RequestParam(required = false) String nameEn,
+                        @RequestParam(required = false) Boolean isActive,
+                        @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                        @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
-        // logger.error("Finding vehicle data as paged." + searchkey);
+                PagedResponse<DesignationResponse> responseData = designationService.getDesignationListBySearch(nameEn,
+                                isActive,
+                                page,
+                                size);
 
-        // PagedResponse<VehdataResponse> vehdataResponse =
-        // vehicleService.searchByRegistrationNo(page, size,
-        // searchkey.trim().toLowerCase());
+                return responseData;
+        }
 
-        // return vehdataResponse;
-        // }
+        @PostMapping("/v1/admin/configurations/designation/delete/{id}")
+        public ResponseEntity<?> deleteDesignationById(@PathVariable Long id) {
+
+                designationService.deleteDesignationById(id);
+
+                return ResponseEntity.noContent().build();
+        }
 
         @GetMapping("/search-designation")
         public ResponseEntity<?> getDesignationBySearch(
@@ -102,9 +107,6 @@ public class DesignationController {
                         @RequestParam(required = false) Boolean isActive,
                         @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
                         @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
-
-                // return designationService.getDesignationBySearch(nameEn, isActive, page,
-                // size);
 
                 PagedResponse<DesignationResponse> responseData = designationService.getDesignationBySearch(nameEn,
                                 isActive,

@@ -36,12 +36,12 @@ public abstract class DateAudit implements Serializable {
     // @CreatedDate
     @CreationTimestamp
     @Column(name = "created_date")
-    private Instant createdDate;
+    private Instant createdAt;
 
     // @LastModifiedDate
     @UpdateTimestamp
     @Column(name = "updated_date")
-    private Instant updatedDate;
+    private Instant updatedAt;
 
     @Version
     @Column(name = "version_no")

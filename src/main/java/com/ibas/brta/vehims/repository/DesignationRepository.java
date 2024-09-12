@@ -32,15 +32,21 @@ public interface DesignationRepository extends JpaRepository<Designation, Long> 
     List<Designation> findByParentDesignationIdIsNull();
 
     // Complex query with JPQL and named parameters
-    @Query("SELECT d FROM Designation d WHERE (:nameEn is null or d.nameEn LIKE %:nameEn%) AND (:nameEn is null or d.nameBn LIKE %:nameEn%) AND (:isActive is null or d.isActive = :isActive)")
-    // @Query("SELECT d FROM Designation d WHERE d.nameEn LIKE %:nameEn%")
+    // @Query("SELECT d FROM Designation d WHERE " +
+    // "(:nameEn IS NULL OR LOWER(d.nameEn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR
+    // LOWER(d.nameBn) LIKE LOWER(CONCAT('%', :nameEn, '%'))) "
+    // +
+    // "AND (:isActive IS NULL OR d.isActive = :isActive)")
+    // @Query("SELECT d FROM Designation d WHERE (:nameEn IS NULL OR LOWER(d.nameEn)
+    // LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(d.nameBn) LIKE
+    // LOWER(CONCAT('%', :nameEn, '%'))) AND (:isActive IS NULL OR d.isActive =
+    // :isActive)")
+    // List<Designation> getDesignationBySearch(
+    // @Param("nameEn") String nameEn,
+    // @Param("isActive") Boolean isActive);
+    @Query("SELECT d FROM Designation d WHERE (:nameEn IS NULL OR LOWER(d.nameEn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(d.nameBn) LIKE LOWER(CONCAT('%', :nameEn, '%'))) AND (:isActive IS NULL OR d.isActive = :isActive) ORDER BY d.levelNumber ASC")
     Page<Designation> getDesignationBySearch(
             @Param("nameEn") String nameEn,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
-
-    // @Query("select c from VehicleData c where UPPER(c.registrationNo) like
-    // %:filter%")
-    // Page<VehicleData> searchByRegistrationNo(@Param("filter") String filter,
-    // Pageable pageable);
 }

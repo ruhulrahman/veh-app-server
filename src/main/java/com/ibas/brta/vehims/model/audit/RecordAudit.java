@@ -65,4 +65,27 @@ public abstract class RecordAudit extends DateAudit {
     // return getUuid();
     // }
 
+    @PrePersist
+    public void prePersist() {
+        // setCreatedBy(getLoggedinUserId());
+        Long createdUserId = getLoggedinUserId();
+        this.createdBy = createdUserId;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        // setUpdatedBy(getLoggedinUserId());
+        Long updateUserId = getLoggedinUserId();
+        this.updatedBy = updateUserId;
+    }
+
+    private Long getLoggedinUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            return userPrincipal.getId();
+        }
+        return null;
+    }
+
 }

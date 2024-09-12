@@ -43,6 +43,27 @@ public class DesignationService implements IDesignation {
         return designationRepository.findByNameEn(name);
     }
 
+    public PagedResponse<DesignationResponse> getDesignationListBySearch(String nameEn, Boolean isActive, int page,
+            int size) {
+        Pageable pageable = PageRequest.of(page, size);
+
+        // Retrieve all records from the database
+        Page<Designation> records = designationRepository.getDesignationBySearch(nameEn, isActive, pageable);
+
+        if (records.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(), records.getNumber(),
+                    records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
+        }
+
+        // Map Responses with all information
+        List<DesignationResponse> responseData = records.map(record -> {
+            return ModelMapper.DesignationToResponse(record);
+        }).getContent();
+
+        return new PagedResponse<>(responseData, records.getNumber(),
+                records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
+    }
+
     public PagedResponse<DesignationResponse> getDesignationBySearch(String nameEn, Boolean isActive, int page,
             int size) {
         Pageable pageable = PageRequest.of(page, size);
@@ -50,18 +71,18 @@ public class DesignationService implements IDesignation {
         // Retrieve all records from the database
         // Page<Designation> records =
         // designationRepository.getDesignationBySearch(nameEn, isActive, pageable);
-        List<Designation> recordsT = new ArrayList();
+        // List<Designation> recordsT = designationRepository.findAll();
 
-        if (nameEn.isEmpty() && isActive == null) {
-            recordsT = designationRepository.findAll();
-        } else if (!nameEn.isEmpty()) {
-            recordsT = designationRepository.findByNameEn(nameEn);
-        } else if (isActive != null) {
-            recordsT = designationRepository.findByIsActive(isActive);
-        }
+        // Page<Designation> recordsT =
+        // designationRepository.getDesignationBySearch(nameEn, isActive, pageable);
 
-        // logger.info("recordsT" + recordsT);
-        Page<Designation> records = new PageImpl<Designation>(recordsT, pageable, recordsT.size());
+        // logger.info("recordsT" + recordsT.size());
+        // Page<Designation> records = new PageImpl<Designation>(recordsT, pageable,
+        // recordsT.size());
+        // Page<Designation> records = new PageImpl<Designation>(recordsT, pageable,
+        // recordsT.size());
+        // Retrieve
+        Page<Designation> records = designationRepository.getDesignationBySearch(nameEn, isActive, pageable);
 
         if (records.getNumberOfElements() == 0) {
             return new PagedResponse<>(Collections.emptyList(), records.getNumber(),
@@ -128,5 +149,9 @@ public class DesignationService implements IDesignation {
 
     public List<Designation> getParentDesignationList() {
         return designationRepository.findByParentDesignationIdIsNull();
+    }
+
+    public void deleteDesignationById(Long id) {
+        designationRepository.deleteById(id);
     }
 }

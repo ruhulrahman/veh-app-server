@@ -21,7 +21,7 @@ public class ModelMapper {
         Optional.ofNullable(data.getLevelNumber()).ifPresent(response::setLevelNumber);
         Optional.ofNullable(data.getParentDesignationId()).ifPresent(response::setParentDesignationId);
         // Optional.ofNullable(data.getSubDesignations());
-        Optional.ofNullable(data.getParentDesignation());
+        Optional.ofNullable(data.getParentDesignation()).ifPresent(response::setParentDesingation);
         Optional.ofNullable(data.getIsActive()).ifPresent(response::setIsActive);
 
         return response;
