@@ -11,6 +11,7 @@ import com.ibas.brta.vehims.repository.DesignationRepository;
 import com.ibas.brta.vehims.util.AppConstants;
 import com.ibas.brta.vehims.util.ModelMapper;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.java.Log;
 
 import org.slf4j.Logger;
@@ -37,6 +38,10 @@ public class DesignationService implements IDesignation {
     @Override
     public List<Designation> findAllDesignations() {
         return designationRepository.findAll(Sort.by("ASC", "createdDate"));
+    }
+
+    public List<Designation> findAllDesignationsOrderByLevelNumberAsc() {
+        return designationRepository.findAll(Sort.by(Sort.Direction.ASC, "levelNumber"));
     }
 
     public List<Designation> getDesignListByNameEn(String name) {
@@ -142,13 +147,19 @@ public class DesignationService implements IDesignation {
         return designationRepository.findById(id);
     }
 
+    @Transactional
     @Override
     public Designation saveDesignation(Designation designation) {
         return designationRepository.save(designation);
     }
 
     public List<Designation> getParentDesignationList() {
-        return designationRepository.findByParentDesignationIdIsNull();
+        // return designationRepository.findByParentDesignationIdIsNull();
+        return designationRepository.findByParentDesignationIdIsNullOrderByLevelNumberAsc();
+    }
+
+    public List<Designation> getDesignationListIsActiveTrue() {
+        return designationRepository.findByIsActiveTrueOrderByLevelNumberAsc();
     }
 
     public void deleteDesignationById(Long id) {

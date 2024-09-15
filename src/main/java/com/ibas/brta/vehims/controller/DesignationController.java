@@ -59,14 +59,12 @@ public class DesignationController {
                 return null;
         }
 
-        @PostMapping("/v1/designation/create")
+        @PostMapping("/v1/admin/configurations/designation/create")
         public ResponseEntity<?> createDesignationV1(@Valid @RequestBody Designation designation) {
 
-                logger.info("designation ==", designation.getCreatedBy());
-
-                // designation.setCreatedBy(2L);
-                designation.setCreatedBy(getLoggedinUserId());
-
+                designation.setCreatedBy(2L);
+                // designation.setCreatedBy(getLoggedinUserId());
+                logger.info("designation ==", designation);
                 Designation _designation = designationService.saveDesignation(designation);
 
                 URI location = ServletUriComponentsBuilder
@@ -130,7 +128,14 @@ public class DesignationController {
                 return ResponseEntity.ok(ApiResponse.success("Fetched list", _designations));
         }
 
-        @GetMapping("/v1/designation/parent-list")
+        @GetMapping("/v1/admin/configurations/designation/all-list")
+        public ResponseEntity<?> findAllDesignationsOrderByLevelNumberAsc() {
+                List<Designation> _designations = designationService.findAllDesignationsOrderByLevelNumberAsc();
+
+                return ResponseEntity.ok(ApiResponse.success("Fetched list", _designations));
+        }
+
+        @GetMapping("/v1/admin/configurations/designation/parent-list")
         public ResponseEntity<?> getParentDesignationList() {
                 List<Designation> _designations = designationService.getParentDesignationList();
 

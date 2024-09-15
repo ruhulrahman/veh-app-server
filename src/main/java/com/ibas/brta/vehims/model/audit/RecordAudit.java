@@ -1,11 +1,14 @@
 package com.ibas.brta.vehims.model.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.ibas.brta.vehims.controller.DesignationController;
 import com.ibas.brta.vehims.security.UserPrincipal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.GenericGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
@@ -38,6 +41,8 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = false)
 public abstract class RecordAudit extends DateAudit {
 
+    private static final Logger logger = LoggerFactory.getLogger(RecordAudit.class);
+
     // @Column(length = 36)
     // @NotNull
     // private UUID uuid = UUID.randomUUID(); // UUID generated in the constructor
@@ -69,6 +74,7 @@ public abstract class RecordAudit extends DateAudit {
     public void prePersist() {
         // setCreatedBy(getLoggedinUserId());
         Long createdUserId = getLoggedinUserId();
+        logger.info("createdUserId: " + createdUserId);
         this.createdBy = createdUserId;
     }
 
@@ -76,6 +82,7 @@ public abstract class RecordAudit extends DateAudit {
     public void preUpdate() {
         // setUpdatedBy(getLoggedinUserId());
         Long updateUserId = getLoggedinUserId();
+        logger.info("updateUserId: " + updateUserId);
         this.updatedBy = updateUserId;
     }
 

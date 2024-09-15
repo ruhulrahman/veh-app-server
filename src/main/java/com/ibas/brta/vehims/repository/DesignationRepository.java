@@ -29,7 +29,11 @@ public interface DesignationRepository extends JpaRepository<Designation, Long> 
 
     List<Designation> findByNameBn(String nameBn);
 
-    List<Designation> findByParentDesignationIdIsNull();
+    List<Designation> findByParentDesignationIdIsNullOrderByLevelNumberAsc();
+
+    List<Designation> findAllByOrderByLevelNumberAsc();
+
+    List<Designation> findByIsActiveTrueOrderByLevelNumberAsc();
 
     // Complex query with JPQL and named parameters
     // @Query("SELECT d FROM Designation d WHERE " +
