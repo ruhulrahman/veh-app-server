@@ -1,0 +1,3081 @@
+
+CREATE TABLE IF NOT EXISTS brta.s_users
+(
+    user_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    name_en character varying(100),
+    name_bn character varying(100) NOT NULL,
+    username character varying(100) NOT NULL,
+    mobile character varying(100) NOT NULL,
+    email character varying(255) DEFAULT NULL,
+    password character varying(255),
+    user_type_id integer,
+    designation_id integer,
+    profile_completed boolean NOT NULL DEFAULT false,
+    is_active boolean DEFAULT true,
+    create_user_id bigint,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1',
+    CONSTRAINT s_users_pkey PRIMARY KEY (user_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_services
+(
+    service_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(255) NOT NULL,
+    name_bn character varying(255) NOT NULL,
+    parent_service_id integer,
+    service_code character varying NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_services_pkey PRIMARY KEY (service_id),
+    CONSTRAINT c_services_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT c_services_parent_service_id_fkey FOREIGN KEY (parent_service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_services_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_status_groups
+(
+    status_group_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    status_group_code character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    deleted_date timestamp without time zone,
+    version_no smallint DEFAULT '1'::smallint,
+    created_date timestamp without time zone,
+    updated_date timestamp without time zone,
+    is_active boolean DEFAULT true,
+    code character varying(100) NOT NULL,
+    CONSTRAINT status_group_id_pkey PRIMARY KEY (status_group_id),
+    CONSTRAINT c_status_groups_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_status_groups_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_statuses
+(
+    status_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    status_group_id integer NOT NULL,
+    status_code character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    color_name character varying(20),
+    data json,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint DEFAULT '1'::smallint,
+    is_active boolean DEFAULT true,
+    code character varying(100) NOT NULL,
+    CONSTRAINT c_statuses_pkey PRIMARY KEY (status_id),
+    CONSTRAINT c_statuses_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_statuses_status_group_id_fkey FOREIGN KEY (status_group_id)
+        REFERENCES brta.c_status_groups (status_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_statuses_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_locations
+(
+    location_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100),
+    name_bn character varying(100),
+    location_type_id integer,
+    parent_location_id integer,
+    is_active boolean DEFAULT true,
+    create_user_id bigint,
+    update_user_id bigint,
+    created_date timestamp without time zone,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint DEFAULT '1'::smallint,
+    CONSTRAINT c_locations_pkey PRIMARY KEY (location_id),
+    CONSTRAINT c_locations_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_locations_location_type_id_fkey FOREIGN KEY (location_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_locations_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_genders
+(
+    gender_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(20) NOT NULL,
+    name_bn character varying(20) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_genders_pkey PRIMARY KEY (gender_id),
+    CONSTRAINT c_genders_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_genders_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_fuel_types
+(
+    fuel_type_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_fuel_types_pkey PRIMARY KEY (fuel_type_id),
+    CONSTRAINT c_fuel_types_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_fuel_types_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_fiscal_years
+(
+    fiscal_year_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    start_date timestamp without time zone NOT NULL,
+    end_date timestamp without time zone NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_fiscal_years_pkey PRIMARY KEY (fiscal_year_id),
+    CONSTRAINT c_fiscal_years_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_fiscal_years_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_document_types
+(
+    document_type_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    document_format character varying(255) NOT NULL,
+    document_size integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_document_types_pkey PRIMARY KEY (document_type_id),
+    CONSTRAINT c_document_types_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT c_document_types_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_designations
+(
+    designation_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    level_number integer NOT NULL,
+    parent_designation_id integer,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id integer NOT NULL,
+    update_user_id integer,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_designations_pkey PRIMARY KEY (designation_id),
+    CONSTRAINT c_designations_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_designations_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_countries
+(
+    country_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint,
+    update_user_id bigint NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_countries_pkey PRIMARY KEY (country_id),
+    CONSTRAINT c_countries_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_countries_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_blood_groups
+(
+    blood_group_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(20) NOT NULL,
+    name_bn character varying(20) NOT NULL,
+    is_active boolean DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint DEFAULT '1'::smallint,
+    CONSTRAINT c_blood_groups_pkey PRIMARY KEY (blood_group_id),
+    CONSTRAINT c_blood_groups_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_blood_groups_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_email_templates
+(
+    email_template_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    template_name text NOT NULL,
+    subject_bn text NOT NULL,
+    subject_en text NOT NULL,
+    emai_body_bn text NOT NULL,
+    emai_body_en text NOT NULL,
+    btn_text_bn character varying(255),
+    btn_text_en character varying(255),
+    btn_url character varying(255),
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_email_templates_pkey PRIMARY KEY (email_template_id),
+    CONSTRAINT c_email_templates_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_email_templates_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_email_templates_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_notificaiton_templates
+(
+    notificaiton_template_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    title_bn text NOT NULL,
+    title_en text NOT NULL,
+    message_bn text NOT NULL,
+    message_en text NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_notificaiton_templates_pkey PRIMARY KEY (notificaiton_template_id),
+    CONSTRAINT c_notificaiton_templates_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_notificaiton_templates_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_notificaiton_templates_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_organizations
+(
+    org_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    office_type_id integer NOT NULL,
+    parent_org_id integer,
+    location_id integer NOT NULL,
+    post_code character varying(20) NOT NULL,
+    address_bn character varying(100) NOT NULL,
+    address_en character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_organizations_pkey PRIMARY KEY (org_id),
+    CONSTRAINT c_organizations_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_organizations_division_id_fkey FOREIGN KEY (location_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_organizations_office_type_id_fkey FOREIGN KEY (office_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_organizations_parent_org_id_fkey FOREIGN KEY (parent_org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_organizations_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.s_addresses
+(
+    address_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    "applicant _id" bigint NOT NULL,
+    model character varying(255) NOT NULL,
+    model_id integer NOT NULL,
+    holding_house_village character varying(100) NOT NULL,
+    road_block_sector_colony character varying(100),
+    location_id integer NOT NULL,
+    post_code character varying(20) NOT NULL,
+    mobile_number character varying(20),
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_addresses_pkey PRIMARY KEY (address_id),
+    CONSTRAINT s_addresses_location_id_fkey FOREIGN KEY (location_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.s_cd_addresses
+(
+    cd_address_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    model character varying,
+    model_id integer,
+    address_type_id integer NOT NULL,
+    holding_house_village character varying(100) NOT NULL,
+    road_block_sector_colony character varying(100),
+    location_id integer NOT NULL,
+    post_code character varying(20) NOT NULL,
+    mobile_number character varying(20),
+    card_status_id integer NOT NULL,
+    delivery_status_id integer,
+    delivered_user_id bigint,
+    delivered_date timestamp without time zone,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_cd_addresses_pkey PRIMARY KEY (cd_address_id),
+    CONSTRAINT s_cd_addresses_address_type_id_fkey FOREIGN KEY (address_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_cd_addresses_card_status_id_fkey FOREIGN KEY (card_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_cd_addresses_delivered_user_id_fkey FOREIGN KEY (delivered_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_cd_addresses_delivery_status_id_fkey FOREIGN KEY (delivery_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_cd_addresses_location_id_fkey FOREIGN KEY (location_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.u_permissions
+(
+    permission_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name character varying(100) NOT NULL,
+    permission_code character varying(100) NOT NULL,
+    type integer NOT NULL,
+    parent_permission_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT u_permissions_pkey PRIMARY KEY (permission_id)
+);
+
+CREATE TABLE IF NOT EXISTS brta.u_roles
+(
+    role_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_bn character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    role_code character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT u_roles_pkey PRIMARY KEY (role_id),
+    CONSTRAINT u_roles_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT u_roles_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.u_role_permissions
+(
+    role_permission_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    role_id integer NOT NULL,
+    permission_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    CONSTRAINT u_role_permissions_pkey PRIMARY KEY (role_permission_id),
+    CONSTRAINT u_role_permissions_permission_id_fkey FOREIGN KEY (permission_id)
+        REFERENCES brta.u_permissions (permission_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT u_role_permissions_role_id_fkey FOREIGN KEY (role_id)
+        REFERENCES brta.u_roles (role_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+
+CREATE TABLE IF NOT EXISTS brta.v_exporters
+(
+    exporter_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_bn character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    country_id integer NOT NULL,
+    address character varying(255) DEFAULT NULL::character varying,
+    mobile character varying(20) DEFAULT NULL::character varying,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_exporters_pkey PRIMARY KEY (exporter_id),
+    CONSTRAINT v_exporters_country_id_fkey FOREIGN KEY (country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_exporters_country_id_fkey1 FOREIGN KEY (country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_exporters_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_exporters_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_importers
+(
+    importer_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_bn character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    country_id integer NOT NULL,
+    address character varying(255),
+    mobile character varying(20),
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_importers_pkey PRIMARY KEY (importer_id),
+    CONSTRAINT v_importers_country_id_fkey FOREIGN KEY (country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_importers_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_importers_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_tin_infos
+(
+    user_tin_info_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    user_id bigint NOT NULL,
+    tin_number character varying(100) NOT NULL,
+    tin_person_or_company_name character varying(255) NOT NULL,
+    tin_zone character varying(100) NOT NULL,
+    tin_circle character varying(100),
+    tin_type character varying(100),
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_tin_infos_pkey PRIMARY KEY (user_tin_info_id),
+    CONSTRAINT s_user_tin_infos_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_details
+(
+    user_detail_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    user_id bigint NOT NULL,
+    passport_number character varying,
+    birth_reg_number character varying,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_details_pkey PRIMARY KEY (user_detail_id),
+    CONSTRAINT s_user_details_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_details_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_details_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_email_histories
+(
+    user_email_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    user_id bigint NOT NULL,
+    email character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_email_histories_pkey PRIMARY KEY (user_email_id),
+    CONSTRAINT s_user_email_histories_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_mobile_histories
+(
+    user_mobile_id integer NOT NULL,
+    user_id bigint NOT NULL,
+    mobile_number character varying(20) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    created_date timestamp without time zone NOT NULL,
+    version_no integer NOT NULL DEFAULT 1,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    CONSTRAINT s_user_mobile_histories_pkey PRIMARY KEY (user_mobile_id),
+    CONSTRAINT s_user_mobile_histories_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.s_user_password_histories
+(
+    user_password_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    user_id bigint NOT NULL,
+    password character varying(255) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_password_histories_pkey PRIMARY KEY (user_password_id),
+    CONSTRAINT s_user_password_histories_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+
+CREATE TABLE IF NOT EXISTS brta.s_user_nid_infos
+(
+    user_nid_info_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    user_id bigint NOT NULL,
+    nid_number character varying(100) NOT NULL,
+    dob date NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    name_en character varying(100) NOT NULL,
+    father_or_husband_name_en character varying(100),
+    father_or_husband_name_bn character varying(100) NOT NULL,
+    mother_name_en character varying(100),
+    mother_name_bn character varying(100) NOT NULL,
+    address_en character varying(100),
+    address_bn character varying(100) NOT NULL,
+    gender_id integer NOT NULL,
+    mobile character varying(20) NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_nid_infos_pkey PRIMARY KEY (user_nid_info_id),
+    CONSTRAINT s_user_nid_infos_gender_id_fkey FOREIGN KEY (gender_id)
+        REFERENCES brta.c_genders (gender_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_nid_infos_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_office_histories
+(
+    user_office_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    user_id bigint NOT NULL,
+    role_id integer NOT NULL,
+    designation_id integer NOT NULL,
+    org_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_office_histories_pkey PRIMARY KEY (user_office_history_id),
+    CONSTRAINT s_user_office_histories_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_office_histories_designation_id_fkey FOREIGN KEY (designation_id)
+        REFERENCES brta.c_designations (designation_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_office_histories_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_office_histories_role_id_fkey FOREIGN KEY (role_id)
+        REFERENCES brta.u_roles (role_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_office_histories_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_office_histories_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_office_exam_centers
+(
+    office_exam_center_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    org_id integer NOT NULL,
+    thana_id integer NOT NULL,
+    address_bn character varying(100) NOT NULL,
+    address_en character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_office_exam_centers_pkey PRIMARY KEY (office_exam_center_id),
+    CONSTRAINT c_office_exam_centers_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_exam_centers_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_exam_centers_thana_id_fkey FOREIGN KEY (thana_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_exam_centers_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_office_jurisdictions
+(
+    office_jurisdiction_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    org_id integer NOT NULL,
+    thana_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_office_jurisdictions_pkey PRIMARY KEY (office_jurisdiction_id),
+    CONSTRAINT c_office_jurisdictions_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_jurisdictions_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_jurisdictions_thana_id_fkey FOREIGN KEY (thana_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_office_jurisdictions_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_colors
+(
+    vehicle_color_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_colors_pkey PRIMARY KEY (vehicle_color_id),
+    CONSTRAINT c_vehicle_colors_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_colors_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_makers
+(
+    maker_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    country_id integer NOT NULL,
+    address character varying(255) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_makers_pkey PRIMARY KEY (maker_id),
+    CONSTRAINT c_vehicle_makers_country_id_fkey FOREIGN KEY (country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_makers_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_makers_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_brands
+(
+    brand_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    maker_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_brands_pkey PRIMARY KEY (brand_id),
+    CONSTRAINT c_vehicle_brands_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_brands_maker_id_fkey FOREIGN KEY (maker_id)
+        REFERENCES brta.c_vehicle_makers (maker_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_brands_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_types
+(
+    vehicle_type_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_types_pkey PRIMARY KEY (vehicle_type_id),
+    CONSTRAINT c_vehicle_types_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_types_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_classes
+(
+    vehicle_class_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    name_en character varying(100) NOT NULL,
+    name_bn character varying(100) NOT NULL,
+    vehicle_type_id integer NOT NULL,
+    vehicle_class_code character varying(100) NOT NULL,
+    cc_min integer,
+    cc_max integer,
+    seat_min smallint,
+    seat_max smallint,
+    loaded_weight_min_kg integer,
+    loaded_weight_max_kg integer,
+    motor_capacity_min_kw integer,
+    motor_capacity_max_kw integer,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_classes_pkey PRIMARY KEY (vehicle_class_id),
+    CONSTRAINT c_vehicle_classes_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_classes_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_classes_vehicle_type_id_fkey FOREIGN KEY (vehicle_type_id)
+        REFERENCES brta.c_vehicle_types (vehicle_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_routes
+(
+    route_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    route_permit_type_id integer NOT NULL,
+    route_name_bn character varying NOT NULL,
+    route_name_en character varying NOT NULL,
+    min_district smallint NOT NULL,
+    max_district smallint NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_routes_pkey PRIMARY KEY (route_id),
+    CONSTRAINT c_vehicle_routes_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_routes_route_permit_type_id_fkey FOREIGN KEY (route_permit_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_routes_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.c_vehicle_route_districts
+(
+    v_route_disctrict_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    route_id integer NOT NULL,
+    district_id integer NOT NULL,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_vehicle_route_districts_pkey PRIMARY KEY (v_route_disctrict_id),
+    CONSTRAINT c_vehicle_route_districts_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_route_districts_district_id_fkey FOREIGN KEY (district_id)
+        REFERENCES brta.c_locations (location_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_route_districts_route_id_fkey FOREIGN KEY (route_id)
+        REFERENCES brta.c_vehicle_routes (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_vehicle_route_districts_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.f_service_fees
+(
+    service_fees_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    service_type_id integer NOT NULL,
+    vehicle_type_id integer NOT NULL,
+    vehicle_class_id integer,
+    hire_purchase boolean,
+    is_yearly_fee boolean NOT NULL DEFAULT true,
+    main_fee integer NOT NULL,
+    late_fee integer DEFAULT 0,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT " f_service_fees_pkey" PRIMARY KEY (service_fees_id),
+    CONSTRAINT " f_service_fees_service_id_fkey" FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_service_type_id_fkey FOREIGN KEY (service_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_vehicle_class_id_fkey FOREIGN KEY (vehicle_class_id)
+        REFERENCES brta.c_vehicle_classes (vehicle_class_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_vehicle_type_id_fkey FOREIGN KEY (vehicle_type_id)
+        REFERENCES brta.c_vehicle_types (vehicle_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.f_service_fees_histories
+(
+    service_fees_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    service_type_id integer NOT NULL,
+    vehicle_type_id integer,
+    vehicle_class_id integer,
+    hire_purchase boolean,
+    is_yearly_fee boolean NOT NULL,
+    main_fee integer NOT NULL,
+    late_fee integer,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT f_service_fees_histories_pkey PRIMARY KEY (service_fees_history_id),
+    CONSTRAINT f_service_fees_histories_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_histories_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_histories_service_type_id_fkey FOREIGN KEY (service_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_histories_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_histories_vehicle_class_id_fkey FOREIGN KEY (vehicle_class_id)
+        REFERENCES brta.c_vehicle_classes (vehicle_class_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_service_fees_histories_vehicle_type_id_fkey FOREIGN KEY (vehicle_type_id)
+        REFERENCES brta.c_vehicle_types (vehicle_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.f_driving_related_service_fees
+(
+    dr_service_fees_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    is_yearly_fee boolean NOT NULL DEFAULT true,
+    main_fee integer NOT NULL,
+    late_fee integer NOT NULL DEFAULT 0,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT f_driving_related_service_fees_pkey PRIMARY KEY (dr_service_fees_id),
+    CONSTRAINT f_driving_related_service_fees_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_service_id_fkey1 FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_service_id_fkey2 FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.f_driving_related_service_fees_histories
+(
+    dr_service_fees_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    is_yearly_fee boolean NOT NULL DEFAULT true,
+    main_fee integer NOT NULL,
+    late_fee integer NOT NULL DEFAULT 0,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT f_driving_related_service_fees_histories_pkey PRIMARY KEY (dr_service_fees_history_id),
+    CONSTRAINT f_driving_related_service_fees_histories_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_histories_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_driving_related_service_fees_histories_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+
+CREATE TABLE IF NOT EXISTS brta.f_route_permit_service_fees
+(
+    rp_service_fees_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    route_permit_type_id integer NOT NULL,
+    route_id integer,
+    min_route_number integer,
+    max_route_number integer,
+    is_yearly_fee boolean NOT NULL DEFAULT true,
+    main_fee integer NOT NULL,
+    late_fee integer NOT NULL DEFAULT 0,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT f_route_permit_service_fees_pkey PRIMARY KEY (rp_service_fees_id),
+    CONSTRAINT f_route_permit_service_fees_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_route_id_fkey FOREIGN KEY (route_id)
+        REFERENCES brta.c_vehicle_routes (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_route_permit_type_id_fkey FOREIGN KEY (route_permit_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.f_route_permit_service_fees_histories
+(
+    rp_service_fees_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    route_permit_type_id integer NOT NULL,
+    route_id integer,
+    min_route_number integer,
+    max_route_number integer,
+    is_yearly_fee boolean NOT NULL DEFAULT true,
+    main_fee integer NOT NULL,
+    late_fee integer NOT NULL DEFAULT 0,
+    vat_percentage smallint NOT NULL,
+    sd_percentage smallint,
+    effective_start_date timestamp without time zone NOT NULL,
+    effective_end_date timestamp without time zone,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT f_route_permit_service_fees_histories_pkey PRIMARY KEY (rp_service_fees_history_id),
+    CONSTRAINT f_route_permit_service_fees_histories_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_histories_route_id_fkey FOREIGN KEY (route_id)
+        REFERENCES brta.c_vehicle_routes (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_histories_route_permit_type_id_fkey FOREIGN KEY (route_permit_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_histories_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT f_route_permit_service_fees_histories_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.c_service_fine_remissions
+(
+    fine_remission_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_id integer NOT NULL,
+    fine_remission_start_date timestamp without time zone NOT NULL,
+    fine_remission_end_date timestamp without time zone NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT c_service_fine_remissions_pkey PRIMARY KEY (fine_remission_id),
+    CONSTRAINT c_service_fine_remissions_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_service_fine_remissions_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT c_service_fine_remissions_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_service_requests
+(
+    service_request_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_request_no character varying(25) NOT NULL,
+    service_id integer NOT NULL,
+    org_id integer NOT NULL,
+    applicant_id integer NOT NULL,
+    application_date timestamp without time zone NOT NULL,
+    volume_no integer,
+    page_no integer,
+    forward_date_for_inspection timestamp without time zone,
+    inspector_id bigint,
+    inspection_status_id integer,
+    inspection_remarks character varying(255) COLLATE pg_catalog."default",
+    inspection_date timestamp without time zone,
+    dl_exam_status_id integer,
+    dl_exam_remarks character varying COLLATE pg_catalog."default",
+    dl_exam_date timestamp without time zone,
+    forward_date_for_revenue timestamp without time zone,
+    revenue_checker_id bigint,
+    revenue_status_id integer,
+    revenue_remarks character varying COLLATE pg_catalog."default",
+    revenue_check_date timestamp without time zone,
+    approval_id bigint,
+    approval_remarks character varying COLLATE pg_catalog."default",
+    approval_date timestamp without time zone,
+    rejection_date timestamp without time zone,
+    application_status_id integer,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_service_requests_pkey PRIMARY KEY (service_request_id),
+    CONSTRAINT s_service_requests_applicant_id_fkey FOREIGN KEY (applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_application_status_id_fkey FOREIGN KEY (application_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_approval_id_fkey FOREIGN KEY (approval_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_dl_exam_status_id_fkey FOREIGN KEY (dl_exam_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_inspection_status_id_fkey FOREIGN KEY (inspection_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_inspector_id_fkey FOREIGN KEY (inspector_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_org_id_fkey1 FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_revenue_checker_id_fkey FOREIGN KEY (revenue_checker_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_revenue_status_id_fkey FOREIGN KEY (revenue_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_service_requests_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.medias
+(
+    media_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    model character varying,
+    model_id integer,
+    service_id integer,
+    status_id integer,
+    original_name character varying,
+    folder_path character varying,
+    file character varying,
+    extension character varying(20),
+    type character varying(20),
+    size integer,
+    created_date timestamp without time zone,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint DEFAULT '1'::smallint,
+    CONSTRAINT medias_pkey PRIMARY KEY (media_id),
+    CONSTRAINT medias_service_id_fkey FOREIGN KEY (service_id)
+        REFERENCES brta.c_services (service_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT medias_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.dl_applicants
+(
+    dl_applicant_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    service_request_id bigint,
+    nid_number character varying(25) NOT NULL,
+    dl_language_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    occupation_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    marital_status_id integer NOT NULL,
+    spouse_name character varying(70),
+    spouse_contact_no character varying(20),
+    is_other_cityzenship boolean NOT NULL DEFAULT false,
+    office_phone_number character varying(20),
+    residence_phone_number character varying(20),
+    emergency_contact_name character varying(20) NOT NULL,
+    emergency_contact_number character varying(20) NOT NULL,
+    emergency_contact_relationship_id integer NOT NULL,
+    emergency_contact_email character varying(100) NOT NULL,
+    present_address_id integer NOT NULL,
+    permanent_address_id integer NOT NULL,
+    cd_option_id integer NOT NULL,
+    cd_address_id integer NOT NULL,
+    dl_status_id integer,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone NOT NULL,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT dl_applicants_pkey PRIMARY KEY (dl_applicant_id),
+    CONSTRAINT dl_applicants_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_cd_address_id_fkey FOREIGN KEY (cd_address_id)
+        REFERENCES brta.s_cd_addresses (cd_address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_cd_option_id_fkey FOREIGN KEY (cd_option_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_dl_language_id_fkey FOREIGN KEY (dl_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_dl_status_id_fkey FOREIGN KEY (dl_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_emergency_contact_relationship_id_fkey FOREIGN KEY (emergency_contact_relationship_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_marital_status_id_fkey FOREIGN KEY (marital_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_occupation_id_fkey FOREIGN KEY (occupation_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_permanent_address_id_fkey FOREIGN KEY (permanent_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_present_address_id_fkey FOREIGN KEY (present_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_applicants_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.dl_informations
+(
+    dl_info_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    applicant_id bigint NOT NULL,
+    dl_number character varying(50) NOT NULL,
+    dl_reference_number character varying(50) NOT NULL,
+    dl_language_id integer NOT NULL,
+    application_type_id integer NOT NULL,
+    license_type_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    dl_vehicle_class_id integer NOT NULL,
+    issued_office_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    occupation_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    marital_status_id integer NOT NULL,
+    spouse_name character varying(70),
+    spouse_contact_no character varying(20),
+    is_other_cityzenship boolean NOT NULL,
+    office_phone_number character varying(20),
+    residence_phone_number character varying(20),
+    emergency_contact_name character varying(70) NOT NULL,
+    emergency_contact_number character varying(20) NOT NULL,
+    emergency_contact_relationship_id integer NOT NULL,
+    emergency_contact_email character varying(100) NOT NULL,
+    present_address_id integer NOT NULL,
+    permanent_address_id integer NOT NULL,
+    status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT dl_informations_pkey PRIMARY KEY (dl_info_id),
+    CONSTRAINT dl_informations_applicant_id_fkey FOREIGN KEY (applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_application_type_id_fkey FOREIGN KEY (application_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_dl_language_id_fkey FOREIGN KEY (dl_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_dl_vehicle_class_id_fkey FOREIGN KEY (dl_vehicle_class_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_emergency_contact_relationship_id_fkey FOREIGN KEY (emergency_contact_relationship_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_issued_office_id_fkey FOREIGN KEY (issued_office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_license_type_id_fkey FOREIGN KEY (license_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_license_type_id_fkey1 FOREIGN KEY (license_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_marital_status_id_fkey FOREIGN KEY (marital_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_occupation_id_fkey FOREIGN KEY (occupation_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_permanent_address_id_fkey FOREIGN KEY (permanent_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_present_address_id_fkey FOREIGN KEY (present_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT dl_informations_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_application_dl_classes
+(
+    application_dl_class_id bigint NOT NULL,
+    dl_applicant_id bigint,
+    dl_class_id integer,
+    created_date timestamp without time zone,
+    CONSTRAINT s_application_dl_classes_pkey PRIMARY KEY (application_dl_class_id),
+    CONSTRAINT s_application_dl_classes_dl_applicant_id_fkey FOREIGN KEY (dl_applicant_id)
+        REFERENCES brta.dl_applicants (dl_applicant_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_application_dl_classes_dl_class_id_fkey FOREIGN KEY (dl_class_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_dl_exam_test_times
+(
+    exam_test_time_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    exam_name_id integer NOT NULL,
+    exam_time time without time zone NOT NULL,
+    office_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_dl_exam_test_times_pkey PRIMARY KEY (exam_test_time_id),
+    CONSTRAINT s_dl_exam_test_times_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_dl_exam_test_times_exam_name_id_fkey FOREIGN KEY (exam_name_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_dl_exam_test_times_office_id_fkey FOREIGN KEY (office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_dl_exam_test_times_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.s_driving_learner_licenses
+(
+    dll_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    service_request_id bigint NOT NULL,
+    dl_applicant_id bigint NOT NULL,
+    photo_media_id bigint NOT NULL,
+    learner_number bigint NOT NULL,
+    learner_applicant_id bigint NOT NULL,
+    roll_no integer NOT NULL,
+    office_id integer NOT NULL,
+    exam_venue_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    dl_language_id integer NOT NULL,
+    application_type_id integer NOT NULL,
+    license_type_id integer NOT NULL,
+    exam_date timestamp without time zone NOT NULL,
+    exam_status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_driving_learner_licenses_pkey PRIMARY KEY (dll_id),
+    CONSTRAINT s_driving_learner_licenses_application_type_id_fkey FOREIGN KEY (application_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_dl_applicant_id_fkey FOREIGN KEY (dl_applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_dl_language_id_fkey FOREIGN KEY (dl_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_exam_status_id_fkey FOREIGN KEY (exam_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_exam_venue_id_fkey FOREIGN KEY (exam_venue_id)
+        REFERENCES brta.c_office_exam_centers (office_exam_center_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_learner_applicant_id_fkey FOREIGN KEY (learner_applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_license_type_id_fkey FOREIGN KEY (license_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_office_id_fkey FOREIGN KEY (office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_photo_media_id_fkey FOREIGN KEY (photo_media_id)
+        REFERENCES brta.medias (media_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_driving_learner_licenses_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+
+CREATE TABLE IF NOT EXISTS brta.d_license_histories
+(
+    dl_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    dl_info_id integer NOT NULL,
+    applicant_id bigint NOT NULL,
+    license_type_id integer NOT NULL,
+    application_type_id integer NOT NULL,
+    issued_office_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    dl_language_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    occupation_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    marital_status_id integer NOT NULL,
+    spouse_name character varying(70) DEFAULT NULL::character varying,
+    spouse_contact_no character varying(20) DEFAULT NULL::character varying,
+    is_other_cityzenship boolean NOT NULL DEFAULT false,
+    office_phone_number character varying(20) DEFAULT NULL::character varying,
+    residence_phone_number character varying(20) DEFAULT NULL::character varying,
+    emergency_contact_name character varying(20) NOT NULL,
+    emergency_contact_number character varying(20) NOT NULL,
+    emergency_contact_relationship_id integer NOT NULL,
+    emergency_contact_email character varying(100) NOT NULL,
+    present_address_id integer NOT NULL,
+    permanent_address_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT d_license_histories_pkey PRIMARY KEY (dl_history_id),
+    CONSTRAINT d_license_histories_applicant_id_fkey FOREIGN KEY (applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_application_type_id_fkey FOREIGN KEY (application_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_dl_language_id_fkey FOREIGN KEY (dl_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_emergency_contact_relationship_id_fkey FOREIGN KEY (emergency_contact_relationship_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_issued_office_id_fkey FOREIGN KEY (issued_office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_license_type_id_fkey FOREIGN KEY (license_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_marital_status_id_fkey FOREIGN KEY (marital_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_occupation_id_fkey FOREIGN KEY (occupation_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_permanent_address_id_fkey FOREIGN KEY (permanent_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_license_histories_present_address_id_fkey FOREIGN KEY (present_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_dl_info_classes
+(
+    dl_info_class_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    dl_info_id integer,
+    dl_class_id integer,
+    created_date timestamp without time zone,
+    CONSTRAINT s_dl_info_classes_pkey PRIMARY KEY (dl_info_class_id),
+    CONSTRAINT s_dl_info_classes_dl_class_id_fkey FOREIGN KEY (dl_class_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_dl_info_classes_dl_info_id_fkey FOREIGN KEY (dl_info_id)
+        REFERENCES brta.dl_informations (dl_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.d_instructor_applicants
+(
+    dil_applicant_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    service_request_id bigint NOT NULL,
+    dl_info_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    roll_no integer NOT NULL,
+    office_id integer NOT NULL,
+    exam_venue_id integer NOT NULL,
+    exam_test_time_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    dl_language_id integer NOT NULL,
+    exam_date timestamp without time zone NOT NULL,
+    exam_status_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    technical_edu_id integer,
+    previosly_disqualified boolean NOT NULL DEFAULT false,
+    disqualified_reason character varying,
+    disqualifier_authority_id integer,
+    is_goog_character boolean NOT NULL DEFAULT true,
+    fit_as_instructor boolean NOT NULL DEFAULT true,
+    present_address_id integer NOT NULL,
+    permanent_address_id integer NOT NULL,
+    cd_address_id integer,
+    dil_status_id integer,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT d_instructor_applicants_pkey PRIMARY KEY (dil_applicant_id),
+    CONSTRAINT d_instructor_applicants_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_cd_address_id_fkey FOREIGN KEY (cd_address_id)
+        REFERENCES brta.s_cd_addresses (cd_address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_dil_status_id_fkey FOREIGN KEY (dil_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_disqualifier_authority_id_fkey FOREIGN KEY (disqualifier_authority_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_dl_info_id_fkey FOREIGN KEY (dl_info_id)
+        REFERENCES brta.dl_informations (dl_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_dl_language_id_fkey FOREIGN KEY (dl_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_exam_status_id_fkey FOREIGN KEY (exam_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_exam_test_time_id_fkey FOREIGN KEY (exam_test_time_id)
+        REFERENCES brta.s_dl_exam_test_times (exam_test_time_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_exam_venue_id_fkey FOREIGN KEY (exam_venue_id)
+        REFERENCES brta.c_office_exam_centers (office_exam_center_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_office_id_fkey FOREIGN KEY (office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_permanent_address_id_fkey FOREIGN KEY (permanent_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_present_address_id_fkey FOREIGN KEY (present_address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_applicants_technical_edu_id_fkey FOREIGN KEY (technical_edu_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.d_instructor_license_infos
+(
+    dil_info_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    applicant_id bigint NOT NULL,
+    dl_info_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    office_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    dil_language_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    technical_edu_id integer,
+    status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT d_instructor_license_infos_pkey PRIMARY KEY (dil_info_id),
+    CONSTRAINT d_instructor_license_infos_applicant_id_fkey FOREIGN KEY (applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_dil_language_id_fkey FOREIGN KEY (dil_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_dl_info_id_fkey FOREIGN KEY (dl_info_id)
+        REFERENCES brta.dl_informations (dl_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_office_id_fkey FOREIGN KEY (office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_infos_technical_edu_id_fkey FOREIGN KEY (technical_edu_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.d_instructor_license_histories
+(
+    dil_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    dil_info_id bigint NOT NULL,
+    applicant_id bigint NOT NULL,
+    dl_info_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    office_id integer NOT NULL,
+    issue_date timestamp without time zone NOT NULL,
+    expire_date timestamp without time zone NOT NULL,
+    dil_language_id integer NOT NULL,
+    blood_group_id integer NOT NULL,
+    edu_qualification_id integer NOT NULL,
+    technical_edu_id integer,
+    status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT d_instructor_license_histories_pkey PRIMARY KEY (dil_info_id),
+    CONSTRAINT d_instructor_license_histories_applicant_id_fkey FOREIGN KEY (applicant_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_blood_group_id_fkey FOREIGN KEY (blood_group_id)
+        REFERENCES brta.c_blood_groups (blood_group_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_dil_info_id_fkey FOREIGN KEY (dil_info_id)
+        REFERENCES brta.d_instructor_license_infos (dil_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT d_instructor_license_histories_dil_language_id_fkey FOREIGN KEY (dil_language_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_dl_info_id_fkey FOREIGN KEY (dl_info_id)
+        REFERENCES brta.dl_informations (dl_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_edu_qualification_id_fkey FOREIGN KEY (edu_qualification_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_office_id_fkey FOREIGN KEY (office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT d_instructor_license_histories_technical_edu_id_fkey FOREIGN KEY (technical_edu_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_infos
+(
+    vehicle_info_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    chassis_number character varying(100) NOT NULL,
+    engine_number character varying(100) NOT NULL,
+    fitness_issue_date timestamp without time zone,
+    fitness_expire_date timestamp without time zone,
+    tax_token_issue_date timestamp without time zone,
+    tax_token_expire_date timestamp without time zone,
+    route_permit_issue_date timestamp without time zone,
+    route_permit_expire_date timestamp without time zone,
+    bill_of_entry_number character varying(100) NOT NULL,
+    bill_of_entry_date timestamp without time zone NOT NULL,
+    bill_of_entry_office_code character varying(100),
+    hs_code character varying(100),
+    importer_id integer NOT NULL,
+    maker_id integer NOT NULL,
+    exporter_id integer NOT NULL,
+    agent character varying(255),
+    product_location character varying(255),
+    product_description character varying(255),
+    invoice_number character varying(255),
+    invoice_date timestamp without time zone,
+    is_electrict_vehicle boolean NOT NULL DEFAULT false,
+    cc_or_kw integer NOT NULL,
+    manufacturing_year integer NOT NULL,
+    vehicle_class_id integer,
+    vehicle_type_id integer,
+    body_color_id integer NOT NULL,
+    assembly_operation_id integer NOT NULL,
+    mileage integer,
+    unladen_weight integer,
+    max_laden_weight integer,
+    is_hire boolean DEFAULT false,
+    is_hire_purchase boolean DEFAULT false,
+    total_seat smallint,
+    fuel_id integer,
+    economic_life timestamp without time zone,
+    remaining_life timestamp without time zone,
+    vehicle_price integer,
+    is_air_conditioner boolean DEFAULT false,
+    v_brand_id integer,
+    v_model character varying(100),
+    cylinder smallint,
+    horse_power integer,
+    highest_rpm integer,
+    wheel_base character varying(100),
+    standee integer,
+    tyre_size character varying(100),
+    tyre_number smallint,
+    axle_number integer,
+    front_axle_1 integer,
+    front_axle_2 integer,
+    central_axle_1 integer,
+    central_axle_2 integer,
+    central_axle_3 integer,
+    rear_axle_1 integer,
+    rear_axle_2 integer,
+    rear_axle_3 integer,
+    status_id integer,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    page_completed integer DEFAULT 1,
+    CONSTRAINT v_vehicle_infos_pkey PRIMARY KEY (vehicle_info_id),
+    CONSTRAINT v_vehicle_infos_assembly_operation_id_fkey FOREIGN KEY (assembly_operation_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_body_color_id_fkey FOREIGN KEY (body_color_id)
+        REFERENCES brta.c_vehicle_colors (vehicle_color_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_exporter_id_fkey FOREIGN KEY (exporter_id)
+        REFERENCES brta.v_exporters (exporter_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_importer_id_fkey FOREIGN KEY (importer_id)
+        REFERENCES brta.v_importers (importer_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_maker_id_fkey FOREIGN KEY (maker_id)
+        REFERENCES brta.c_vehicle_makers (maker_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_v_brand_id_fkey FOREIGN KEY (v_brand_id)
+        REFERENCES brta.c_vehicle_brands (brand_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_vehicle_class_id_fkey FOREIGN KEY (vehicle_class_id)
+        REFERENCES brta.c_vehicle_classes (vehicle_class_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_infos_vehicle_type_id_fkey FOREIGN KEY (vehicle_type_id)
+        REFERENCES brta.c_vehicle_types (vehicle_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_owners
+(
+    vehicle_owner_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    father_or_husband_name character varying(100) NOT NULL,
+    mother_name character varying(100) NOT NULL,
+    gender_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    guardian_name character varying(100),
+    passport_no character varying(100),
+    birth_certificate_no character varying(100),
+    address_id integer NOT NULL,
+    is_recondition boolean NOT NULL DEFAULT false,
+    is_joint_owner boolean NOT NULL DEFAULT false,
+    owner_type_id integer NOT NULL,
+    ministry_id integer,
+    department_id integer,
+    sub_office_unit_group_id integer,
+    unit_or_activity_id integer,
+    in_use boolean DEFAULT true,
+    used_by_id integer,
+    within_organogram boolean,
+    acquisition_process_id integer,
+    acquisition_office character varying,
+    acquisition_price integer,
+    date_of_receipt date,
+    remarks character varying,
+    is_active boolean NOT NULL DEFAULT true,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_owners_pkey PRIMARY KEY (vehicle_owner_id),
+    CONSTRAINT v_vehicle_owners_acquisition_process_id_fkey FOREIGN KEY (acquisition_process_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_address_id_fkey FOREIGN KEY (address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_gender_id_fkey FOREIGN KEY (gender_id)
+        REFERENCES brta.c_genders (gender_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_used_by_id_fkey FOREIGN KEY (used_by_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_owners_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_ownership_transfer_applications
+(
+    ownership_transfer_application_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer,
+    owner_type_id integer NOT NULL,
+    reason_for_transfer_id integer NOT NULL,
+    buying_price integer NOT NULL,
+    name character varying(100) NOT NULL,
+    father_or_husband_name character varying(100) NOT NULL,
+    mother_name character varying(100) NOT NULL,
+    gender_id integer NOT NULL,
+    nationality_id integer NOT NULL,
+    guardian_name character varying(100),
+    passport_no character varying(100),
+    birth_certificate_no character varying(100),
+    address_id integer NOT NULL,
+    is_joint_owner boolean NOT NULL DEFAULT false,
+    ministry_id integer,
+    department_id integer,
+    sub_office_unit_group_id integer,
+    unit_or_activity_id integer,
+    in_use boolean DEFAULT true,
+    used_by_id integer,
+    within_organogram boolean,
+    acquisition_process_id integer,
+    acquisition_office character varying,
+    acquisition_price integer,
+    date_of_receipt date,
+    remarks character varying,
+    is_active boolean NOT NULL DEFAULT true,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_ownership_transfer_applications_acquisition_process_id_fkey FOREIGN KEY (acquisition_process_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_address_id_fkey FOREIGN KEY (address_id)
+        REFERENCES brta.s_addresses (address_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_gender_id_fkey FOREIGN KEY (gender_id)
+        REFERENCES brta.c_genders (gender_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_nationality_id_fkey FOREIGN KEY (nationality_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_owner_type_id_fkey FOREIGN KEY (owner_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_reason_for_transfer_id_fkey FOREIGN KEY (reason_for_transfer_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_ownership_transfer_applications_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_registrations
+(
+    vehicle_reg_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    vehicle_owner_id integer NOT NULL,
+    reg_office_id integer NOT NULL,
+    vehicle_type_id integer NOT NULL,
+    vehicle_class_id integer NOT NULL,
+    class_number character varying(10) NOT NULL,
+    vehicle_number character varying(10) NOT NULL,
+    full_reg_number character varying(20) NOT NULL,
+    status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_registrations_pkey PRIMARY KEY (vehicle_reg_id),
+    CONSTRAINT v_vehicle_registrations_reg_office_id_fkey FOREIGN KEY (reg_office_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_vehicle_class_id_fkey FOREIGN KEY (vehicle_class_id)
+        REFERENCES brta.c_vehicle_classes (vehicle_class_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_vehicle_owner_id_fkey FOREIGN KEY (vehicle_owner_id)
+        REFERENCES brta.v_vehicle_owners (vehicle_owner_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_registrations_vehicle_type_id_fkey FOREIGN KEY (vehicle_type_id)
+        REFERENCES brta.c_vehicle_types (vehicle_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_tyre_histories
+(
+    vehicle_tyre_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    tyre_size character varying(100) NOT NULL,
+    is_active boolean NOT NULL DEFAULT false,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_tyre_histories_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_tyre_histories_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_body_color_histories
+(
+    vehicle_body_color_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    body_color_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT false,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_body_color_histories_body_color_id_fkey FOREIGN KEY (body_color_id)
+        REFERENCES brta.c_vehicle_colors (vehicle_color_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_body_color_histories_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT v_vehicle_body_color_histories_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_ac_histories
+(
+    vehicle_body_color_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    is_air_conditioner boolean NOT NULL DEFAULT false,
+    is_active boolean NOT NULL DEFAULT false,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_ac_histories_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_ac_histories_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_engine_histories
+(
+    vehicle_engine_history_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    engine_number character varying(100) NOT NULL,
+    cc integer NOT NULL,
+    v_model character varying(100),
+    cylinder smallint,
+    horse_power integer,
+    fuel_type_id integer NOT NULL,
+    economic_life timestamp without time zone,
+    remaining_life timestamp without time zone,
+    engine_making_country_id integer NOT NULL,
+    gear_box_description character varying(100),
+    engine_change_description character varying(100),
+    is_driver_connection_standard_id integer NOT NULL,
+    fault_description character varying(100),
+    is_engine_working_properly boolean NOT NULL,
+    is_active boolean NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_engine_histories_pkey PRIMARY KEY (vehicle_engine_history_id),
+    CONSTRAINT v_vehicle_engine_histories_engine_making_country_id_fkey FOREIGN KEY (engine_making_country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_engine_histories_fuel_type_id_fkey FOREIGN KEY (fuel_type_id)
+        REFERENCES brta.c_fuel_types (fuel_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_engine_histories_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_engine_histories_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_modification_applications
+(
+    v_modification_application_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer,
+    engine_number character varying(100) NOT NULL,
+    body_color_id integer NOT NULL,
+    tyre_size character varying(100),
+    is_air_conditioner boolean NOT NULL,
+    cc integer NOT NULL,
+    v_model character varying(100),
+    cylinder smallint,
+    horse_power integer,
+    fuel_type_id integer NOT NULL,
+    engine_making_country_id integer NOT NULL,
+    gear_box_description character varying(100),
+    engine_change_description character varying(100),
+    is_driver_connection_standard_id integer NOT NULL,
+    fault_description character varying(100),
+    is_engine_working_properly boolean NOT NULL,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_modification_applications_pkey PRIMARY KEY (v_modification_application_id),
+    CONSTRAINT v_modification_applications_body_color_id_fkey FOREIGN KEY (body_color_id)
+        REFERENCES brta.c_vehicle_colors (vehicle_color_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_engine_making_country_id_fkey FOREIGN KEY (engine_making_country_id)
+        REFERENCES brta.c_countries (country_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_fuel_type_id_fkey FOREIGN KEY (fuel_type_id)
+        REFERENCES brta.c_fuel_types (fuel_type_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_modification_applications_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_duplicate_np_applications
+(
+    v_duplicate_np_application_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer,
+    replication_type_id integer NOT NULL,
+    replication_reason character varying(100) NOT NULL,
+    has_drc_attatchment boolean NOT NULL,
+    has_identity_attatchment boolean NOT NULL,
+    has_authorization_attatchment boolean NOT NULL,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_duplicate_np_applications_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_duplicate_np_applications_replication_type_id_fkey FOREIGN KEY (replication_type_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_duplicate_np_applications_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_duplicate_np_applications_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_duplicate_np_applications_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_tagging
+(
+    vehicle_tag_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_reg_id integer NOT NULL,
+    create_user_id bigint NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    CONSTRAINT v_vehicle_tagging_vehicle_reg_id_fkey FOREIGN KEY (vehicle_reg_id)
+        REFERENCES brta.v_vehicle_registrations (vehicle_reg_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.appointment_timeslots
+(
+    appointment_timeslot_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    slot_name_bn character varying(100) NOT NULL,
+    slot_name_en character varying(100) NOT NULL,
+    slot_start_time time without time zone NOT NULL,
+    slot_end_time time without time zone NOT NULL,
+    is_active boolean NOT NULL,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT appointment_timeslots_pkey PRIMARY KEY (appointment_timeslot_id)
+);
+
+
+CREATE TABLE IF NOT EXISTS brta.v_fitness_appointments
+(
+    fitness_appointment_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    appointment_date timestamp without time zone NOT NULL,
+    org_id integer NOT NULL,
+    ft_appointment_timeslot_id integer NOT NULL,
+    mobile_no character varying(20) NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_fitness_appointments_pkey PRIMARY KEY (fitness_appointment_id),
+    CONSTRAINT v_fitness_appointments_ft_appointment_timeslot_id_fkey FOREIGN KEY (ft_appointment_timeslot_id)
+        REFERENCES brta.appointment_timeslots (appointment_timeslot_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_fitness_appointments_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_fitness_appointments_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_fitness_appointments_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_fitness
+(
+    vehicle_fitness_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    fitness_valid_start_date timestamp without time zone NOT NULL,
+    fitness_valid_end_date timestamp without time zone NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_fitness_pkey PRIMARY KEY (vehicle_fitness_id),
+    CONSTRAINT v_vehicle_fitness_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_fitness_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_advance_income_taxes
+(
+    vehicle_ait_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    fiscal_year_id integer NOT NULL,
+    payment_status_id integer NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_advance_income_taxes_pkey PRIMARY KEY (vehicle_ait_id),
+    CONSTRAINT v_vehicle_advance_income_taxes_fiscal_year_id_fkey FOREIGN KEY (fiscal_year_id)
+        REFERENCES brta.c_fiscal_years (fiscal_year_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_advance_income_taxes_payment_status_id_fkey FOREIGN KEY (payment_status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_advance_income_taxes_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT v_vehicle_advance_income_taxes_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_tax_tokens
+(
+    vehicle_tt_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    tt_valid_start_date timestamp without time zone NOT NULL,
+    tt_valid_end_date timestamp without time zone NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_tax_tokens_pkey PRIMARY KEY (vehicle_tt_id),
+    CONSTRAINT v_vehicle_tax_tokens_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT v_vehicle_tax_tokens_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS brta.v_vehicle_route_permits
+(
+    vehicle_rp_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    vehicle_info_id integer NOT NULL,
+    service_request_id integer NOT NULL,
+    route_id integer NOT NULL,
+    rp_valid_start_date timestamp without time zone NOT NULL,
+    rp_valid_end_date timestamp without time zone NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    deleted_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT v_vehicle_route_permits_pkey PRIMARY KEY (vehicle_rp_id),
+    CONSTRAINT v_vehicle_route_permits_route_id_fkey FOREIGN KEY (route_id)
+        REFERENCES brta.c_vehicle_routes (route_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT v_vehicle_route_permits_service_request_id_fkey FOREIGN KEY (service_request_id)
+        REFERENCES brta.s_service_requests (service_request_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT v_vehicle_route_permits_vehicle_info_id_fkey FOREIGN KEY (vehicle_info_id)
+        REFERENCES brta.v_vehicle_infos (vehicle_info_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_activity_logs
+(
+    activity_log_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    subject character varying(255) NOT NULL,
+    description character varying(255) DEFAULT NULL,
+    status_id integer NOT NULL,
+    model character varying(255) NOT NULL,
+    model_id integer NOT NULL,
+    create_user_id bigint NOT NULL,
+    created_date timestamp without time zone NOT NULL,
+    CONSTRAINT s_activity_logs_pkey PRIMARY KEY (activity_log_id),
+    CONSTRAINT s_activity_logs_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_activity_logs_status_id_fkey FOREIGN KEY (status_id)
+        REFERENCES brta.c_statuses (status_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
+
+CREATE TABLE IF NOT EXISTS brta.s_user_offices
+(
+    user_office_id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+    user_id bigint NOT NULL,
+    org_id integer NOT NULL,
+    role_id integer NOT NULL,
+    is_active boolean NOT NULL DEFAULT true,
+    create_user_id bigint NOT NULL,
+    update_user_id bigint,
+    created_date timestamp without time zone NOT NULL,
+    updated_date timestamp without time zone,
+    version_no smallint NOT NULL DEFAULT '1'::smallint,
+    CONSTRAINT s_user_offices_pkey PRIMARY KEY (user_office_id),
+    CONSTRAINT s_user_offices_create_user_id_fkey FOREIGN KEY (create_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_offices_org_id_fkey FOREIGN KEY (org_id)
+        REFERENCES brta.c_organizations (org_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_offices_role_id_fkey FOREIGN KEY (role_id)
+        REFERENCES brta.u_roles (role_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_offices_update_user_id_fkey FOREIGN KEY (update_user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT s_user_offices_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES brta.s_users (user_id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+);
