@@ -19,8 +19,7 @@ import com.ibas.brta.vehims.service.DesignationService;
 @RequestMapping("/api/")
 public class CommonController {
 
-    // private static final Logger logger =
-    // LoggerFactory.getLogger(DesignationController.class);
+    private static final Logger logger = LoggerFactory.getLogger(DesignationController.class);
 
     @Autowired
     DesignationService designationService;

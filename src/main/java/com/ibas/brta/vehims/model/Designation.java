@@ -36,7 +36,7 @@ public class Designation extends RecordAudit {
 
     @NotBlank
     @Size(max = 100)
-    @Column(name = "name_bn")
+    @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
 
     @NotNull(message = "The level number not be null.")

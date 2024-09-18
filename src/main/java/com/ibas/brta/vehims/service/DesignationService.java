@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.service;
 
 import com.ibas.brta.vehims.controller.AuthController;
 import com.ibas.brta.vehims.exception.BadRequestException;
+import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IDesignation;
 import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.payload.request.DesignationRequest;
@@ -153,6 +154,22 @@ public class DesignationService implements IDesignation {
         return designationRepository.save(designation);
     }
 
+    @Transactional
+    @Override
+    public Designation updateDesignation(Designation designation) {
+
+        Designation existingDesignation = designationRepository.findById(designation.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Designation", "id", designation.getId()));
+        // copy fields to the existing entity and save
+        existingDesignation.setNameEn(designation.getNameEn());
+        existingDesignation.setNameBn(designation.getNameBn());
+        existingDesignation.setLevelNumber(designation.getLevelNumber());
+        existingDesignation.setParentDesignationId(designation.getParentDesignationId());
+        existingDesignation.setIsActive(designation.getIsActive());
+
+        return designationRepository.save(existingDesignation);
+    }
+
     public List<Designation> getParentDesignationList() {
         // return designationRepository.findByParentDesignationIdIsNull();
         return designationRepository.findByParentDesignationIdIsNullOrderByLevelNumberAsc();
@@ -162,7 +179,9 @@ public class DesignationService implements IDesignation {
         return designationRepository.findByIsActiveTrueOrderByLevelNumberAsc();
     }
 
+    @Override
     public void deleteDesignationById(Long id) {
         designationRepository.deleteById(id);
     }
+
 }

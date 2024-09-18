@@ -2,6 +2,8 @@ package com.ibas.brta.vehims.iservice;
 
 import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.payload.request.DesignationRequest;
+import com.ibas.brta.vehims.payload.response.DesignationResponse;
+import com.ibas.brta.vehims.payload.response.PagedResponse;
 
 import javax.swing.text.html.Option;
 
@@ -18,6 +20,10 @@ public interface IDesignation {
 
     Optional<Designation> findDesignationById(Long id);
 
+    void deleteDesignationById(Long id);
+
     Designation saveDesignation(Designation designation);
+
+    Designation updateDesignation(Designation designation);
 
 }

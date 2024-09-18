@@ -19,7 +19,7 @@ public class DesignationResponse {
     private String nameBn;
     private int levelNumber;
     private Long parentDesignationId;
-    private Designation parentDesingation;
+    private Designation parentDesignation;
     private Boolean isActive;
     // private String createdBy;
     // private String updatedBy;

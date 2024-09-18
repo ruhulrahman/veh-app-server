@@ -1,17 +1,10 @@
 package com.ibas.brta.vehims.controller;
 
-import com.ibas.brta.vehims.exception.AppException;
-import com.ibas.brta.vehims.exception.ErrorDetails;
-import com.ibas.brta.vehims.model.Country;
 import com.ibas.brta.vehims.model.Designation;
-import com.ibas.brta.vehims.model.User;
-import com.ibas.brta.vehims.model.rbac.Role;
-import com.ibas.brta.vehims.model.rbac.RoleName;
-import com.ibas.brta.vehims.payload.request.DesignationRequest;
-import com.ibas.brta.vehims.payload.request.SignupRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.repository.DesignationRepository;
 import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.service.DesignationService;
 import com.ibas.brta.vehims.util.AppConstants;
@@ -21,10 +14,6 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -48,6 +37,9 @@ public class DesignationController {
         @Autowired
         DesignationService designationService;
 
+        @Autowired
+        DesignationRepository designationRepository;
+
         private static final Logger logger = LoggerFactory.getLogger(DesignationController.class);
 
         private Long getLoggedinUserId() {
@@ -62,9 +54,9 @@ public class DesignationController {
         @PostMapping("/v1/admin/configurations/designation/create")
         public ResponseEntity<?> createDesignationV1(@Valid @RequestBody Designation designation) {
 
-                designation.setCreatedBy(2L);
+                // designation.setCreatedBy(2L);
                 // designation.setCreatedBy(getLoggedinUserId());
-                logger.info("designation ==", designation);
+                // logger.info("designation ==", designation);
                 Designation _designation = designationService.saveDesignation(designation);
 
                 URI location = ServletUriComponentsBuilder
@@ -72,7 +64,20 @@ public class DesignationController {
                                 .buildAndExpand(_designation.getNameEn()).toUri();
 
                 return ResponseEntity.created(location)
-                                .body(ApiResponse.success(_designation.getNameEn() + " created.", _designation));
+                                .body(ApiResponse.success(_designation.getNameEn() + " saved.", _designation));
+        }
+
+        @PostMapping("/v1/admin/configurations/designation/update")
+        public ResponseEntity<?> updateDesignationV1(@Valid @RequestBody Designation designation) {
+
+                Designation _designation = designationService.updateDesignation(designation);
+
+                URI location = ServletUriComponentsBuilder
+                                .fromCurrentContextPath().path("/designation/create/")
+                                .buildAndExpand(_designation.getNameEn()).toUri();
+
+                return ResponseEntity.created(location)
+                                .body(ApiResponse.success(_designation.getNameEn() + " updated.", _designation));
         }
 
         // @PreAuthorize("hasAnyAuthority('READ_OP')")

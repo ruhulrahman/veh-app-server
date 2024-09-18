@@ -32,7 +32,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @EntityListeners(UserListener.class)
 @EqualsAndHashCode(callSuper = false)
-// @Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 // @AttributeOverride(name = "id", column = @Column(name = "user_id"))
 public class User extends DateAudit {
     @Id
@@ -91,9 +91,9 @@ public class User extends DateAudit {
     @JoinTable(name = "x_user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
-    // @OneToMany(fetch = FetchType.LAZY)
-    // @JoinTable(name = "x_user_roles", joinColumns = @JoinColumn(name =
-    // "user_id"))
+    // @ManyToMany(fetch = FetchType.LAZY)
+    // @JoinTable(name = "x_user_roles", joinColumns = @JoinColumn(name = "id",
+    // referencedColumnName = "user_id"))
     // private Set<Role> roles = new HashSet<>();
 
     public User(String nameEn, String nameBn, String username, String email, String mobile, String password,
