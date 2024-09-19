@@ -2,6 +2,8 @@ package com.ibas.brta.vehims.payload.request;
 
 import java.io.Serializable;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +12,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class StatusRequest {
+public class VehicleTypeDTO implements Serializable {
+
     private Long id;
-    private Long statusGroupId;
-    private String statusCode;
+
+    @NotBlank
+    @Size(max = 100)
     private String nameEn;
+
+    @NotBlank
+    @Size(max = 100)
     private String nameBn;
-    private String colorName;
-    private Integer priority;
-    private Boolean isActive;
 }

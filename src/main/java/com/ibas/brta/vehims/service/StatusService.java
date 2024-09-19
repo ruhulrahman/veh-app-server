@@ -14,6 +14,8 @@ import com.ibas.brta.vehims.controller.StatusController;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IStatus;
 import com.ibas.brta.vehims.model.Status;
+import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.payload.request.StatusRequest;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.repository.StatusRepository;
@@ -41,6 +43,7 @@ public class StatusService implements IStatus {
             return new PagedResponse<>(Collections.emptyList(), records.getNumber(), records.getSize(),
                     records.getTotalElements(), records.getTotalPages(), records.isLast());
         }
+
         // Map Responses with all information
         List<StatusResponse> responseData = records.map(record -> {
             return ModelMapper.StatusToResponse(record);
@@ -66,22 +69,30 @@ public class StatusService implements IStatus {
     }
 
     @Override
-    public Status updateStatus(Status status) {
+    public Status updateStatus(StatusRequest status) {
 
-        Status existingData = statusRepository.findById(status.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Status", "id", status.getId()));
+        try {
 
-        logger.info("Existing data: {}", existingData);
+            Status existingData = statusRepository.findById(status.getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Status", "id",
+                            status.getId()));
 
-        existingData.setStatusCode(status.getStatusCode());
-        existingData.setStatusGroupId(status.getStatusGroupId());
-        existingData.setNameEn(status.getNameEn());
-        existingData.setNameBn(status.getNameBn());
-        existingData.setColorName(status.getColorName());
-        existingData.setPriority(status.getPriority());
-        existingData.setIsActive(status.getIsActive());
+            logger.info("Existing data: ", existingData.toString());
 
-        return statusRepository.save(existingData);
+            existingData.setStatusCode(status.getStatusCode());
+            existingData.setStatusGroupId(status.getStatusGroupId());
+            existingData.setNameEn(status.getNameEn());
+            existingData.setNameBn(status.getNameBn());
+            existingData.setColorName(status.getColorName());
+            existingData.setPriority(status.getPriority());
+            existingData.setIsActive(!existingData.getIsActive());
+
+            return statusRepository.save(existingData);
+        } catch (Exception e) {
+            // TODO: handle exception
+            logger.error("error=====", e);
+        }
+        return new Status();
     }
 
     @Override

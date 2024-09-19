@@ -1,6 +1,8 @@
 package com.ibas.brta.vehims.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.ibas.brta.vehims.model.audit.RecordAudit;
@@ -40,7 +42,16 @@ public class StatusGroup extends RecordAudit {
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
 
-    @OneToMany(mappedBy = "statusGroup", cascade = CascadeType.ALL)
-    private Set<Status> statuses = new HashSet<>();
+    // @OneToMany(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "status_group_id", referencedColumnName =
+    // "status_group_id", insertable = false, updatable = false)
+    // private List<Status> statuses = new ArrayList<>();
+
+    // @OneToMany(mappedBy = "statusGroup", cascade = CascadeType.ALL, orphanRemoval
+    // = true)
+    // private List<Status> statuses;
+    // @OneToMany(mappedBy = "statusGroup", cascade = CascadeType.ALL, orphanRemoval
+    // = true)
+    // private Set<Status> statuses = new HashSet<>();
 
 }

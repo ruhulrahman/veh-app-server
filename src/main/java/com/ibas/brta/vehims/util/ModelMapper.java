@@ -1,6 +1,11 @@
 package com.ibas.brta.vehims.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.model.Status;
@@ -8,6 +13,7 @@ import com.ibas.brta.vehims.model.StatusGroup;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
+import com.ibas.brta.vehims.service.StatusService;
 
 /**
  * Converting Domain Objects to DTOs (Data Transfer Object) or vice-versa
@@ -17,6 +23,9 @@ import com.ibas.brta.vehims.payload.response.StatusResponse;
  */
 
 public class ModelMapper {
+
+    private static final Logger logger = LoggerFactory.getLogger(ModelMapper.class);
+
     public static DesignationResponse DesignationToResponse(Designation data) {
         DesignationResponse response = new DesignationResponse();
         Optional.ofNullable(data.getId()).ifPresent(response::setId);
@@ -39,20 +48,36 @@ public class ModelMapper {
         Optional.ofNullable(data.getNameEn()).ifPresent(response::setNameEn);
         Optional.ofNullable(data.getIsActive()).ifPresent(response::setIsActive);
 
+        // if (data.getStatuses() != null) {
+        // List<StatusResponse> statusList = new ArrayList<>();
+        // for (Status status : data.getStatuses()) {
+        // StatusResponse statusResponse = StatusToResponse(status);
+        // statusList.add(statusResponse);
+        // }
+        // response.setStatuses(statusList);
+        // }
+
         return response;
     }
 
     public static StatusResponse StatusToResponse(Status data) {
         StatusResponse response = new StatusResponse();
         Optional.ofNullable(data.getId()).ifPresent(response::setId);
-        Optional.ofNullable(data.getStatusGroupId()).ifPresent(response::setStatusGroupId);
+        // Optional.ofNullable(data.getStatusGroupId()).ifPresent(response::setStatusGroupId);
         Optional.ofNullable(data.getStatusCode()).ifPresent(response::setStatusCode);
         Optional.ofNullable(data.getNameBn()).ifPresent(response::setNameBn);
         Optional.ofNullable(data.getNameEn()).ifPresent(response::setNameEn);
         Optional.ofNullable(data.getColorName()).ifPresent(response::setColorName);
         Optional.ofNullable(data.getPriority()).ifPresent(response::setPriority);
         Optional.ofNullable(data.getIsActive()).ifPresent(response::setIsActive);
-        Optional.ofNullable(data.getStatusGroup()).ifPresent(response::setStatusGroup);
+        // Optional.ofNullable(data.getStatusGroup()).ifPresent(response::setStatusGroup);
+
+        if (data.getStatusGroup() != null) {
+            StatusGroupResponse statusGroup = ModelMapper.StatusGroupToResponse(data.getStatusGroup());
+            response.setStatusGroup(statusGroup);
+        }
+
+        logger.info("status list =" + response.toString());
 
         return response;
     }

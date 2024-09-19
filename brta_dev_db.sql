@@ -14,7 +14,6 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 -- Dumping structure for table brta.appointment_timeslots
-DROP TABLE IF EXISTS "appointment_timeslots";
 CREATE TABLE IF NOT EXISTS "appointment_timeslots" (
 	"appointment_timeslot_id" BIGINT NOT NULL,
 	"slot_name_bn" VARCHAR(100) NOT NULL,
@@ -36,7 +35,6 @@ CREATE TABLE IF NOT EXISTS "appointment_timeslots" (
 /*!40000 ALTER TABLE "appointment_timeslots" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_blood_groups
-DROP TABLE IF EXISTS "c_blood_groups";
 CREATE TABLE IF NOT EXISTS "c_blood_groups" (
 	"blood_group_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(20) NOT NULL,
@@ -58,7 +56,6 @@ CREATE TABLE IF NOT EXISTS "c_blood_groups" (
 /*!40000 ALTER TABLE "c_blood_groups" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_countries
-DROP TABLE IF EXISTS "c_countries";
 CREATE TABLE IF NOT EXISTS "c_countries" (
 	"country_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(255) NOT NULL,
@@ -82,11 +79,10 @@ INSERT INTO "c_countries" ("country_id", "name_en", "name_bn", "is_active", "cre
 /*!40000 ALTER TABLE "c_countries" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_designations
-DROP TABLE IF EXISTS "c_designations";
 CREATE TABLE IF NOT EXISTS "c_designations" (
 	"designation_id" BIGINT NOT NULL,
-	"name_en" VARCHAR(255) NOT NULL,
-	"name_bn" VARCHAR(255) NOT NULL,
+	"name_en" VARCHAR(100) NOT NULL,
+	"name_bn" VARCHAR(100) NOT NULL,
 	"level_number" INTEGER NOT NULL,
 	"parent_designation_id" BIGINT NULL DEFAULT NULL,
 	"is_active" BOOLEAN NOT NULL DEFAULT true,
@@ -95,31 +91,36 @@ CREATE TABLE IF NOT EXISTS "c_designations" (
 	"created_date" TIMESTAMP NOT NULL,
 	"updated_date" TIMESTAMP NULL DEFAULT NULL,
 	"deleted_date" TIMESTAMP NULL DEFAULT NULL,
-	"version_no" INTEGER NOT NULL DEFAULT '1',
+	"version_no" INTEGER NULL DEFAULT NULL,
 	PRIMARY KEY ("designation_id"),
 	CONSTRAINT "c_designations_create_user_id_fkey" FOREIGN KEY ("create_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "c_designations_update_user_id_fkey" FOREIGN KEY ("update_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "fkbrayjcoy84om1fwb3hbkuop8i" FOREIGN KEY ("parent_designation_id") REFERENCES "c_designations" ("designation_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
--- Dumping data for table brta.c_designations: 11 rows
+-- Dumping data for table brta.c_designations: 14 rows
 /*!40000 ALTER TABLE "c_designations" DISABLE KEYS */;
 INSERT INTO "c_designations" ("designation_id", "name_en", "name_bn", "level_number", "parent_designation_id", "is_active", "create_user_id", "update_user_id", "created_date", "updated_date", "deleted_date", "version_no") VALUES
 	(6, 'Chairman', 'চেয়ারম্যান', 1, NULL, 'true', 2, NULL, '2024-09-05 12:49:03', NULL, NULL, 1),
-	(18, 'Assistant Accountant', 'হিসাব সহকারি', 4, NULL, 'true', 2, NULL, '2024-09-10 09:53:03.18876', '2024-09-10 09:53:03.18876', NULL, 0),
-	(21, 'Porter Chambers', 'Whilemina Haynes', 133, NULL, 'false', 2, NULL, '2024-09-10 09:55:06.506052', '2024-09-10 09:55:06.506052', NULL, 0),
-	(22, 'Vera Mckay', 'Lana Murphy', 569, NULL, 'false', 2, NULL, '2024-09-10 09:55:30.027754', '2024-09-10 09:55:30.027754', NULL, 0),
-	(24, 'Kimberly Brewer', 'Barry Crane', 845, NULL, 'false', 2, NULL, '2024-09-11 06:01:27.200094', '2024-09-11 06:01:27.200094', NULL, 0),
-	(19, 'Assistant Accountant', 'হিসাব সহকারি', 5, NULL, 'false', 2, NULL, '2024-09-10 09:53:31.097208', '2024-09-10 09:53:31.097208', NULL, 0),
+	(18, 'Assistant Accountant', 'হিসাব সহকারি', 4, NULL, 'true', 2, NULL, '2024-09-10 09:53:03.18876', '2024-09-10 09:53:03.18876', NULL, 1),
+	(21, 'Porter Chambers', 'Whilemina Haynes', 133, NULL, 'false', 2, NULL, '2024-09-10 09:55:06.506052', '2024-09-10 09:55:06.506052', NULL, 1),
+	(22, 'Vera Mckay', 'Lana Murphy', 569, NULL, 'false', 2, NULL, '2024-09-10 09:55:30.027754', '2024-09-10 09:55:30.027754', NULL, 1),
 	(34, 'QC', 'কিউসি', 20, NULL, 'true', 2, NULL, '2024-09-12 12:41:59', NULL, NULL, 1),
-	(16, 'Dai Woodward', 'Chastity Bonner', 872, NULL, 'false', 2, NULL, '2024-09-10 06:16:41.716361', '2024-09-10 06:16:41.716361', NULL, 0),
-	(17, 'Accounts Officer', 'হিসাব রক্ষন কর্মকর্তা', 6, NULL, 'true', 2, NULL, '2024-09-10 09:50:29.180284', '2024-09-10 09:50:29.180284', NULL, 0),
 	(35, 'Computer Operator', 'Computer Operator', 18, NULL, 'true', 2, NULL, '2024-09-12 17:47:23', NULL, NULL, 1),
-	(9, 'Director', 'পরিচালক', 2, 6, 'true', 2, NULL, '2024-09-05 12:49:03', NULL, NULL, 1);
+	(9, 'Director', 'পরিচালক', 2, 6, 'true', 2, NULL, '2024-09-05 12:49:03', NULL, NULL, 1),
+	(47, 'Hayes Garcia', 'Fuller Good', 557, NULL, 'false', 2, NULL, '2024-09-15 10:19:00.808317', '2024-09-15 10:19:00.808317', NULL, 1),
+	(46, 'Barbara White', 'Diana Stein', 797, NULL, 'false', 2, 2, '2024-09-15 10:18:53.76058', '2024-09-15 10:36:42.902402', NULL, 1),
+	(17, 'Accounts Officer', 'হিসাব রক্ষন কর্মকর্তা', 6, NULL, 'false', 2, 2, '2024-09-10 09:50:29.180284', '2024-09-15 10:37:35.106663', NULL, 1),
+	(48, 'Daria Fowler', 'Illana Whitehead', 888, NULL, 'true', 2, 2, '2024-09-15 11:51:41.409084', '2024-09-15 11:56:41.527949', NULL, 0),
+	(49, 'Zeph Shaffer', 'Kylee Mejia', 555, NULL, 'true', 2, NULL, '2024-09-15 12:32:28.636977', '2024-09-15 12:32:28.636977', NULL, 0),
+	(50, 'Kiona Mcdaniel', 'Lenore Tyler', 913, NULL, 'true', 2, NULL, '2024-09-17 03:21:24.551564', '2024-09-17 03:21:24.551564', NULL, 0),
+	(51, 'Griffith Mack', 'Astra Dyer', 54, NULL, 'true', 2, NULL, '2024-09-17 04:14:47.13131', '2024-09-17 04:14:47.13131', NULL, 0),
+	(55, 'Griffith Mack', 'Astra Dyer', 54, NULL, 'true', 2, NULL, '2024-09-17 04:14:47.13131', '2024-09-17 04:14:47.13131', NULL, 0),
+	(57, 'Idona Baldwin', 'Blaze Mcclure', 875, NULL, 'true', 2, NULL, '2024-09-17 05:56:42.196168', '2024-09-17 05:56:42.196168', NULL, 0),
+	(56, 'Astra Dyer', 'Astra Dye', 3, NULL, 'true', 2, 2, '2024-09-17 04:14:47.13131', '2024-09-17 06:30:40.027869', NULL, 3);
 /*!40000 ALTER TABLE "c_designations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_document_types
-DROP TABLE IF EXISTS "c_document_types";
 CREATE TABLE IF NOT EXISTS "c_document_types" (
 	"document_type_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -143,7 +144,6 @@ CREATE TABLE IF NOT EXISTS "c_document_types" (
 /*!40000 ALTER TABLE "c_document_types" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_email_templates
-DROP TABLE IF EXISTS "c_email_templates";
 CREATE TABLE IF NOT EXISTS "c_email_templates" (
 	"email_template_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -173,7 +173,6 @@ CREATE TABLE IF NOT EXISTS "c_email_templates" (
 /*!40000 ALTER TABLE "c_email_templates" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_fiscal_years
-DROP TABLE IF EXISTS "c_fiscal_years";
 CREATE TABLE IF NOT EXISTS "c_fiscal_years" (
 	"fiscal_year_id" BIGINT NOT NULL,
 	"start_date" TIMESTAMP NOT NULL,
@@ -197,7 +196,6 @@ CREATE TABLE IF NOT EXISTS "c_fiscal_years" (
 /*!40000 ALTER TABLE "c_fiscal_years" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_fuel_types
-DROP TABLE IF EXISTS "c_fuel_types";
 CREATE TABLE IF NOT EXISTS "c_fuel_types" (
 	"fuel_type_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -219,7 +217,6 @@ CREATE TABLE IF NOT EXISTS "c_fuel_types" (
 /*!40000 ALTER TABLE "c_fuel_types" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_genders
-DROP TABLE IF EXISTS "c_genders";
 CREATE TABLE IF NOT EXISTS "c_genders" (
 	"gender_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(20) NOT NULL,
@@ -241,7 +238,6 @@ CREATE TABLE IF NOT EXISTS "c_genders" (
 /*!40000 ALTER TABLE "c_genders" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_locations
-DROP TABLE IF EXISTS "c_locations";
 CREATE TABLE IF NOT EXISTS "c_locations" (
 	"location_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NULL DEFAULT NULL,
@@ -266,7 +262,6 @@ CREATE TABLE IF NOT EXISTS "c_locations" (
 /*!40000 ALTER TABLE "c_locations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_notificaiton_templates
-DROP TABLE IF EXISTS "c_notificaiton_templates";
 CREATE TABLE IF NOT EXISTS "c_notificaiton_templates" (
 	"notificaiton_template_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -292,7 +287,6 @@ CREATE TABLE IF NOT EXISTS "c_notificaiton_templates" (
 /*!40000 ALTER TABLE "c_notificaiton_templates" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_office_exam_centers
-DROP TABLE IF EXISTS "c_office_exam_centers";
 CREATE TABLE IF NOT EXISTS "c_office_exam_centers" (
 	"office_exam_center_id" BIGINT NOT NULL,
 	"org_id" BIGINT NOT NULL,
@@ -318,7 +312,6 @@ CREATE TABLE IF NOT EXISTS "c_office_exam_centers" (
 /*!40000 ALTER TABLE "c_office_exam_centers" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_office_jurisdictions
-DROP TABLE IF EXISTS "c_office_jurisdictions";
 CREATE TABLE IF NOT EXISTS "c_office_jurisdictions" (
 	"office_jurisdiction_id" BIGINT NOT NULL,
 	"org_id" BIGINT NOT NULL,
@@ -342,7 +335,6 @@ CREATE TABLE IF NOT EXISTS "c_office_jurisdictions" (
 /*!40000 ALTER TABLE "c_office_jurisdictions" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_organizations
-DROP TABLE IF EXISTS "c_organizations";
 CREATE TABLE IF NOT EXISTS "c_organizations" (
 	"org_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(255) NOT NULL,
@@ -360,6 +352,7 @@ CREATE TABLE IF NOT EXISTS "c_organizations" (
 	"updated_date" TIMESTAMP NULL DEFAULT NULL,
 	"deleted_date" TIMESTAMP NULL DEFAULT NULL,
 	"version_no" INTEGER NOT NULL,
+	"version" INTEGER NULL DEFAULT NULL,
 	PRIMARY KEY ("org_id"),
 	CONSTRAINT "c_organizations_create_user_id_fkey" FOREIGN KEY ("create_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "c_organizations_division_id_fkey" FOREIGN KEY ("location_id") REFERENCES "c_locations" ("location_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
@@ -373,7 +366,6 @@ CREATE TABLE IF NOT EXISTS "c_organizations" (
 /*!40000 ALTER TABLE "c_organizations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_services
-DROP TABLE IF EXISTS "c_services";
 CREATE TABLE IF NOT EXISTS "c_services" (
 	"service_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(255) NOT NULL,
@@ -398,7 +390,6 @@ CREATE TABLE IF NOT EXISTS "c_services" (
 /*!40000 ALTER TABLE "c_services" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_service_fine_remissions
-DROP TABLE IF EXISTS "c_service_fine_remissions";
 CREATE TABLE IF NOT EXISTS "c_service_fine_remissions" (
 	"fine_remission_id" BIGINT NOT NULL,
 	"service_id" BIGINT NOT NULL,
@@ -422,14 +413,13 @@ CREATE TABLE IF NOT EXISTS "c_service_fine_remissions" (
 /*!40000 ALTER TABLE "c_service_fine_remissions" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_statuses
-DROP TABLE IF EXISTS "c_statuses";
 CREATE TABLE IF NOT EXISTS "c_statuses" (
 	"status_id" BIGINT NOT NULL,
 	"status_group_id" BIGINT NOT NULL,
 	"status_code" VARCHAR(100) NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
 	"name_bn" VARCHAR(100) NOT NULL,
-	"color_name" VARCHAR(20) NULL DEFAULT NULL,
+	"color_name" VARCHAR(100) NULL DEFAULT NULL,
 	"data" JSON NULL DEFAULT NULL,
 	"create_user_id" BIGINT NOT NULL,
 	"update_user_id" BIGINT NULL DEFAULT NULL,
@@ -438,19 +428,26 @@ CREATE TABLE IF NOT EXISTS "c_statuses" (
 	"deleted_date" TIMESTAMP NULL DEFAULT NULL,
 	"version_no" INTEGER NULL DEFAULT NULL,
 	"is_active" BOOLEAN NULL DEFAULT true,
-	"code" VARCHAR(100) NOT NULL,
+	"priority" INTEGER NULL DEFAULT NULL,
 	PRIMARY KEY ("status_id"),
 	CONSTRAINT "c_statuses_create_user_id_fkey" FOREIGN KEY ("create_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "c_statuses_status_group_id_fkey" FOREIGN KEY ("status_group_id") REFERENCES "c_status_groups" ("status_group_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "c_statuses_update_user_id_fkey" FOREIGN KEY ("update_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
--- Dumping data for table brta.c_statuses: 0 rows
+-- Dumping data for table brta.c_statuses: 7 rows
 /*!40000 ALTER TABLE "c_statuses" DISABLE KEYS */;
+INSERT INTO "c_statuses" ("status_id", "status_group_id", "status_code", "name_en", "name_bn", "color_name", "data", "create_user_id", "update_user_id", "created_date", "updated_date", "deleted_date", "version_no", "is_active", "priority") VALUES
+	(5, 57, 'Ut libero vero recus', 'Grace Spencer', 'Jorden Barr', 'Price Ayala', NULL, 3, NULL, '2024-09-19 04:44:26.737147', '2024-09-19 04:44:26.737147', NULL, 0, 'true', 17),
+	(6, 57, 'Voluptate eum fugiat', 'Todd Abbott', 'Juliet Salinas', 'Nolan Benjamin', NULL, 3, NULL, '2024-09-19 07:14:59.465238', '2024-09-19 07:14:59.465238', NULL, 0, 'true', 99),
+	(8, 57, 'Consequatur labore ', 'Miranda Dillard', 'Cherokee White', 'Allen Fisher', NULL, 3, NULL, '2024-09-19 07:15:33.72332', '2024-09-19 07:15:33.724345', NULL, 0, 'true', 87),
+	(7, 57, 'Est nulla architecto', 'Martin Kaufman', 'Jaden Bauer', 'Farrah Livingston', NULL, 3, 3, '2024-09-19 07:15:07.21334', '2024-09-19 08:58:58.808202', NULL, 2, 'true', 12),
+	(9, 58, 'Consectetur ut aliq', 'Maxine Baird', 'Selma Roman', 'Morgan Pugh', NULL, 3, 3, '2024-09-19 07:18:30.773312', '2024-09-19 09:01:33.724488', NULL, 1, 'true', 83),
+	(1, 57, 'Beatae adipisicing e', 'Jessica Holt', 'Aurelia Beasley', 'Helen Stanley', NULL, 3, 3, '2024-09-19 04:13:15.405067', '2024-09-19 10:08:55.298635', NULL, 1, 'false', 87),
+	(2, 58, 'Green', 'WOrking', 'WOrking', 'Green', NULL, 3, 3, '2024-09-19 04:43:59.634117', '2024-09-19 12:34:09.804295', NULL, 17, 'false', 52);
 /*!40000 ALTER TABLE "c_statuses" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_status_groups
-DROP TABLE IF EXISTS "c_status_groups";
 CREATE TABLE IF NOT EXISTS "c_status_groups" (
 	"status_group_id" BIGINT NOT NULL,
 	"status_group_code" VARCHAR(100) NOT NULL,
@@ -463,18 +460,26 @@ CREATE TABLE IF NOT EXISTS "c_status_groups" (
 	"created_date" TIMESTAMP NULL DEFAULT NULL,
 	"updated_date" TIMESTAMP NULL DEFAULT NULL,
 	"is_active" BOOLEAN NULL DEFAULT true,
-	"code" VARCHAR(100) NOT NULL,
+	"status_group_status_group_id" BIGINT NULL DEFAULT NULL,
+	UNIQUE "ukp9ophs7irrmui55twv4tfydey" ("status_group_status_group_id"),
 	PRIMARY KEY ("status_group_id"),
 	CONSTRAINT "c_status_groups_create_user_id_fkey" FOREIGN KEY ("create_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
-	CONSTRAINT "c_status_groups_update_user_id_fkey" FOREIGN KEY ("update_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
+	CONSTRAINT "c_status_groups_update_user_id_fkey" FOREIGN KEY ("update_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT "fk3tbxw59hdh27pokdlc91rkju1" FOREIGN KEY ("status_group_status_group_id") REFERENCES "c_status_groups" ("status_group_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
--- Dumping data for table brta.c_status_groups: 0 rows
+-- Dumping data for table brta.c_status_groups: 4 rows
 /*!40000 ALTER TABLE "c_status_groups" DISABLE KEYS */;
+INSERT INTO "c_status_groups" ("status_group_id", "status_group_code", "name_en", "name_bn", "create_user_id", "update_user_id", "deleted_date", "version_no", "created_date", "updated_date", "is_active", "status_group_status_group_id") VALUES
+	(53, 'Nulla illum ex nequ', 'Wayne Gill', 'Kimberley Townsend', 3, NULL, NULL, 0, '2024-09-18 08:44:59.853093', '2024-09-18 08:44:59.853093', 'false', NULL),
+	(58, 'Earum in dolores ex ', 'Application Status', 'আবেদনের অবস্থা', 3, 3, NULL, 2, '2024-09-18 10:09:59.574468', '2024-09-18 10:11:36.018543', 'true', NULL),
+	(57, 'Natus laudantium si', 'Card Delivery Status', 'কার্ড ডেলিভারি স্ট্যাটাস', 3, 3, NULL, 1, '2024-09-18 10:09:55.763271', '2024-09-18 10:12:02.232423', 'true', NULL),
+	(52, 'Ea qui omnis ducimus', 'Reed Warner', 'Guinevere Battle', 3, 3, NULL, 1, '2024-09-18 08:44:57.254987', '2024-09-18 10:12:09.295821', 'false', NULL),
+	(59, 'Dolore ipsa modi ne', 'Heather Colon', 'Clark Schmidt', 3, NULL, NULL, 0, '2024-09-19 06:52:24.471633', '2024-09-19 06:52:24.471633', 'false', NULL),
+	(60, 'Obcaecati unde optio', 'Payment Status', 'পেমেন্ট স্ট্যাটাস', 3, 3, NULL, 1, '2024-09-19 06:52:27.726455', '2024-09-19 09:00:16.8428', 'true', NULL);
 /*!40000 ALTER TABLE "c_status_groups" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_brands
-DROP TABLE IF EXISTS "c_vehicle_brands";
 CREATE TABLE IF NOT EXISTS "c_vehicle_brands" (
 	"brand_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -498,7 +503,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_brands" (
 /*!40000 ALTER TABLE "c_vehicle_brands" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_classes
-DROP TABLE IF EXISTS "c_vehicle_classes";
 CREATE TABLE IF NOT EXISTS "c_vehicle_classes" (
 	"vehicle_class_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -531,7 +535,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_classes" (
 /*!40000 ALTER TABLE "c_vehicle_classes" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_colors
-DROP TABLE IF EXISTS "c_vehicle_colors";
 CREATE TABLE IF NOT EXISTS "c_vehicle_colors" (
 	"vehicle_color_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -553,7 +556,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_colors" (
 /*!40000 ALTER TABLE "c_vehicle_colors" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_makers
-DROP TABLE IF EXISTS "c_vehicle_makers";
 CREATE TABLE IF NOT EXISTS "c_vehicle_makers" (
 	"maker_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -578,7 +580,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_makers" (
 /*!40000 ALTER TABLE "c_vehicle_makers" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_routes
-DROP TABLE IF EXISTS "c_vehicle_routes";
 CREATE TABLE IF NOT EXISTS "c_vehicle_routes" (
 	"route_id" BIGINT NOT NULL,
 	"route_permit_type_id" BIGINT NOT NULL,
@@ -604,7 +605,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_routes" (
 /*!40000 ALTER TABLE "c_vehicle_routes" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_route_districts
-DROP TABLE IF EXISTS "c_vehicle_route_districts";
 CREATE TABLE IF NOT EXISTS "c_vehicle_route_districts" (
 	"v_route_disctrict_id" BIGINT NOT NULL,
 	"route_id" BIGINT NOT NULL,
@@ -627,7 +627,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_route_districts" (
 /*!40000 ALTER TABLE "c_vehicle_route_districts" ENABLE KEYS */;
 
 -- Dumping structure for table brta.c_vehicle_types
-DROP TABLE IF EXISTS "c_vehicle_types";
 CREATE TABLE IF NOT EXISTS "c_vehicle_types" (
 	"vehicle_type_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(100) NOT NULL,
@@ -649,7 +648,6 @@ CREATE TABLE IF NOT EXISTS "c_vehicle_types" (
 /*!40000 ALTER TABLE "c_vehicle_types" ENABLE KEYS */;
 
 -- Dumping structure for table brta.dl_applicants
-DROP TABLE IF EXISTS "dl_applicants";
 CREATE TABLE IF NOT EXISTS "dl_applicants" (
 	"dl_applicant_id" BIGINT NOT NULL,
 	"service_request_id" BIGINT NULL DEFAULT NULL,
@@ -699,7 +697,6 @@ CREATE TABLE IF NOT EXISTS "dl_applicants" (
 /*!40000 ALTER TABLE "dl_applicants" ENABLE KEYS */;
 
 -- Dumping structure for table brta.dl_informations
-DROP TABLE IF EXISTS "dl_informations";
 CREATE TABLE IF NOT EXISTS "dl_informations" (
 	"dl_info_id" BIGINT NOT NULL,
 	"applicant_id" BIGINT NOT NULL,
@@ -757,7 +754,6 @@ CREATE TABLE IF NOT EXISTS "dl_informations" (
 /*!40000 ALTER TABLE "dl_informations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.d_instructor_applicants
-DROP TABLE IF EXISTS "d_instructor_applicants";
 CREATE TABLE IF NOT EXISTS "d_instructor_applicants" (
 	"dil_applicant_id" BIGINT NOT NULL,
 	"service_request_id" BIGINT NOT NULL,
@@ -812,7 +808,6 @@ CREATE TABLE IF NOT EXISTS "d_instructor_applicants" (
 /*!40000 ALTER TABLE "d_instructor_applicants" ENABLE KEYS */;
 
 -- Dumping structure for table brta.d_instructor_license_histories
-DROP TABLE IF EXISTS "d_instructor_license_histories";
 CREATE TABLE IF NOT EXISTS "d_instructor_license_histories" (
 	"dil_history_id" BIGINT NOT NULL,
 	"dil_info_id" BIGINT NOT NULL,
@@ -849,7 +844,6 @@ CREATE TABLE IF NOT EXISTS "d_instructor_license_histories" (
 /*!40000 ALTER TABLE "d_instructor_license_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.d_instructor_license_infos
-DROP TABLE IF EXISTS "d_instructor_license_infos";
 CREATE TABLE IF NOT EXISTS "d_instructor_license_infos" (
 	"dil_info_id" BIGINT NOT NULL,
 	"applicant_id" BIGINT NOT NULL,
@@ -884,7 +878,6 @@ CREATE TABLE IF NOT EXISTS "d_instructor_license_infos" (
 /*!40000 ALTER TABLE "d_instructor_license_infos" ENABLE KEYS */;
 
 -- Dumping structure for table brta.d_license_histories
-DROP TABLE IF EXISTS "d_license_histories";
 CREATE TABLE IF NOT EXISTS "d_license_histories" (
 	"dl_history_id" BIGINT NOT NULL,
 	"dl_info_id" BIGINT NOT NULL,
@@ -936,7 +929,6 @@ CREATE TABLE IF NOT EXISTS "d_license_histories" (
 /*!40000 ALTER TABLE "d_license_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_driving_related_service_fees
-DROP TABLE IF EXISTS "f_driving_related_service_fees";
 CREATE TABLE IF NOT EXISTS "f_driving_related_service_fees" (
 	"dr_service_fees_id" BIGINT NOT NULL,
 	"service_id" BIGINT NOT NULL,
@@ -967,7 +959,6 @@ CREATE TABLE IF NOT EXISTS "f_driving_related_service_fees" (
 /*!40000 ALTER TABLE "f_driving_related_service_fees" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_driving_related_service_fees_histories
-DROP TABLE IF EXISTS "f_driving_related_service_fees_histories";
 CREATE TABLE IF NOT EXISTS "f_driving_related_service_fees_histories" (
 	"dr_service_fees_history_id" BIGINT NOT NULL,
 	"service_id" BIGINT NOT NULL,
@@ -995,7 +986,6 @@ CREATE TABLE IF NOT EXISTS "f_driving_related_service_fees_histories" (
 /*!40000 ALTER TABLE "f_driving_related_service_fees_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_route_permit_service_fees
-DROP TABLE IF EXISTS "f_route_permit_service_fees";
 CREATE TABLE IF NOT EXISTS "f_route_permit_service_fees" (
 	"rp_service_fees_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -1030,7 +1020,6 @@ CREATE TABLE IF NOT EXISTS "f_route_permit_service_fees" (
 /*!40000 ALTER TABLE "f_route_permit_service_fees" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_route_permit_service_fees_histories
-DROP TABLE IF EXISTS "f_route_permit_service_fees_histories";
 CREATE TABLE IF NOT EXISTS "f_route_permit_service_fees_histories" (
 	"rp_service_fees_history_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -1064,7 +1053,6 @@ CREATE TABLE IF NOT EXISTS "f_route_permit_service_fees_histories" (
 /*!40000 ALTER TABLE "f_route_permit_service_fees_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_service_fees
-DROP TABLE IF EXISTS "f_service_fees";
 CREATE TABLE IF NOT EXISTS "f_service_fees" (
 	"service_fees_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -1100,7 +1088,6 @@ CREATE TABLE IF NOT EXISTS "f_service_fees" (
 /*!40000 ALTER TABLE "f_service_fees" ENABLE KEYS */;
 
 -- Dumping structure for table brta.f_service_fees_histories
-DROP TABLE IF EXISTS "f_service_fees_histories";
 CREATE TABLE IF NOT EXISTS "f_service_fees_histories" (
 	"service_fees_history_id" BIGINT NOT NULL,
 	"service_id" INTEGER NOT NULL,
@@ -1135,7 +1122,6 @@ CREATE TABLE IF NOT EXISTS "f_service_fees_histories" (
 /*!40000 ALTER TABLE "f_service_fees_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.medias
-DROP TABLE IF EXISTS "medias";
 CREATE TABLE IF NOT EXISTS "medias" (
 	"media_id" BIGINT NOT NULL,
 	"model" VARCHAR NULL DEFAULT NULL,
@@ -1162,7 +1148,6 @@ CREATE TABLE IF NOT EXISTS "medias" (
 /*!40000 ALTER TABLE "medias" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_activity_logs
-DROP TABLE IF EXISTS "s_activity_logs";
 CREATE TABLE IF NOT EXISTS "s_activity_logs" (
 	"activity_log_id" BIGINT NOT NULL,
 	"subject" VARCHAR(255) NOT NULL,
@@ -1182,7 +1167,6 @@ CREATE TABLE IF NOT EXISTS "s_activity_logs" (
 /*!40000 ALTER TABLE "s_activity_logs" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_addresses
-DROP TABLE IF EXISTS "s_addresses";
 CREATE TABLE IF NOT EXISTS "s_addresses" (
 	"address_id" BIGINT NOT NULL,
 	"applicant _id" BIGINT NOT NULL,
@@ -1206,7 +1190,6 @@ CREATE TABLE IF NOT EXISTS "s_addresses" (
 /*!40000 ALTER TABLE "s_addresses" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_application_dl_classes
-DROP TABLE IF EXISTS "s_application_dl_classes";
 CREATE TABLE IF NOT EXISTS "s_application_dl_classes" (
 	"application_dl_class_id" BIGINT NOT NULL,
 	"dl_applicant_id" BIGINT NULL DEFAULT NULL,
@@ -1222,7 +1205,6 @@ CREATE TABLE IF NOT EXISTS "s_application_dl_classes" (
 /*!40000 ALTER TABLE "s_application_dl_classes" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_cd_addresses
-DROP TABLE IF EXISTS "s_cd_addresses";
 CREATE TABLE IF NOT EXISTS "s_cd_addresses" (
 	"cd_address_id" BIGINT NOT NULL,
 	"model" VARCHAR NULL DEFAULT NULL,
@@ -1254,7 +1236,6 @@ CREATE TABLE IF NOT EXISTS "s_cd_addresses" (
 /*!40000 ALTER TABLE "s_cd_addresses" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_dl_exam_test_times
-DROP TABLE IF EXISTS "s_dl_exam_test_times";
 CREATE TABLE IF NOT EXISTS "s_dl_exam_test_times" (
 	"exam_test_time_id" BIGINT NOT NULL,
 	"exam_name_id" INTEGER NOT NULL,
@@ -1279,7 +1260,6 @@ CREATE TABLE IF NOT EXISTS "s_dl_exam_test_times" (
 /*!40000 ALTER TABLE "s_dl_exam_test_times" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_dl_info_classes
-DROP TABLE IF EXISTS "s_dl_info_classes";
 CREATE TABLE IF NOT EXISTS "s_dl_info_classes" (
 	"dl_info_class_id" BIGINT NOT NULL,
 	"dl_info_id" INTEGER NULL DEFAULT NULL,
@@ -1295,7 +1275,6 @@ CREATE TABLE IF NOT EXISTS "s_dl_info_classes" (
 /*!40000 ALTER TABLE "s_dl_info_classes" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_driving_learner_licenses
-DROP TABLE IF EXISTS "s_driving_learner_licenses";
 CREATE TABLE IF NOT EXISTS "s_driving_learner_licenses" (
 	"dll_id" BIGINT NOT NULL,
 	"service_request_id" BIGINT NOT NULL,
@@ -1335,7 +1314,6 @@ CREATE TABLE IF NOT EXISTS "s_driving_learner_licenses" (
 /*!40000 ALTER TABLE "s_driving_learner_licenses" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_service_requests
-DROP TABLE IF EXISTS "s_service_requests";
 CREATE TABLE IF NOT EXISTS "s_service_requests" (
 	"service_request_id" BIGINT NOT NULL,
 	"service_request_no" VARCHAR(25) NOT NULL,
@@ -1386,7 +1364,6 @@ CREATE TABLE IF NOT EXISTS "s_service_requests" (
 /*!40000 ALTER TABLE "s_service_requests" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_users
-DROP TABLE IF EXISTS "s_users";
 CREATE TABLE IF NOT EXISTS "s_users" (
 	"user_id" BIGINT NOT NULL,
 	"name_en" VARCHAR(40) NULL DEFAULT NULL,
@@ -1413,14 +1390,14 @@ CREATE TABLE IF NOT EXISTS "s_users" (
 	UNIQUE "ukqdah6j9ojqf45gj7yfrsftfqh" ("email", "mobile")
 );
 
--- Dumping data for table brta.s_users: 1 rows
+-- Dumping data for table brta.s_users: 2 rows
 /*!40000 ALTER TABLE "s_users" DISABLE KEYS */;
 INSERT INTO "s_users" ("user_id", "name_en", "name_bn", "username", "mobile", "email", "password", "user_type_id", "designation_id", "profile_completed", "is_active", "create_user_id", "update_user_id", "created_date", "updated_date", "deleted_date", "version_no", "id") VALUES
-	(2, 'Ruhul Amin', 'রুহুল আমিন', 'ruhul', '01638584622', 'ruhul@gmail.com', '$2y$10$P4UTnMnwFj15aia9Bnk5Re52JQIqYpo7TK9lFnKCg4dqaIVciPxeu', NULL, NULL, 'false', 'true', NULL, NULL, NULL, NULL, NULL, 1, 1);
+	(3, 'Rasel Kazi', 'রাসেল কাজী', 'rasel', '01638584623', 'rasel@gmail.com', '$2y$10$P4UTnMnwFj15aia9Bnk5Re52JQIqYpo7TK9lFnKCg4dqaIVciPxeu', NULL, NULL, 'false', 'true', NULL, NULL, NULL, NULL, NULL, 1, 2),
+	(2, 'Ruhul Amin', 'রুহুল আমিন', 'ruhul', '01638584622', 'ruhul@gmail.com', '$2y$10$P4UTnMnwFj15aia9Bnk5Re52JQIqYpo7TK9lFnKCg4dqaIVciPxeu', NULL, NULL, 'false', 'true', NULL, NULL, NULL, NULL, NULL, 1, 3);
 /*!40000 ALTER TABLE "s_users" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_details
-DROP TABLE IF EXISTS "s_user_details";
 CREATE TABLE IF NOT EXISTS "s_user_details" (
 	"user_detail_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1444,7 +1421,6 @@ CREATE TABLE IF NOT EXISTS "s_user_details" (
 /*!40000 ALTER TABLE "s_user_details" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_email_histories
-DROP TABLE IF EXISTS "s_user_email_histories";
 CREATE TABLE IF NOT EXISTS "s_user_email_histories" (
 	"user_email_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1463,7 +1439,6 @@ CREATE TABLE IF NOT EXISTS "s_user_email_histories" (
 /*!40000 ALTER TABLE "s_user_email_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_mobile_histories
-DROP TABLE IF EXISTS "s_user_mobile_histories";
 CREATE TABLE IF NOT EXISTS "s_user_mobile_histories" (
 	"user_mobile_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1482,7 +1457,6 @@ CREATE TABLE IF NOT EXISTS "s_user_mobile_histories" (
 /*!40000 ALTER TABLE "s_user_mobile_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_nid_infos
-DROP TABLE IF EXISTS "s_user_nid_infos";
 CREATE TABLE IF NOT EXISTS "s_user_nid_infos" (
 	"user_nid_info_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1512,7 +1486,6 @@ CREATE TABLE IF NOT EXISTS "s_user_nid_infos" (
 /*!40000 ALTER TABLE "s_user_nid_infos" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_office_histories
-DROP TABLE IF EXISTS "s_user_office_histories";
 CREATE TABLE IF NOT EXISTS "s_user_office_histories" (
 	"user_office_history_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1540,7 +1513,6 @@ CREATE TABLE IF NOT EXISTS "s_user_office_histories" (
 /*!40000 ALTER TABLE "s_user_office_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_organizations
-DROP TABLE IF EXISTS "s_user_organizations";
 CREATE TABLE IF NOT EXISTS "s_user_organizations" (
 	"user_org_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1565,7 +1537,6 @@ CREATE TABLE IF NOT EXISTS "s_user_organizations" (
 /*!40000 ALTER TABLE "s_user_organizations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_password_histories
-DROP TABLE IF EXISTS "s_user_password_histories";
 CREATE TABLE IF NOT EXISTS "s_user_password_histories" (
 	"user_password_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1584,7 +1555,6 @@ CREATE TABLE IF NOT EXISTS "s_user_password_histories" (
 /*!40000 ALTER TABLE "s_user_password_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.s_user_tin_infos
-DROP TABLE IF EXISTS "s_user_tin_infos";
 CREATE TABLE IF NOT EXISTS "s_user_tin_infos" (
 	"user_tin_info_id" BIGINT NOT NULL,
 	"user_id" BIGINT NOT NULL,
@@ -1606,7 +1576,6 @@ CREATE TABLE IF NOT EXISTS "s_user_tin_infos" (
 /*!40000 ALTER TABLE "s_user_tin_infos" ENABLE KEYS */;
 
 -- Dumping structure for table brta.u_permissions
-DROP TABLE IF EXISTS "u_permissions";
 CREATE TABLE IF NOT EXISTS "u_permissions" (
 	"permission_id" BIGINT NOT NULL,
 	"name" VARCHAR(100) NOT NULL,
@@ -1628,7 +1597,6 @@ CREATE TABLE IF NOT EXISTS "u_permissions" (
 /*!40000 ALTER TABLE "u_permissions" ENABLE KEYS */;
 
 -- Dumping structure for table brta.u_roles
-DROP TABLE IF EXISTS "u_roles";
 CREATE TABLE IF NOT EXISTS "u_roles" (
 	"role_id" BIGINT NOT NULL,
 	"name_bn" VARCHAR(100) NOT NULL,
@@ -1646,7 +1614,7 @@ CREATE TABLE IF NOT EXISTS "u_roles" (
 	CONSTRAINT "u_roles_update_user_id_fkey" FOREIGN KEY ("update_user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
--- Dumping data for table brta.u_roles: 2 rows
+-- Dumping data for table brta.u_roles: 0 rows
 /*!40000 ALTER TABLE "u_roles" DISABLE KEYS */;
 INSERT INTO "u_roles" ("role_id", "name_bn", "name_en", "role_code", "is_active", "create_user_id", "update_user_id", "created_date", "updated_date", "deleted_date", "version_no") VALUES
 	(3, 'Admin', NULL, 'admin', 'true', 2, NULL, '2024-09-05 16:26:30', NULL, NULL, 1),
@@ -1654,7 +1622,6 @@ INSERT INTO "u_roles" ("role_id", "name_bn", "name_en", "role_code", "is_active"
 /*!40000 ALTER TABLE "u_roles" ENABLE KEYS */;
 
 -- Dumping structure for table brta.u_role_permissions
-DROP TABLE IF EXISTS "u_role_permissions";
 CREATE TABLE IF NOT EXISTS "u_role_permissions" (
 	"role_permission_id" BIGINT NOT NULL,
 	"role_id" INTEGER NOT NULL,
@@ -1670,7 +1637,6 @@ CREATE TABLE IF NOT EXISTS "u_role_permissions" (
 /*!40000 ALTER TABLE "u_role_permissions" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_duplicate_np_applications
-DROP TABLE IF EXISTS "v_duplicate_np_applications";
 CREATE TABLE IF NOT EXISTS "v_duplicate_np_applications" (
 	"v_duplicate_np_application_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1699,7 +1665,6 @@ CREATE TABLE IF NOT EXISTS "v_duplicate_np_applications" (
 /*!40000 ALTER TABLE "v_duplicate_np_applications" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_exporters
-DROP TABLE IF EXISTS "v_exporters";
 CREATE TABLE IF NOT EXISTS "v_exporters" (
 	"exporter_id" BIGINT NOT NULL,
 	"name_bn" VARCHAR(100) NOT NULL,
@@ -1726,7 +1691,6 @@ CREATE TABLE IF NOT EXISTS "v_exporters" (
 /*!40000 ALTER TABLE "v_exporters" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_fitness_appointments
-DROP TABLE IF EXISTS "v_fitness_appointments";
 CREATE TABLE IF NOT EXISTS "v_fitness_appointments" (
 	"fitness_appointment_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1751,7 +1715,6 @@ CREATE TABLE IF NOT EXISTS "v_fitness_appointments" (
 /*!40000 ALTER TABLE "v_fitness_appointments" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_importers
-DROP TABLE IF EXISTS "v_importers";
 CREATE TABLE IF NOT EXISTS "v_importers" (
 	"importer_id" BIGINT NOT NULL,
 	"name_bn" VARCHAR(100) NOT NULL,
@@ -1777,7 +1740,6 @@ CREATE TABLE IF NOT EXISTS "v_importers" (
 /*!40000 ALTER TABLE "v_importers" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_modification_applications
-DROP TABLE IF EXISTS "v_modification_applications";
 CREATE TABLE IF NOT EXISTS "v_modification_applications" (
 	"v_modification_application_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1818,7 +1780,6 @@ CREATE TABLE IF NOT EXISTS "v_modification_applications" (
 /*!40000 ALTER TABLE "v_modification_applications" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_ownership_transfer_applications
-DROP TABLE IF EXISTS "v_ownership_transfer_applications";
 CREATE TABLE IF NOT EXISTS "v_ownership_transfer_applications" (
 	"ownership_transfer_application_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1869,7 +1830,6 @@ CREATE TABLE IF NOT EXISTS "v_ownership_transfer_applications" (
 /*!40000 ALTER TABLE "v_ownership_transfer_applications" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_ac_histories
-DROP TABLE IF EXISTS "v_vehicle_ac_histories";
 CREATE TABLE IF NOT EXISTS "v_vehicle_ac_histories" (
 	"vehicle_body_color_history_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1890,7 +1850,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_ac_histories" (
 /*!40000 ALTER TABLE "v_vehicle_ac_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_advance_income_taxes
-DROP TABLE IF EXISTS "v_vehicle_advance_income_taxes";
 CREATE TABLE IF NOT EXISTS "v_vehicle_advance_income_taxes" (
 	"vehicle_ait_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1913,7 +1872,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_advance_income_taxes" (
 /*!40000 ALTER TABLE "v_vehicle_advance_income_taxes" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_body_color_histories
-DROP TABLE IF EXISTS "v_vehicle_body_color_histories";
 CREATE TABLE IF NOT EXISTS "v_vehicle_body_color_histories" (
 	"vehicle_body_color_history_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1935,7 +1893,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_body_color_histories" (
 /*!40000 ALTER TABLE "v_vehicle_body_color_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_engine_histories
-DROP TABLE IF EXISTS "v_vehicle_engine_histories";
 CREATE TABLE IF NOT EXISTS "v_vehicle_engine_histories" (
 	"vehicle_engine_history_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1971,7 +1928,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_engine_histories" (
 /*!40000 ALTER TABLE "v_vehicle_engine_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_fitness
-DROP TABLE IF EXISTS "v_vehicle_fitness";
 CREATE TABLE IF NOT EXISTS "v_vehicle_fitness" (
 	"vehicle_fitness_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -1992,7 +1948,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_fitness" (
 /*!40000 ALTER TABLE "v_vehicle_fitness" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_infos
-DROP TABLE IF EXISTS "v_vehicle_infos";
 CREATE TABLE IF NOT EXISTS "v_vehicle_infos" (
 	"vehicle_info_id" BIGINT NOT NULL,
 	"chassis_number" VARCHAR(100) NOT NULL,
@@ -2074,7 +2029,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_infos" (
 /*!40000 ALTER TABLE "v_vehicle_infos" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_owners
-DROP TABLE IF EXISTS "v_vehicle_owners";
 CREATE TABLE IF NOT EXISTS "v_vehicle_owners" (
 	"vehicle_owner_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -2123,7 +2077,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_owners" (
 /*!40000 ALTER TABLE "v_vehicle_owners" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_registrations
-DROP TABLE IF EXISTS "v_vehicle_registrations";
 CREATE TABLE IF NOT EXISTS "v_vehicle_registrations" (
 	"vehicle_reg_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -2155,7 +2108,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_registrations" (
 /*!40000 ALTER TABLE "v_vehicle_registrations" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_route_permits
-DROP TABLE IF EXISTS "v_vehicle_route_permits";
 CREATE TABLE IF NOT EXISTS "v_vehicle_route_permits" (
 	"vehicle_rp_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -2178,7 +2130,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_route_permits" (
 /*!40000 ALTER TABLE "v_vehicle_route_permits" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_tagging
-DROP TABLE IF EXISTS "v_vehicle_tagging";
 CREATE TABLE IF NOT EXISTS "v_vehicle_tagging" (
 	"vehicle_tag_id" BIGINT NOT NULL,
 	"vehicle_reg_id" INTEGER NOT NULL,
@@ -2193,7 +2144,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_tagging" (
 /*!40000 ALTER TABLE "v_vehicle_tagging" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_tax_tokens
-DROP TABLE IF EXISTS "v_vehicle_tax_tokens";
 CREATE TABLE IF NOT EXISTS "v_vehicle_tax_tokens" (
 	"vehicle_tt_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -2214,7 +2164,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_tax_tokens" (
 /*!40000 ALTER TABLE "v_vehicle_tax_tokens" ENABLE KEYS */;
 
 -- Dumping structure for table brta.v_vehicle_tyre_histories
-DROP TABLE IF EXISTS "v_vehicle_tyre_histories";
 CREATE TABLE IF NOT EXISTS "v_vehicle_tyre_histories" (
 	"vehicle_tyre_history_id" BIGINT NOT NULL,
 	"vehicle_info_id" INTEGER NOT NULL,
@@ -2235,7 +2184,6 @@ CREATE TABLE IF NOT EXISTS "v_vehicle_tyre_histories" (
 /*!40000 ALTER TABLE "v_vehicle_tyre_histories" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_email_audit
-DROP TABLE IF EXISTS "x_email_audit";
 CREATE TABLE IF NOT EXISTS "x_email_audit" (
 	"id" SERIAL NOT NULL,
 	"changed_at" TIMESTAMP NOT NULL,
@@ -2251,7 +2199,6 @@ CREATE TABLE IF NOT EXISTS "x_email_audit" (
 /*!40000 ALTER TABLE "x_email_audit" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_f5tokens
-DROP TABLE IF EXISTS "x_f5tokens";
 CREATE TABLE IF NOT EXISTS "x_f5tokens" (
 	"id" BIGINT NOT NULL,
 	"auth_token" VARCHAR(255) NULL DEFAULT NULL,
@@ -2269,7 +2216,6 @@ CREATE TABLE IF NOT EXISTS "x_f5tokens" (
 /*!40000 ALTER TABLE "x_f5tokens" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_menus
-DROP TABLE IF EXISTS "x_menus";
 CREATE TABLE IF NOT EXISTS "x_menus" (
 	"menu_id" BIGINT NOT NULL,
 	"created_at" TIMESTAMPTZ NULL DEFAULT NULL,
@@ -2298,7 +2244,6 @@ CREATE TABLE IF NOT EXISTS "x_menus" (
 /*!40000 ALTER TABLE "x_menus" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_mobile_audit
-DROP TABLE IF EXISTS "x_mobile_audit";
 CREATE TABLE IF NOT EXISTS "x_mobile_audit" (
 	"id" BIGINT NOT NULL,
 	"changed_at" TIMESTAMP NOT NULL,
@@ -2314,7 +2259,6 @@ CREATE TABLE IF NOT EXISTS "x_mobile_audit" (
 /*!40000 ALTER TABLE "x_mobile_audit" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_privileges
-DROP TABLE IF EXISTS "x_privileges";
 CREATE TABLE IF NOT EXISTS "x_privileges" (
 	"id" BIGINT NOT NULL,
 	"created_at" TIMESTAMPTZ NULL DEFAULT NULL,
@@ -2332,7 +2276,6 @@ CREATE TABLE IF NOT EXISTS "x_privileges" (
 /*!40000 ALTER TABLE "x_privileges" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_roles
-DROP TABLE IF EXISTS "x_roles";
 CREATE TABLE IF NOT EXISTS "x_roles" (
 	"id" SERIAL NOT NULL,
 	"name_bn" VARCHAR(255) NULL DEFAULT NULL,
@@ -2352,7 +2295,6 @@ INSERT INTO "x_roles" ("id", "name_bn", "role_code", "is_active", "name_en") VAL
 /*!40000 ALTER TABLE "x_roles" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_role_menus
-DROP TABLE IF EXISTS "x_role_menus";
 CREATE TABLE IF NOT EXISTS "x_role_menus" (
 	"menu_id" BIGINT NOT NULL,
 	"role_id" BIGINT NOT NULL,
@@ -2366,7 +2308,6 @@ CREATE TABLE IF NOT EXISTS "x_role_menus" (
 /*!40000 ALTER TABLE "x_role_menus" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_role_privileges
-DROP TABLE IF EXISTS "x_role_privileges";
 CREATE TABLE IF NOT EXISTS "x_role_privileges" (
 	"role_id" BIGINT NOT NULL,
 	"privilege_id" BIGINT NOT NULL,
@@ -2379,7 +2320,6 @@ CREATE TABLE IF NOT EXISTS "x_role_privileges" (
 /*!40000 ALTER TABLE "x_role_privileges" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_users
-DROP TABLE IF EXISTS "x_users";
 CREATE TABLE IF NOT EXISTS "x_users" (
 	"id" SERIAL NOT NULL,
 	"created_at" TIMESTAMP NULL DEFAULT NULL,
@@ -2405,7 +2345,7 @@ CREATE TABLE IF NOT EXISTS "x_users" (
 	UNIQUE "uk34hjlxkawdgiv2cjtia6r56w0" ("mobile")
 );
 
--- Dumping data for table brta.x_users: 2 rows
+-- Dumping data for table brta.x_users: 1 rows
 /*!40000 ALTER TABLE "x_users" DISABLE KEYS */;
 INSERT INTO "x_users" ("id", "created_at", "updated_at", "version", "name_bn", "designation_id", "email", "is_active", "profile_completed", "mobile", "name_en", "password", "username", "created_date", "updated_date", "version_no") VALUES
 	(2, '2024-08-25 04:14:32.836508', '2024-08-25 04:14:32.836508', 0, 'syste user', 1, 'system@google.com', 'true', 'false', '01711283365', 'System User', '$2a$10$6R8L8HLYOkOS7KAtBb5osOcghsXurL4xtIukzlM/qoRKArdhb/BYi', 'system', NULL, NULL, 1),
@@ -2413,18 +2353,19 @@ INSERT INTO "x_users" ("id", "created_at", "updated_at", "version", "name_bn", "
 /*!40000 ALTER TABLE "x_users" ENABLE KEYS */;
 
 -- Dumping structure for table brta.x_user_roles
-DROP TABLE IF EXISTS "x_user_roles";
 CREATE TABLE IF NOT EXISTS "x_user_roles" (
 	"user_id" BIGINT NOT NULL,
 	"role_id" BIGINT NOT NULL,
 	PRIMARY KEY ("user_id", "role_id"),
+	CONSTRAINT "fk67mrtll9v2vvs35mp46ne3x3p" FOREIGN KEY ("user_id") REFERENCES "s_users" ("user_id") ON UPDATE NO ACTION ON DELETE NO ACTION,
 	CONSTRAINT "fkr7995e7n87xdhy2atwaa73yk7" FOREIGN KEY ("role_id") REFERENCES "x_roles" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
 );
 
--- Dumping data for table brta.x_user_roles: 1 rows
+-- Dumping data for table brta.x_user_roles: 0 rows
 /*!40000 ALTER TABLE "x_user_roles" DISABLE KEYS */;
 INSERT INTO "x_user_roles" ("user_id", "role_id") VALUES
-	(1, 1);
+	(2, 1),
+	(3, 1);
 /*!40000 ALTER TABLE "x_user_roles" ENABLE KEYS */;
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;

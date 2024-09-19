@@ -1,5 +1,7 @@
 package com.ibas.brta.vehims.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ibas.brta.vehims.model.audit.RecordAudit;
 
 import jakarta.persistence.*;
@@ -7,8 +9,9 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Table(name = "c_status")
+@Table(name = "c_statuses")
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,8 +27,13 @@ public class Status extends RecordAudit {
     private Long id;
 
     @NotNull(message = "Status Group ID cannot be null")
+    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     @Column(name = "status_group_id", nullable = false)
-    private Integer statusGroupId;
+    private Long statusGroupId;
+
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "status_group_id", insertable = false, updatable = false)
+    // private StatusGroup statusGroup;
 
     @NotBlank
     @Size(max = 100)
@@ -50,12 +58,15 @@ public class Status extends RecordAudit {
     @Column(name = "priority")
     private Integer priority;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinTable(name = "c_status_groups", joinColumns = @JoinColumn(name = "status_group_id"), inverseJoinColumns = @JoinColumn(name = "status_id"))
-    private StatusGroup statusGroup;
-
     // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "statusGroupId", insertable = false, updatable = false)
+    // @JoinTable(name = "c_status_groups", joinColumns = @JoinColumn(name =
+    // "status_group_id"))
+    // private StatusGroup statusGroup;
+
+    // Many-to-One relationship with StatusGroup
+    // @OneToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "status_group_id", referencedColumnName =
+    // "status_group_id", insertable = false, updatable = false)
     // private StatusGroup statusGroup;
 
 }

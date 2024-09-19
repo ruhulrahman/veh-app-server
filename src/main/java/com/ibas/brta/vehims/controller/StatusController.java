@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ibas.brta.vehims.model.Status;
+import com.ibas.brta.vehims.payload.request.StatusRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.service.StatusService;
 import com.ibas.brta.vehims.util.AppConstants;
+import com.ibas.brta.vehims.util.ModelMapper;
 
 import jakarta.validation.Valid;
 
@@ -47,16 +50,24 @@ public class StatusController {
         }
 
         @PostMapping("/v1/admin/configurations/status/update")
-        public ResponseEntity<?> updateDesignationV1(@Valid @RequestBody Status requestData) {
+        public ResponseEntity<?> updateDesignationV1(@Valid @RequestBody StatusRequest requestData) {
+                try {
 
-                Status updatedData = statusService.updateStatus(requestData);
+                        logger.info("requestData: " + requestData.toString());
 
-                URI location = ServletUriComponentsBuilder
-                                .fromCurrentContextPath().path("/status/create/")
-                                .buildAndExpand(updatedData.getNameEn()).toUri();
+                        Status updatedData = statusService.updateStatus(requestData);
 
-                return ResponseEntity.created(location)
-                                .body(ApiResponse.success(updatedData.getNameEn() + " updated.", updatedData));
+                        URI location = ServletUriComponentsBuilder
+                                        .fromCurrentContextPath().path("/status/create/")
+                                        .buildAndExpand(updatedData.getNameEn()).toUri();
+
+                        return ResponseEntity.created(location)
+                                        .body(ApiResponse.success(updatedData.getNameEn() + " updated.", updatedData));
+                } catch (Exception e) {
+                        // TODO: handle exception
+                        throw e;
+                }
+
         }
 
         // @PreAuthorize("hasAnyAuthority('READ_OP')")

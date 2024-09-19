@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.service;
 
 import java.util.*;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,6 +46,13 @@ public class StatusGroupService implements IStatusGroup {
         // Map Responses with all information
         List<StatusGroupResponse> responseData = records.map(record -> {
             return ModelMapper.StatusGroupToResponse(record);
+            // Create a new StatusGroupResponse object
+            // StatusGroupResponse statusGroupResponse = new StatusGroupResponse();
+
+            // // Copy properties from the entity (record) to the response object
+            // BeanUtils.copyProperties(record, statusGroupResponse);
+
+            // return statusGroupResponse;
         }).getContent();
 
         return new PagedResponse<>(responseData, records.getNumber(),
