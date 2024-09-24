@@ -10,11 +10,7 @@ public interface IStatusGroup {
 
     List<StatusGroup> findAllStatusGroups();
 
-    List<StatusGroup> getActiveStatusGroups();
-
     PagedResponse<StatusGroupResponse> findAllBySearch(String nameEn, Boolean isActive, int page, int size);
-
-    StatusGroup findStatusGroupById(Long id);
 
     StatusGroup findStatusGroupByStatusGroupCode(String statusGroupCode);
 

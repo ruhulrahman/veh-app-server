@@ -1,22 +1,29 @@
 package com.ibas.brta.vehims.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ibas.brta.vehims.model.Country;
+import com.ibas.brta.vehims.payload.request.CountryDTO;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
+import com.ibas.brta.vehims.payload.response.CountryResponse;
+import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.service.CountryService;
+import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -27,43 +34,60 @@ public class CountryController {
     CountryService countryService;
 
     @PostMapping("/v1/admin/configurations/country/create")
-    public ResponseEntity<?> createCountryV1(@Valid @RequestBody Country country) {
-        Country _country = countryService.saveCountry(country);
+    public ResponseEntity<?> createCountryV1(@Valid @RequestBody CountryDTO countryDTO) {
+        Country saveData = countryService.createData(countryDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentContextPath().path("/country/")
-                .buildAndExpand(_country.getNameEn()).toUri();
+                .buildAndExpand(saveData.getNameEn()).toUri();
 
-        return ResponseEntity.created(location).body(ApiResponse.success("Country has been created", _country));
+        return ResponseEntity.created(location)
+                .body(ApiResponse.success(saveData.getNameEn() + " saved.", saveData));
     }
 
-    @PostMapping("/v1/admin/configurations/country/update")
-    public ResponseEntity<?> updateCountryV1(@Valid @RequestBody Country country) {
-        Country _country = countryService.saveCountry(country);
+    // Update an existing item
+    @PutMapping("/v1/admin/configurations/country/update/{id}")
+    public ResponseEntity<?> updateStatusGroup(
+            @PathVariable Long id,
+            @RequestBody CountryDTO countryDTO) {
+
+        Country updatedData = countryService.updateData(id, countryDTO);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/country/")
-                .buildAndExpand(_country.getNameEn()).toUri();
+                .fromCurrentContextPath().path("/country/updated")
+                .buildAndExpand(updatedData.getNameEn()).toUri();
 
-        return ResponseEntity.created(location).body(ApiResponse.success("Country has been updated", _country));
+        return ResponseEntity.created(location)
+                .body(ApiResponse.success(updatedData.getNameEn() + " updated.", updatedData));
+    }
+
+    // Delete a item
+    @DeleteMapping("/v1/admin/configurations/country/delete/{id}")
+    public ResponseEntity<?> deleteStatusGroup(@PathVariable Long id) {
+        countryService.deleteData(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/v1/admin/configurations/country/list")
-    public ResponseEntity<?> listCountryV1() {
-        List<Country> _countries = countryService.findAllCountries();
+    public PagedResponse<?> findListWithPaginationBySearch(
+            @RequestParam(required = false) String nameEn,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/country/")
-                .buildAndExpand(_countries).toUri();
+        PagedResponse<CountryResponse> responseData = countryService.findAllBySearch(nameEn,
+                isActive,
+                page,
+                size);
 
-        return ResponseEntity.created(location).body(ApiResponse.success("Fetch Country list", _countries));
+        return responseData;
     }
 
-    @PostMapping("/v1/admin/configurations/country/delete")
-    public ResponseEntity<?> deleteCountryV1(@Valid @RequestBody Long country_id) {
-        countryService.deleteCountryById(country_id);
-
-        return ResponseEntity.ok().body(ApiResponse.success("Country has been deleted", country_id));
+    // Get a single item by ID
+    @GetMapping("/v1/admin/configurations/country/{id}")
+    public ResponseEntity<Country> getStatusGroupById(@PathVariable Long id) {
+        Country vehicleType = countryService.getDataById(id);
+        return ResponseEntity.ok(vehicleType);
     }
 
 }

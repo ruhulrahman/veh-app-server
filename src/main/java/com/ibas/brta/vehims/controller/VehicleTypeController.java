@@ -1,11 +1,21 @@
+package com.ibas.brta.vehims.controller;
+
+import com.ibas.brta.vehims.model.VehicleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.model.VehicleType;
 import com.ibas.brta.vehims.payload.request.VehicleTypeDTO;
+import com.ibas.brta.vehims.payload.response.ApiResponse;
+import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.payload.response.VehicleTypeResponse;
 import com.ibas.brta.vehims.service.VehicleTypService;
+import com.ibas.brta.vehims.util.AppConstants;
 
+import jakarta.validation.Valid;
+
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -17,38 +27,59 @@ public class VehicleTypeController {
 
     // Create a new item
     @PostMapping("/v1/admin/configurations/vehicle-type/create")
-    public ResponseEntity<VehicleType> createStatusGroup(@RequestBody VehicleTypeDTO vehicleTypeDTO) {
-        VehicleType createdStatusGroup = vehicleTypeService.createVehilcleType(vehicleTypeDTO);
-        return ResponseEntity.ok(createdStatusGroup);
+    public ResponseEntity<?> createData(@Valid @RequestBody VehicleTypeDTO vehicleTypeDTO) {
+        VehicleType saveData = vehicleTypeService.createData(vehicleTypeDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/vehicle-type/create")
+                .buildAndExpand(saveData.getNameEn()).toUri();
+
+        return ResponseEntity.created(location)
+                .body(ApiResponse.success(saveData.getNameEn() + " saved.", saveData));
     }
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/vehicle-type/update/{id}")
-    public ResponseEntity<VehicleType> updateStatusGroup(
+    public ResponseEntity<?> updateData(
             @PathVariable Long id,
             @RequestBody VehicleTypeDTO vehicleTypeDTO) {
-        VehicleType updatedStatusGroup = vehicleTypeService.updateVehilcleType(id, vehicleTypeDTO);
-        return ResponseEntity.ok(updatedStatusGroup);
+
+        VehicleType updatedData = vehicleTypeService.updateData(id, vehicleTypeDTO);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentContextPath().path("/vehicle-type/updated")
+                .buildAndExpand(updatedData.getNameEn()).toUri();
+
+        return ResponseEntity.created(location)
+                .body(ApiResponse.success(updatedData.getNameEn() + " updated.", updatedData));
     }
 
     // Delete a item
-    @DeleteMapping("/v1/admin/configurations/vehicle-type/{id}")
-    public ResponseEntity<Void> deleteStatusGroup(@PathVariable Long id) {
-        vehicleTypeService.deleteVehilcleType(id);
+    @DeleteMapping("/v1/admin/configurations/vehicle-type/delete/{id}")
+    public ResponseEntity<?> deleteDataById(@PathVariable Long id) {
+        vehicleTypeService.deleteDataById(id);
         return ResponseEntity.noContent().build();
     }
 
-    // List all items
     @GetMapping("/v1/admin/configurations/vehicle-type/list")
-    public ResponseEntity<List<VehicleType>> listAllStatusGroups() {
-        List<VehicleType> vehicleType = vehicleTypeService.listAllVehilcleTypes();
-        return ResponseEntity.ok(vehicleType);
+    public PagedResponse<?> findListWithPaginationBySearch(
+            @RequestParam(required = false) String nameEn,
+            @RequestParam(required = false) Boolean isActive,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+
+        PagedResponse<VehicleTypeResponse> responseData = vehicleTypeService.findAllBySearch(nameEn,
+                isActive,
+                page,
+                size);
+
+        return responseData;
     }
 
     // Get a single item by ID
     @GetMapping("/v1/admin/configurations/vehicle-type/{id}")
-    public ResponseEntity<VehicleType> getStatusGroupById(@PathVariable Long id) {
-        VehicleType vehicleType = vehicleTypeService.getVehilcleTypeById(id);
+    public ResponseEntity<VehicleType> getDataById(@PathVariable Long id) {
+        VehicleType vehicleType = vehicleTypeService.getDataById(id);
         return ResponseEntity.ok(vehicleType);
     }
 }

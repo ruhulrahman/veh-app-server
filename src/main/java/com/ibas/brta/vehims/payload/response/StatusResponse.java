@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class StatusResponse implements Serializable {
+public class StatusResponse {
     private Long id;
-    private Integer statusGroupId;
+    private Long statusGroupId;
     private String statusCode;
     private String nameEn;
     private String nameBn;

@@ -5,9 +5,12 @@ import com.ibas.brta.vehims.exception.BadRequestException;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IDesignation;
 import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.StatusGroup;
 import com.ibas.brta.vehims.payload.request.DesignationRequest;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.repository.DesignationRepository;
 import com.ibas.brta.vehims.util.AppConstants;
 import com.ibas.brta.vehims.util.ModelMapper;
@@ -17,6 +20,7 @@ import lombok.extern.java.Log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,8 +31,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DesignationService implements IDesignation {
@@ -175,13 +182,41 @@ public class DesignationService implements IDesignation {
         return designationRepository.findByParentDesignationIdIsNullOrderByLevelNumberAsc();
     }
 
-    public List<Designation> getDesignationListIsActiveTrue() {
-        return designationRepository.findByIsActiveTrueOrderByLevelNumberAsc();
+    public List<DesignationResponse> getDesignationListIsActiveTrue() {
+
+        List<Designation> records = designationRepository.findByIsActiveTrueOrderByLevelNumberAsc();
+        // Map Responses with all information
+        List<DesignationResponse> responseData = records.stream().map(record -> {
+            // return ModelMapper.VehicleTypeToResponse(record);
+            DesignationResponse response = new DesignationResponse();
+            BeanUtils.copyProperties(record, response);
+            return response;
+        }).collect(Collectors.toList());
+
+        return responseData;
     }
 
     @Override
     public void deleteDesignationById(Long id) {
         designationRepository.deleteById(id);
+    }
+
+    public List<?> getActiveList() {
+        List<Designation> entities = designationRepository.findByIsActiveTrueOrderByNameEnAsc();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        entities.forEach(serviceEntity -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", serviceEntity.getId());
+            object.put("nameEn", serviceEntity.getNameEn());
+            object.put("nameBn", serviceEntity.getNameBn());
+
+            customArray.add(object);
+        });
+
+        return customArray;
     }
 
 }

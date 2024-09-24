@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class StatusGroupResponse implements Serializable {
+public class StatusGroupResponse {
     private Long id;
     private String statusGroupCode;
     private String nameEn;

@@ -10,7 +10,4 @@ public interface ICountry {
 
     Optional<Country> findCountryById(Long id);
 
-    Country saveCountry(Country country);
-
-    void deleteCountryById(Long country_id);
 }

@@ -19,7 +19,6 @@ import com.ibas.brta.vehims.model.Status;
 import com.ibas.brta.vehims.payload.request.StatusRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.service.StatusService;
 import com.ibas.brta.vehims.util.AppConstants;
@@ -74,11 +73,13 @@ public class StatusController {
         @GetMapping("/v1/admin/configurations/status/list")
         public PagedResponse<StatusResponse> getListBySearch(
                         @RequestParam(required = false) String nameEn,
+                        @RequestParam(required = false) Long statusGroupId,
                         @RequestParam(required = false) Boolean isActive,
                         @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
                         @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
                 PagedResponse<StatusResponse> responseData = statusService.findAllBySearch(nameEn,
+                                statusGroupId,
                                 isActive,
                                 page,
                                 size);

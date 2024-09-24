@@ -33,6 +33,8 @@ public interface DesignationRepository extends JpaRepository<Designation, Long> 
 
     List<Designation> findAllByOrderByLevelNumberAsc();
 
+    List<Designation> findByIsActiveTrueOrderByNameEnAsc();
+
     List<Designation> findByIsActiveTrueOrderByLevelNumberAsc();
 
     // Complex query with JPQL and named parameters

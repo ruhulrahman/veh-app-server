@@ -1,7 +1,6 @@
 package com.ibas.brta.vehims.payload.response;
 
 import java.util.*;
-import com.ibas.brta.vehims.model.Designation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,14 +11,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class CommonDropdownResponse {
 
-    public List<Designation> designationList;
-    public List<Designation> countryList;
-    public List<Designation> bloodList;
-    public List<Designation> genderList;
-    public List<Designation> documentTypeList;
-    public List<Designation> fuelTypeList;
-    public List<Designation> userTypeList;
-    public List<Designation> serviceList;
-    public List<Designation> vehicleTypeList;
-    public List<Designation> vehicleColorList;
+    public List<?> designationList;
+    public List<?> countryList;
+    public List<?> bloodList;
+    public List<?> genderList;
+    public List<?> documentTypeList;
+    public List<?> fuelTypeList;
+    public List<?> userTypeList;
+    public List<?> serviceList;
+    public List<?> vehicleTypeList;
+    public List<?> vehicleColorList;
+    public List<?> statusGroupList;
+    public List<?> statusList;
 }

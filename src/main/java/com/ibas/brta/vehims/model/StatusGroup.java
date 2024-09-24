@@ -32,15 +32,20 @@ public class StatusGroup extends RecordAudit {
     @Column(name = "status_group_code", nullable = false, unique = true)
     private String statusGroupCode;
 
-    @NotBlank
+    @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
     @Column(name = "name_en", nullable = false, unique = true)
     private String nameEn;
 
-    @NotBlank
+    @NotBlank(message = "Name in Bangla cannot be blank")
     @Size(max = 100)
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
+
+    // One-to-Many relationship with Status
+    // @OneToMany(mappedBy = "statusGroup", cascade = CascadeType.ALL, fetch =
+    // FetchType.LAZY)
+    // private List<Status> statuses = new ArrayList<>();
 
     // @OneToMany(fetch = FetchType.LAZY)
     // @JoinColumn(name = "status_group_id", referencedColumnName =

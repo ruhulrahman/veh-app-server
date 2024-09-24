@@ -11,8 +11,6 @@ public interface IStatus {
 
     List<Status> findAllStatusGroups();
 
-    PagedResponse<StatusResponse> findAllBySearch(String nameEn, Boolean isActive, int page, int size);
-
     Status findStatusById(Long id);
 
     Status findStatusByStatusCode(String statusCode);

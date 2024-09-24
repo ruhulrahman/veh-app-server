@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,11 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IStatusGroup;
+import com.ibas.brta.vehims.model.BloodGroup;
+import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.Status;
 import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.payload.response.BloodGroupResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.repository.StatusGroupRepository;
@@ -27,9 +32,19 @@ public class StatusGroupService implements IStatusGroup {
         return statusGroupRepository.findAll();
     }
 
-    @Override
-    public List<StatusGroup> getActiveStatusGroups() {
-        return statusGroupRepository.getActiveStatusGroups();
+    public List<?> getActiveStatusGroups() {
+        // return statusGroupRepository.getActiveStatusGroups();
+
+        List<StatusGroup> records = statusGroupRepository.getActiveStatusGroups();
+        // Map Responses with all information
+        List<StatusGroupResponse> responseData = records.stream().map(record -> {
+            // return ModelMapper.VehicleTypeToResponse(record);
+            StatusGroupResponse response = new StatusGroupResponse();
+            BeanUtils.copyProperties(record, response);
+            return response;
+        }).collect(Collectors.toList());
+
+        return responseData;
     }
 
     @Override
@@ -59,9 +74,8 @@ public class StatusGroupService implements IStatusGroup {
                 records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
     }
 
-    @Override
-    public StatusGroup findStatusGroupById(Long id) {
-        return statusGroupRepository.findById(id).orElse(null);
+    public Optional<StatusGroup> findStatusGroupById(Long id) {
+        return statusGroupRepository.findById(id);
     }
 
     @Override
@@ -95,6 +109,28 @@ public class StatusGroupService implements IStatusGroup {
     @Override
     public void deleteStatusGroupByStatusGroupCode(String statusGroupCode) {
         statusGroupRepository.deleteByStatusGroupCode(statusGroupCode);
+    }
+
+    public List<StatusGroup> getAllList() {
+        return statusGroupRepository.findAllByOrderByNameEnAsc();
+    }
+
+    public List<?> getActiveList() {
+        List<StatusGroup> serviceEntities = statusGroupRepository.findByIsActiveTrueOrderByNameEnAsc();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        serviceEntities.forEach(serviceEntity -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", serviceEntity.getId());
+            object.put("nameEn", serviceEntity.getNameEn());
+            object.put("nameBn", serviceEntity.getNameBn());
+
+            customArray.add(object);
+        });
+
+        return customArray;
     }
 
 }

@@ -3,8 +3,6 @@ package com.ibas.brta.vehims.controller;
 import java.util.List;
 import java.net.URI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.model.StatusGroup;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
-import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.service.StatusGroupService;
@@ -88,7 +84,7 @@ public class StatusGroupController {
 
         @GetMapping("/v1/admin/configurations/status-group/active-list")
         public ResponseEntity<?> getActiveList() {
-                List<StatusGroup> responseData = statusGroupService.getActiveStatusGroups();
+                List<?> responseData = statusGroupService.getActiveList();
 
                 return ResponseEntity.ok(ApiResponse.success("Fetched list", responseData));
         }

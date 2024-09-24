@@ -23,12 +23,12 @@ public class VehicleType extends RecordAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
     @Column(name = "name_en", nullable = false, unique = true)
     private String nameEn;
 
-    @NotBlank
+    @NotBlank(message = "Name in Bangla cannot be blank")
     @Size(max = 100)
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;

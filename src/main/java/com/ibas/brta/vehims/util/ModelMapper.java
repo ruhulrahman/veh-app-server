@@ -6,13 +6,16 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.model.Status;
 import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.model.VehicleType;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
+import com.ibas.brta.vehims.payload.response.VehicleTypeResponse;
 import com.ibas.brta.vehims.service.StatusService;
 
 /**
@@ -72,12 +75,25 @@ public class ModelMapper {
         Optional.ofNullable(data.getIsActive()).ifPresent(response::setIsActive);
         // Optional.ofNullable(data.getStatusGroup()).ifPresent(response::setStatusGroup);
 
-        if (data.getStatusGroup() != null) {
-            StatusGroupResponse statusGroup = ModelMapper.StatusGroupToResponse(data.getStatusGroup());
-            response.setStatusGroup(statusGroup);
-        }
+        // if (data.getStatusGroup() != null) {
+        // StatusGroupResponse statusGroup =
+        // ModelMapper.StatusGroupToResponse(data.getStatusGroup());
+        // response.setStatusGroup(statusGroup);
+        // }
 
         logger.info("status list =" + response.toString());
+
+        return response;
+    }
+
+    public static VehicleTypeResponse VehicleTypeToResponse(VehicleType data) {
+        VehicleTypeResponse response = new VehicleTypeResponse();
+        Optional.ofNullable(data.getId()).ifPresent(response::setId);
+        Optional.ofNullable(data.getNameBn()).ifPresent(response::setNameBn);
+        Optional.ofNullable(data.getNameEn()).ifPresent(response::setNameEn);
+        Optional.ofNullable(data.getIsActive()).ifPresent(response::setIsActive);
+
+        // BeanUtils.copyProperties(data, response);
 
         return response;
     }

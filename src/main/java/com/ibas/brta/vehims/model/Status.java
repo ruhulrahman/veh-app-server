@@ -27,12 +27,18 @@ public class Status extends RecordAudit {
     private Long id;
 
     @NotNull(message = "Status Group ID cannot be null")
-    // @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     @Column(name = "status_group_id", nullable = false)
     private Long statusGroupId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinTable(name = "c_status_groups", joinColumns = @JoinColumn(name = "status_group_id", insertable = false, updatable = false))
+    // @NotNull(message = "Status Group ID cannot be null")
+    // @JoinColumn(name = "status_group_id", nullable = false)
+    private StatusGroup statusGroup;
+
+    // Many-to-One relationship with StatusGroup
     // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "status_group_id", insertable = false, updatable = false)
+    // @JoinColumn(name = "status_group_id", nullable = false)
     // private StatusGroup statusGroup;
 
     @NotBlank
@@ -40,12 +46,12 @@ public class Status extends RecordAudit {
     @Column(name = "status_code", nullable = false, unique = true)
     private String statusCode;
 
-    @NotBlank
+    @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
     @Column(name = "name_en", nullable = false, unique = true)
     private String nameEn;
 
-    @NotBlank
+    @NotBlank(message = "Name in Bangla cannot be blank")
     @Size(max = 100)
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
@@ -57,11 +63,6 @@ public class Status extends RecordAudit {
     @Min(value = 1, message = "Priority must be at least 1.")
     @Column(name = "priority")
     private Integer priority;
-
-    // @OneToOne(fetch = FetchType.LAZY)
-    // @JoinTable(name = "c_status_groups", joinColumns = @JoinColumn(name =
-    // "status_group_id"))
-    // private StatusGroup statusGroup;
 
     // Many-to-One relationship with StatusGroup
     // @OneToOne(fetch = FetchType.LAZY)
