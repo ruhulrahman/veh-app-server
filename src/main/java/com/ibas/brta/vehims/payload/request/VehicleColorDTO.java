@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.payload.request;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -25,5 +26,6 @@ public class VehicleColorDTO {
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
 
+    @NotNull(message = "Active status cannot be null")
     private Boolean isActive;
 }

@@ -40,10 +40,10 @@ public class EmailTemplate extends RecordAudit {
     private String subjectBn;
 
     @NotBlank(message = "Email Body in English cannot be blank")
-    @Column(name = "emai_body_en", nullable = false, unique = true)
+    @Column(name = "emai_body_en", columnDefinition = "TEXT", nullable = false, unique = true)
     private String messageEn;
 
     @NotBlank(message = "Email Body in Bangla cannot be blank")
-    @Column(name = "emai_body_bn", nullable = false, unique = true)
+    @Column(name = "emai_body_bn", columnDefinition = "TEXT", nullable = false, unique = true)
     private String messageBn;
 }

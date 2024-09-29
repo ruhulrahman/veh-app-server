@@ -11,8 +11,6 @@ public interface IStatus {
 
     List<Status> findAllStatusGroups();
 
-    Status findStatusById(Long id);
-
     Status findStatusByStatusCode(String statusCode);
 
     Status createStatus(Status status);

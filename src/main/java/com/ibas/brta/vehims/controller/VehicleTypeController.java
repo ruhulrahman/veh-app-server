@@ -10,7 +10,7 @@ import com.ibas.brta.vehims.payload.request.VehicleTypeDTO;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.VehicleTypeResponse;
-import com.ibas.brta.vehims.service.VehicleTypService;
+import com.ibas.brta.vehims.service.VehicleTypeService;
 import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ import java.util.List;
 public class VehicleTypeController {
 
     @Autowired
-    VehicleTypService vehicleTypeService;
+    VehicleTypeService vehicleTypeService;
 
     // Create a new item
     @PostMapping("/v1/admin/configurations/vehicle-type/create")
@@ -41,7 +41,7 @@ public class VehicleTypeController {
     // Update an existing item
     @PutMapping("/v1/admin/configurations/vehicle-type/update/{id}")
     public ResponseEntity<?> updateData(
-            @PathVariable Long id,
+            @Valid @PathVariable Long id,
             @RequestBody VehicleTypeDTO vehicleTypeDTO) {
 
         VehicleType updatedData = vehicleTypeService.updateData(id, vehicleTypeDTO);
@@ -78,8 +78,8 @@ public class VehicleTypeController {
 
     // Get a single item by ID
     @GetMapping("/v1/admin/configurations/vehicle-type/{id}")
-    public ResponseEntity<VehicleType> getDataById(@PathVariable Long id) {
-        VehicleType vehicleType = vehicleTypeService.getDataById(id);
+    public ResponseEntity<VehicleTypeResponse> getDataById(@PathVariable Long id) {
+        VehicleTypeResponse vehicleType = vehicleTypeService.getDataById(id);
         return ResponseEntity.ok(vehicleType);
     }
 }

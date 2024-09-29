@@ -46,7 +46,7 @@ public class DocumentTypeController {
     // Update an existing item
     @PutMapping("/v1/admin/configurations/document-type/update/{id}")
     public ResponseEntity<?> updateStatusGroup(
-            @PathVariable Long id,
+            @Valid @PathVariable Long id,
             @RequestBody DocumentTypeRequest request) {
 
         DocumentTypeResponse updatedData = documentTypeService.updateData(id, request);

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.iservice.ICountry;
 import com.ibas.brta.vehims.model.Country;
-import com.ibas.brta.vehims.model.Designation;
 import com.ibas.brta.vehims.payload.request.CountryDTO;
 import com.ibas.brta.vehims.payload.response.CountryResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
@@ -34,9 +33,16 @@ public class CountryService implements ICountry {
         return countryRepository.findAll();
     }
 
-    @Override
-    public Optional<Country> findCountryById(Long id) {
-        return countryRepository.findById(id);
+    // Find a single record by ID
+    public CountryResponse getDataById(Long id) {
+
+        Country existingData = countryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        CountryResponse response = new CountryResponse();
+        BeanUtils.copyProperties(existingData, response);
+
+        return response;
     }
 
     // Create or Insert operation
@@ -88,23 +94,17 @@ public class CountryService implements ICountry {
                 records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
     }
 
-    // Find a single record by ID
-    public Country getDataById(Long id) {
-        return countryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
-    }
-
     public List<?> getActiveList() {
         List<Country> entities = countryRepository.findByIsActiveTrueOrderByNameEnAsc();
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        entities.forEach(serviceEntity -> {
+        entities.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
 
             customArray.add(object);
         });

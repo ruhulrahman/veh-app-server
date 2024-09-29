@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.payload.request;
 
 import java.io.Serializable;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,7 @@ public class StatusRequest {
     private String nameBn;
     private String colorName;
     private Integer priority;
+
+    @NotNull(message = "Active status cannot be null")
     private Boolean isActive;
 }

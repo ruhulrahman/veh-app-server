@@ -142,13 +142,13 @@ public class NotificationTemplateService {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        listData.forEach(serviceEntity -> {
+        listData.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("titleEn", serviceEntity.getTitleEn());
-            object.put("titleBn", serviceEntity.getTitleBn());
-            object.put("serviceId", serviceEntity.getServiceId());
+            object.put("id", item.getId());
+            object.put("titleEn", item.getTitleEn());
+            object.put("titleBn", item.getTitleBn());
+            object.put("serviceId", item.getServiceId());
             customArray.add(object);
         });
 

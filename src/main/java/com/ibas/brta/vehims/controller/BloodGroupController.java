@@ -41,7 +41,7 @@ public class BloodGroupController {
     // Update an existing item
     @PutMapping("/v1/admin/configurations/blood/update/{id}")
     public ResponseEntity<?> updateData(
-            @PathVariable Long id,
+            @Valid @PathVariable Long id,
             @RequestBody BloodGroupDTO bloodGroupDTO) {
 
         BloodGroup updatedData = bloodGroupService.updateData(id, bloodGroupDTO);

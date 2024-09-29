@@ -33,7 +33,7 @@ public class StatusGroupController {
         private StatusGroupService statusGroupService;
 
         @PostMapping("/v1/admin/configurations/status-group/create")
-        public ResponseEntity<?> createDesignationV1(@Valid @RequestBody StatusGroup requestData) {
+        public ResponseEntity<?> createData(@Valid @RequestBody StatusGroup requestData) {
 
                 StatusGroup saveData = statusGroupService.createStatusGroup(requestData);
 
@@ -46,7 +46,7 @@ public class StatusGroupController {
         }
 
         @PostMapping("/v1/admin/configurations/status-group/update")
-        public ResponseEntity<?> updateDesignationV1(@Valid @RequestBody StatusGroup requestData) {
+        public ResponseEntity<?> updateData(@Valid @RequestBody StatusGroup requestData) {
 
                 StatusGroup updatedData = statusGroupService.updateStatusGroup(requestData);
 

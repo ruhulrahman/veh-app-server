@@ -48,8 +48,8 @@ public class ServiceEntityController {
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/service/update/{id}")
-    public ResponseEntity<?> updateStatusGroup(
-            @PathVariable Long id,
+    public ResponseEntity<?> updateData(
+            @Valid @PathVariable Long id,
             @RequestBody ServiceEntityDTO serviceEntityDTO) {
 
         ServiceEntityDTO updatedData = serviceEntityService.updateData(id, serviceEntityDTO);
@@ -64,7 +64,7 @@ public class ServiceEntityController {
 
     // Delete a item
     @DeleteMapping("/v1/admin/configurations/service/delete/{id}")
-    public ResponseEntity<?> deleteStatusGroup(@PathVariable Long id) {
+    public ResponseEntity<?> deleteData(@PathVariable Long id) {
         serviceEntityService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
@@ -87,7 +87,7 @@ public class ServiceEntityController {
     // Get a single item by ID
 
     @GetMapping("/v1/admin/configurations/service/{id}")
-    public ResponseEntity<ServiceEntity> getStatusGroupById(@PathVariable Long id) {
+    public ResponseEntity<ServiceEntity> getDataById(@PathVariable Long id) {
         ServiceEntity serviceEntity = serviceEntityService.getDataById(id);
         return ResponseEntity.ok(serviceEntity);
     }

@@ -22,7 +22,6 @@ import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.service.StatusService;
 import com.ibas.brta.vehims.util.AppConstants;
-import com.ibas.brta.vehims.util.ModelMapper;
 
 import jakarta.validation.Valid;
 
@@ -36,7 +35,7 @@ public class StatusController {
         private static final Logger logger = LoggerFactory.getLogger(StatusController.class);
 
         @PostMapping("/v1/admin/configurations/status/create")
-        public ResponseEntity<?> createDesignationV1(@Valid @RequestBody Status requestData) {
+        public ResponseEntity<?> createData(@Valid @RequestBody Status requestData) {
 
                 Status saveData = statusService.createStatus(requestData);
 
@@ -49,7 +48,7 @@ public class StatusController {
         }
 
         @PostMapping("/v1/admin/configurations/status/update")
-        public ResponseEntity<?> updateDesignationV1(@Valid @RequestBody StatusRequest requestData) {
+        public ResponseEntity<?> updateData(@Valid @RequestBody StatusRequest requestData) {
                 try {
 
                         logger.info("requestData: " + requestData.toString());

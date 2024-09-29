@@ -23,4 +23,9 @@ public class CommonDropdownResponse {
     public List<?> vehicleColorList;
     public List<?> statusGroupList;
     public List<?> statusList;
+    public List<?> fiscalYearList;
+    public List<?> appointmentTimeSlotList;
+    public List<?> locationTypeList;
+    public List<?> routePermitTypes;
+    public List<?> paymentStatusList;
 }

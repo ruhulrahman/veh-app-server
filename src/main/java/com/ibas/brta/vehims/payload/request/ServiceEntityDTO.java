@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.payload.request;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,5 +36,6 @@ public class ServiceEntityDTO {
 
     private ServiceEntityDTO parentService;
 
-    private Boolean isActive;;
+    @NotNull(message = "Active status cannot be null")
+    private Boolean isActive;
 }

@@ -47,8 +47,8 @@ public class CountryController {
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/country/update/{id}")
-    public ResponseEntity<?> updateStatusGroup(
-            @PathVariable Long id,
+    public ResponseEntity<?> updateData(
+            @Valid @PathVariable Long id,
             @RequestBody CountryDTO countryDTO) {
 
         Country updatedData = countryService.updateData(id, countryDTO);
@@ -63,7 +63,7 @@ public class CountryController {
 
     // Delete a item
     @DeleteMapping("/v1/admin/configurations/country/delete/{id}")
-    public ResponseEntity<?> deleteStatusGroup(@PathVariable Long id) {
+    public ResponseEntity<?> deleteData(@PathVariable Long id) {
         countryService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
@@ -85,8 +85,8 @@ public class CountryController {
 
     // Get a single item by ID
     @GetMapping("/v1/admin/configurations/country/{id}")
-    public ResponseEntity<Country> getStatusGroupById(@PathVariable Long id) {
-        Country vehicleType = countryService.getDataById(id);
+    public ResponseEntity<?> getDataById(@PathVariable Long id) {
+        CountryResponse vehicleType = countryService.getDataById(id);
         return ResponseEntity.ok(vehicleType);
     }
 

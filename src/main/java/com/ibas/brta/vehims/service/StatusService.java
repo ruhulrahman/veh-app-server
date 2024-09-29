@@ -21,6 +21,7 @@ import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.repository.StatusRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -76,9 +77,13 @@ public class StatusService implements IStatus {
                 records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
     }
 
-    @Override
-    public Status findStatusById(Long id) {
-        return statusRepository.findById(id).orElse(null);
+    public StatusResponse findStatusById(Long id) {
+        Status existingData = statusRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        StatusResponse response = new StatusResponse();
+        BeanUtils.copyProperties(existingData, response);
+        return response;
     }
 
     @Override
@@ -137,12 +142,12 @@ public class StatusService implements IStatus {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        listData.forEach(serviceEntity -> {
+        listData.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
 
             customArray.add(object);
         });

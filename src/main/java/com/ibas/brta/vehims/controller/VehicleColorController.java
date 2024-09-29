@@ -40,7 +40,7 @@ public class VehicleColorController {
     // Update an existing item
     @PutMapping("/v1/admin/configurations/vehicle-color/update/{id}")
     public ResponseEntity<?> updateData(
-            @PathVariable Long id,
+            @Valid @PathVariable Long id,
             @RequestBody VehicleColorDTO vehicleColorDTO) {
 
         VehicleColor updatedData = vehicleColorService.updateData(id, vehicleColorDTO);

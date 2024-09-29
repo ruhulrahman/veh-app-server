@@ -8,6 +8,4 @@ public interface ICountry {
 
     List<Country> findAllCountries();
 
-    Optional<Country> findCountryById(Long id);
-
 }

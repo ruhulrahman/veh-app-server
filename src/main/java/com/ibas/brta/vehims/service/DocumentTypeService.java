@@ -105,14 +105,14 @@ public class DocumentTypeService {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        listData.forEach(serviceEntity -> {
+        listData.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
-            object.put("documentFormat", serviceEntity.getDocumentFormat());
-            object.put("documentSize", serviceEntity.getDocumentSize());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
+            object.put("documentFormat", item.getDocumentFormat());
+            object.put("documentSize", item.getDocumentSize());
 
             customArray.add(object);
         });

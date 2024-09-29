@@ -45,8 +45,8 @@ public class GenderController {
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/gender/update/{id}")
-    public ResponseEntity<?> updateStatusGroup(
-            @PathVariable Long id,
+    public ResponseEntity<?> updateData(
+            @Valid @PathVariable Long id,
             @RequestBody GenderRequest genderRequest) {
 
         GenderResponse updatedData = genderService.updateData(id, genderRequest);
@@ -61,7 +61,7 @@ public class GenderController {
 
     // Delete a item
     @DeleteMapping("/v1/admin/configurations/gender/delete/{id}")
-    public ResponseEntity<?> deleteStatusGroup(@PathVariable Long id) {
+    public ResponseEntity<?> deleteData(@PathVariable Long id) {
         genderService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
@@ -84,7 +84,7 @@ public class GenderController {
     // Get a single item by ID
 
     @GetMapping("/v1/admin/configurations/gender/{id}")
-    public ResponseEntity<?> getStatusGroupById(@PathVariable Long id) {
+    public ResponseEntity<?> getDataById(@PathVariable Long id) {
         GenderResponse response = genderService.getDataById(id);
         return ResponseEntity.ok(response);
     }

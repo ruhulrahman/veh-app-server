@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -27,5 +28,6 @@ public class VehicleTypeDTO {
     @Column(name = "name_bn", nullable = false, unique = true)
     private String nameBn;
 
+    @NotNull(message = "Active status cannot be null")
     private Boolean isActive;
 }

@@ -12,11 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IStatusGroup;
-import com.ibas.brta.vehims.model.BloodGroup;
-import com.ibas.brta.vehims.model.ServiceEntity;
-import com.ibas.brta.vehims.model.Status;
 import com.ibas.brta.vehims.model.StatusGroup;
-import com.ibas.brta.vehims.payload.response.BloodGroupResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.repository.StatusGroupRepository;
@@ -120,12 +116,12 @@ public class StatusGroupService implements IStatusGroup {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        serviceEntities.forEach(serviceEntity -> {
+        serviceEntities.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
 
             customArray.add(object);
         });

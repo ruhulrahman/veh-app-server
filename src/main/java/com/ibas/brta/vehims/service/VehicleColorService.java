@@ -14,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.FuelType;
 import com.ibas.brta.vehims.model.VehicleColor;
 import com.ibas.brta.vehims.payload.request.VehicleColorDTO;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
@@ -93,12 +92,12 @@ public class VehicleColorService {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        entities.forEach(serviceEntity -> {
+        entities.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
 
             customArray.add(object);
         });

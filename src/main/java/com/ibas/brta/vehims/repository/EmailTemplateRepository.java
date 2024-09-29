@@ -13,7 +13,7 @@ import com.ibas.brta.vehims.model.EmailTemplate;
 
 @Repository
 public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, Long> {
-    EmailTemplate findByTemplateNameEn(String templateName);
+    EmailTemplate findByTemplateName(String templateName);
 
     List<EmailTemplate> findByIsActiveTrueOrderByTemplateNameAsc();
 

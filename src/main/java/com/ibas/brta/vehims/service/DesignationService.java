@@ -1,29 +1,22 @@
 package com.ibas.brta.vehims.service;
 
-import com.ibas.brta.vehims.controller.AuthController;
 import com.ibas.brta.vehims.exception.BadRequestException;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IDesignation;
 import com.ibas.brta.vehims.model.Designation;
-import com.ibas.brta.vehims.model.ServiceEntity;
-import com.ibas.brta.vehims.model.StatusGroup;
-import com.ibas.brta.vehims.payload.request.DesignationRequest;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.repository.DesignationRepository;
 import com.ibas.brta.vehims.util.AppConstants;
 import com.ibas.brta.vehims.util.ModelMapper;
 
 import jakarta.transaction.Transactional;
-import lombok.extern.java.Log;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -206,12 +199,12 @@ public class DesignationService implements IDesignation {
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
-        entities.forEach(serviceEntity -> {
+        entities.forEach(item -> {
             // Access and process each entity's fields
             Map<String, Object> object = new HashMap<>();
-            object.put("id", serviceEntity.getId());
-            object.put("nameEn", serviceEntity.getNameEn());
-            object.put("nameBn", serviceEntity.getNameBn());
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
 
             customArray.add(object);
         });

@@ -47,8 +47,8 @@ public class FuelTypeController {
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/fuel-type/update/{id}")
-    public ResponseEntity<?> updateStatusGroup(
-            @PathVariable Long id,
+    public ResponseEntity<?> updateData(
+            @Valid @PathVariable Long id,
             @RequestBody FuelTypeDTO fuelTypeDTO) {
 
         FuelType updatedData = fuelTypeService.updateData(id, fuelTypeDTO);
@@ -63,7 +63,7 @@ public class FuelTypeController {
 
     // Delete a item
     @DeleteMapping("/v1/admin/configurations/fuel-type/delete/{id}")
-    public ResponseEntity<?> deleteStatusGroup(@PathVariable Long id) {
+    public ResponseEntity<?> deleteData(@PathVariable Long id) {
         fuelTypeService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
@@ -86,7 +86,7 @@ public class FuelTypeController {
     // Get a single item by ID
 
     @GetMapping("/v1/admin/configurations/fuel-type/{id}")
-    public ResponseEntity<FuelType> getStatusGroupById(@PathVariable Long id) {
+    public ResponseEntity<FuelType> getDataById(@PathVariable Long id) {
         FuelType fuelType = fuelTypeService.getDataById(id);
         return ResponseEntity.ok(fuelType);
     }

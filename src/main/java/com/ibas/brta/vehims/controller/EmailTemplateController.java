@@ -46,7 +46,7 @@ public class EmailTemplateController {
     // Update an existing item
     @PutMapping("/v1/admin/configurations/email-template/update/{id}")
     public ResponseEntity<?> updateData(
-            @PathVariable Long id,
+            @Valid @PathVariable Long id,
             @RequestBody EmailTemplateRequest request) {
 
         EmailTemplateResponse updatedData = emailTemplateService.updateData(id, request);

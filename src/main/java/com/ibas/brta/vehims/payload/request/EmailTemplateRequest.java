@@ -16,14 +16,17 @@ public class EmailTemplateRequest {
     private Long serviceId;
 
     @NotBlank(message = "Template Name cannot be blank")
+    @Size(max = 255)
     @Column(name = "template_name", nullable = false, unique = true)
     private String templateName;
 
     @NotBlank(message = "Subject in English cannot be blank")
+    @Size(max = 255)
     @Column(name = "subject_en", nullable = false, unique = true)
     private String subjectEn;
 
     @NotBlank(message = "Subject in Bangla cannot be blank")
+    @Size(max = 255)
     @Column(name = "subject_bn", nullable = false, unique = true)
     private String subjectBn;
 

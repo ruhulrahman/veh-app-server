@@ -2,8 +2,6 @@ package com.ibas.brta.vehims.controller;
 
 import java.util.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +15,12 @@ import com.ibas.brta.vehims.service.*;
 // import com.ibas.brta.vehims.service.StatusGroupService;
 // import com.ibas.brta.vehims.service.StatusService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestController
 @RequestMapping("/api/")
 public class CommonController {
-
-    private static final Logger logger = LoggerFactory.getLogger(DesignationController.class);
 
     @Autowired
     DesignationService designationService;
@@ -39,7 +38,7 @@ public class CommonController {
     VehicleColorService vehicleColorService;
 
     @Autowired
-    VehicleTypService vehicleTypService;
+    VehicleTypeService vehicleTypeService;
 
     @Autowired
     CountryService countryService;
@@ -56,6 +55,12 @@ public class CommonController {
     @Autowired
     DocumentTypeService documentTypeService;
 
+    @Autowired
+    AppointmentTimeSlotService appointmentTimeSlotService;
+
+    @Autowired
+    CommonService commonService;
+
     @GetMapping("/v1/admin/configurations/common-dropdown-list")
     public ResponseEntity<?> getParentDesignationList() {
         List<?> designations = designationService.getActiveList();
@@ -63,17 +68,22 @@ public class CommonController {
         List<?> statuses = statusService.getActiveList();
         List<?> bloodGroups = bloodGroupService.getActiveList();
         List<?> vehicleColors = vehicleColorService.getActiveList();
-        List<?> vehicleTypes = vehicleTypService.getActiveList();
+        List<?> vehicleTypes = vehicleTypeService.getActiveList();
         List<?> countries = countryService.getActiveList();
         List<?> fuelTypes = fuelTypeService.getActiveList();
         List<?> services = serviceEntityService.getActiveList();
         List<?> genders = genderService.getActiveList();
         List<?> documentTypes = documentTypeService.getActiveList();
+        List<?> appointmentTimeSlotList = appointmentTimeSlotService.getActiveList();
+
+        List<?> routePermitTypes = commonService.findByStatusesByGroupCode("route_permit_types");
+        List<?> locationList = commonService.findByStatusesByGroupCode("locations");
+        List<?> userTypes = commonService.findByStatusesByGroupCode("user_types");
 
         CommonDropdownResponse dropdowns = new CommonDropdownResponse();
         dropdowns.setDesignationList(designations);
         dropdowns.setStatusGroupList(statusGroups);
-        dropdowns.setStatusList(statuses);
+        dropdowns.setStatusList(new ArrayList<>());
         dropdowns.setBloodList(bloodGroups);
         dropdowns.setCountryList(countries);
         dropdowns.setVehicleColorList(vehicleColors);
@@ -82,7 +92,11 @@ public class CommonController {
         dropdowns.setServiceList(services);
         dropdowns.setGenderList(genders);
         dropdowns.setDocumentTypeList(documentTypes);
-        dropdowns.setUserTypeList(new ArrayList<>());
+        dropdowns.setAppointmentTimeSlotList(appointmentTimeSlotList);
+        dropdowns.setRoutePermitTypes(routePermitTypes);
+        dropdowns.setLocationTypeList(locationList);
+        dropdowns.setUserTypeList(userTypes);
+        dropdowns.setPaymentStatusList(new ArrayList<>());
 
         return ResponseEntity.ok(ApiResponse.success("Fetched list", dropdowns));
     }

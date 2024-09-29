@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ServletInitializer<vehims>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.ibas.brta.vehims.ServletInitializer",
+            "projectName": "vehims",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

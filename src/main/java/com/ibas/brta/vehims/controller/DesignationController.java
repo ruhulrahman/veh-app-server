@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -39,7 +38,8 @@ public class DesignationController {
         @Autowired
         DesignationRepository designationRepository;
 
-        private static final Logger logger = LoggerFactory.getLogger(DesignationController.class);
+        // private static final Logger logger =
+        // LoggerFactory.getLogger(DesignationController.class);
 
         private Long getLoggedinUserId() {
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

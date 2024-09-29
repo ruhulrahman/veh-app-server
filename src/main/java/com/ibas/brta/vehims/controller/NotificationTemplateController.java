@@ -45,8 +45,7 @@ public class NotificationTemplateController {
 
     // Update an existing item
     @PutMapping("/v1/admin/configurations/notification-template/update/{id}")
-    public ResponseEntity<?> updateData(
-            @PathVariable Long id,
+    public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
             @RequestBody NotificationTemplateRequest request) {
 
         NotificationTemplateResponse updatedData = notificationTemplateService.updateData(id, request);
