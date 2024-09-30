@@ -21,16 +21,16 @@ public class Role implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @NaturalId
-    @Column( name ="name_en", length = 60)
+    @Column(name = "name_en", length = 60)
     private RoleName name;
 
-    @Column (name = "name_bn")
+    @Column(name = "name_bn")
     private String altName;
 
-    @Column (name = "role_code", nullable = false)
+    @Column(name = "role_code", nullable = false)
     private String code;
 
-    @Column (nullable = false)
+    @Column(nullable = false)
     private Boolean isActive = true;
 
     @ManyToMany

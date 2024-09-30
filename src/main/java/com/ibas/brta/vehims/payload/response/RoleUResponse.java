@@ -1,5 +1,11 @@
 package com.ibas.brta.vehims.payload.response;
 
+import java.io.Serializable;
+import java.util.Set;
+
+import com.ibas.brta.vehims.model.Status;
+import com.ibas.brta.vehims.model.StatusGroup;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,13 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class PermissionResponse {
+public class RoleUResponse {
     private Long id;
-    private Long parentId;
-    private String parentName;
     private String nameEn;
-    private String permissionCode;
-    private Integer type;
-    private String typeName;
+    private String nameBn;
+    private String roleCode;
     private Boolean isActive;
+    private Long[] permisionIds;
 }

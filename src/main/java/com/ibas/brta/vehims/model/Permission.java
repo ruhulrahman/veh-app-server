@@ -23,13 +23,12 @@ public class Permission extends RecordAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Parent Permission cannot be null")
-    @Column(name = "parent_permission_id", nullable = false)
+    @Column(name = "parent_permission_id", nullable = true)
     private Long parentId;
 
     @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
-    @Column(name = "name_en", nullable = false)
+    @Column(name = "name", nullable = false)
     private String nameEn;
 
     // @NotBlank(message = "Name in Bangla cannot be blank")
@@ -44,5 +43,8 @@ public class Permission extends RecordAudit {
     @NotNull(message = "Type cannot be null")
     @Column(name = "type", nullable = false)
     private Integer type;
+
+    // @ManyToMany(mappedBy = "permissions")
+    // private Collection<Role> roles;
 
 }

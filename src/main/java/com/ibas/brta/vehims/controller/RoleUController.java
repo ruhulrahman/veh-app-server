@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.payload.request.PermissionRequest;
+import com.ibas.brta.vehims.payload.request.RoleURequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
-import com.ibas.brta.vehims.payload.response.PermissionResponse;
+import com.ibas.brta.vehims.payload.response.RoleUResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.service.PermissionService;
+import com.ibas.brta.vehims.service.RoleUService;
 import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
@@ -28,17 +28,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("/api/")
-public class PermissionController {
+public class RoleUController {
 
     @Autowired
-    PermissionService permissionService;
+    RoleUService roleService;
 
-    @PostMapping("/v1/admin/user-management/permission/create")
-    public ResponseEntity<?> createData(@Valid @RequestBody PermissionRequest request) {
-        PermissionResponse saveData = permissionService.createData(request);
+    @PostMapping("/v1/admin/configurations/role/create")
+    public ResponseEntity<?> createData(@RequestBody @Valid RoleURequest request) {
+        RoleUResponse saveData = roleService.createData(request);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/permission/")
+                .fromCurrentContextPath().path("/role/")
                 .buildAndExpand(saveData.getNameEn()).toUri();
 
         return ResponseEntity.created(location)
@@ -46,14 +46,14 @@ public class PermissionController {
     }
 
     // Update an existing item
-    @PutMapping("/v1/admin/user-management/permission/update/{id}")
+    @PutMapping("/v1/admin/configurations/role/update/{id}")
     public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
-            @RequestBody PermissionRequest request) {
+            @RequestBody RoleURequest request) {
 
-        PermissionResponse updatedData = permissionService.updateData(id, request);
+        RoleUResponse updatedData = roleService.updateData(id, request);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/permission/updated")
+                .fromCurrentContextPath().path("/role/updated")
                 .buildAndExpand(updatedData.getNameEn()).toUri();
 
         return ResponseEntity.created(location)
@@ -61,24 +61,20 @@ public class PermissionController {
     }
 
     // Delete a item
-    @DeleteMapping("/v1/admin/user-management/permission/delete/{id}")
+    @DeleteMapping("/v1/admin/configurations/role/delete/{id}")
     public ResponseEntity<?> deleteData(@PathVariable Long id) {
-        permissionService.deleteData(id);
+        roleService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/v1/admin/user-management/permission/list")
+    @GetMapping("/v1/admin/configurations/role/list")
     public PagedResponse<?> findListWithPaginationBySearch(
             @RequestParam(required = false) String nameEn,
-            @RequestParam(required = false) Long type,
-            @RequestParam(required = false) Long parentId,
             @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
-        PagedResponse<PermissionResponse> responseData = permissionService.findAllBySearch(nameEn,
-                type,
-                parentId,
+        PagedResponse<RoleUResponse> responseData = roleService.findAllBySearch(nameEn,
                 isActive,
                 page,
                 size);
@@ -87,30 +83,16 @@ public class PermissionController {
     }
 
     // Get a single item by ID
-    @GetMapping("/v1/admin/user-management/permission/{id}")
+    @GetMapping("/v1/admin/configurations/role/{id}")
     public ResponseEntity<?> getDataById(@PathVariable Long id) {
-        PermissionResponse response = permissionService.getDataById(id);
+        RoleUResponse response = roleService.getDataById(id);
         return ResponseEntity.ok(response);
     }
 
     // Active List
-    @GetMapping("/v1/admin/user-management/permission/active-list")
+    @GetMapping("/v1/admin/configurations/role/active-list")
     public ResponseEntity<?> getActiveList() {
-        List<?> response = permissionService.getActiveList();
-        return ResponseEntity.ok(response);
-    }
-
-    // All List
-    @GetMapping("/v1/admin/user-management/permission/all-list")
-    public ResponseEntity<?> getAllList() {
-        List<?> response = permissionService.getAllList();
-        return ResponseEntity.ok(response);
-    }
-
-    // All List
-    @GetMapping("/v1/admin/user-management/permission/parent-list")
-    public ResponseEntity<?> getParentList() {
-        List<?> response = permissionService.getParentList();
+        List<?> response = roleService.getActiveList();
         return ResponseEntity.ok(response);
     }
 

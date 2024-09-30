@@ -11,8 +11,7 @@ import lombok.*;
 public class PermissionRequest {
     private Long id;
 
-    @NotNull(message = "Parent Permission cannot be null")
-    @Column(name = "parent_permission_id", nullable = false)
+    @Column(name = "parent_permission_id")
     private Long parentId;
 
     @NotBlank(message = "Name in English cannot be blank")

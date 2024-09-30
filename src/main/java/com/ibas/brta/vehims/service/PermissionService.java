@@ -74,7 +74,7 @@ public class PermissionService {
     }
 
     // List all records
-    public PagedResponse<PermissionResponse> findAllBySearch(String nameEn, Long type, Boolean isActive,
+    public PagedResponse<PermissionResponse> findAllBySearch(String nameEn, Long type, Long parentId, Boolean isActive,
             int page,
             int size) {
 
@@ -82,6 +82,7 @@ public class PermissionService {
         // Retrieve all records from the database
         Page<Permission> records = permissionRepository.findListWithPaginationBySearch(nameEn,
                 type,
+                parentId,
                 isActive,
                 pageable);
         if (records.getNumberOfElements() == 0) {
@@ -93,6 +94,13 @@ public class PermissionService {
         List<PermissionResponse> responseData = records.map(record -> {
             PermissionResponse response = new PermissionResponse();
             BeanUtils.copyProperties(record, response);
+
+            if (response.getParentId() != null) {
+                Optional<Permission> parent = permissionRepository.findById(response.getParentId());
+                if (parent.isPresent()) {
+                    response.setParentName(parent.get().getNameEn());
+                }
+            }
 
             response.setTypeName(record.getType() == 1 ? "Page" : "Feature");
 
@@ -114,11 +122,58 @@ public class PermissionService {
 
         response.setTypeName(existingData.getType() == 1 ? "Page" : "Feature");
 
+        if (response.getParentId() != null) {
+            Optional<Permission> parent = permissionRepository.findById(response.getParentId());
+            if (parent.isPresent()) {
+                response.setParentName(parent.get().getNameEn());
+            }
+        }
+
         return response;
     }
 
     public List<?> getActiveList() {
         List<Permission> listData = permissionRepository.findByIsActiveTrueOrderByNameEnAsc();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        listData.forEach(item -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("permissionCode", item.getPermissionCode());
+            object.put("type", item.getType());
+            object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
+
+            customArray.add(object);
+        });
+
+        return customArray;
+    }
+
+    public List<?> getAllList() {
+        List<Permission> listData = permissionRepository.findAllOrderByNameAsc();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        listData.forEach(item -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("permissionCode", item.getPermissionCode());
+            object.put("type", item.getType());
+            object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
+
+            customArray.add(object);
+        });
+
+        return customArray;
+    }
+
+    public List<?> getParentList() {
+        List<Permission> listData = permissionRepository.findParentOrderByNameAsc();
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
