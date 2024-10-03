@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,6 +186,48 @@ public class PermissionService {
             object.put("permissionCode", item.getPermissionCode());
             object.put("type", item.getType());
             object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
+
+            customArray.add(object);
+        });
+
+        return customArray;
+    }
+
+    public List<?> getPermissionParentChildList() {
+        List<Permission> listData = permissionRepository.findParentOrderByNameAsc();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        listData.forEach(item -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("type", item.getType());
+            object.put("permissionCode", item.getPermissionCode());
+
+            List<Permission> pages = permissionRepository.findByParentPermissionIdAndType(item.getId(), 1L);
+            List<Permission> features = permissionRepository.findByParentPermissionIdAndType(item.getId(),
+                    2L);
+
+            // Map Responses with all information
+            List<PermissionResponse> pageList = pages.stream()
+                    .map(record -> {
+                        PermissionResponse response = new PermissionResponse();
+                        BeanUtils.copyProperties(record, response);
+                        return response;
+                    }).collect(Collectors.toList());
+
+            List<PermissionResponse> featureList = features.stream()
+                    .map(record -> {
+                        PermissionResponse response = new PermissionResponse();
+                        BeanUtils.copyProperties(record, response);
+                        return response;
+                    }).collect(Collectors.toList());
+
+            object.put("featureList", featureList);
+            object.put("pageList", pageList);
+            object.put("checkedAll", false);
 
             customArray.add(object);
         });

@@ -5,11 +5,14 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ibas.brta.vehims.model.RoleU;
+
+import jakarta.transaction.Transactional;
 
 @Repository
 public interface RoleURepository extends JpaRepository<RoleU, Long> {
@@ -29,4 +32,9 @@ public interface RoleURepository extends JpaRepository<RoleU, Long> {
 
     @Query(value = "SELECT * FROM u_permissions p WHERE p.parent_permission_id IS NULL ORDER BY p.name_en ASC", nativeQuery = true)
     List<RoleU> findParentOrderByNameAsc();
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM RolePermission ur WHERE ur.roleId = :roleId")
+    int deleteAllPermissionsByRoleId(@Param("roleId") Long roleId);
 }

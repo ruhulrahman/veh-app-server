@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class RoleUService {
+public class RolePermissionService {
 
     @Autowired
     RoleURepository roleRepository;
@@ -76,8 +76,6 @@ public class RoleUService {
 
             RoleU updatedData = roleRepository.save(requestObject);
 
-            rolePermissionRepository.deleteByRoleId(updatedData.getId());
-
             if (request.getPermissionIds() != null) {
 
                 for (Long permissionId : request.getPermissionIds()) {
@@ -104,7 +102,6 @@ public class RoleUService {
     // Delete operation
     public void deleteData(Long id) {
         if (roleRepository.existsById(id)) {
-            roleRepository.deleteAllPermissionsByRoleId(id);
             roleRepository.deleteById(id);
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);
@@ -145,19 +142,6 @@ public class RoleUService {
 
         RoleUResponse response = new RoleUResponse();
         BeanUtils.copyProperties(existingData, response);
-
-        if (response.getId() != null) {
-
-            List<RolePermission> rolePermissions = rolePermissionRepository.findByRoleId(response.getId());
-            // Declare a List of Long to dynamically add permission IDs
-            List<Long> permissionIdsList = new ArrayList<>();
-
-            for (RolePermission item : rolePermissions) {
-                permissionIdsList.add(item.getPermissionId());
-            }
-
-            response.setPermissionIds(permissionIdsList);
-        }
 
         // response.setTypeName(existingData.getType() == 1 ? "Page" : "Feature");
 

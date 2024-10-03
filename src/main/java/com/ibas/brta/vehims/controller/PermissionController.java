@@ -107,10 +107,17 @@ public class PermissionController {
         return ResponseEntity.ok(response);
     }
 
-    // All List
+    // All Parent Permissions
     @GetMapping("/v1/admin/user-management/permission/parent-list")
     public ResponseEntity<?> getParentList() {
         List<?> response = permissionService.getParentList();
+        return ResponseEntity.ok(response);
+    }
+
+    // Parent Permissions with child permissions
+    @GetMapping("/v1/admin/user-management/permission/parent-child-list")
+    public ResponseEntity<?> getPermissionParentChildList() {
+        List<?> response = permissionService.getPermissionParentChildList();
         return ResponseEntity.ok(response);
     }
 

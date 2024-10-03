@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.payload.response;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 import com.ibas.brta.vehims.model.Status;
@@ -20,5 +21,5 @@ public class RoleUResponse {
     private String nameBn;
     private String roleCode;
     private Boolean isActive;
-    private Long[] permisionIds;
+    private List<Long> permissionIds;
 }

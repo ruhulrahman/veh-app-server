@@ -31,4 +31,15 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
     @Query(value = "SELECT * FROM u_permissions p WHERE p.parent_permission_id IS NULL ORDER BY p.name ASC", nativeQuery = true)
     List<Permission> findParentOrderByNameAsc();
+
+    @Query(value = "SELECT * FROM u_permissions p WHERE p.type = :type ORDER BY p.name ASC", nativeQuery = true)
+    List<Permission> findByType(@Param("type") Long type);
+
+    @Query(value = "SELECT * FROM u_permissions p WHERE p.parent_permission_id = :parentPermissionId ORDER BY p.name ASC", nativeQuery = true)
+    List<Permission> findByParentPermissionId(@Param("parentPermissionId") Long parentPermissionId);
+
+    @Query(value = "SELECT * FROM u_permissions p WHERE p.parent_permission_id = :parentPermissionId AND p.type = :type AND is_active = true ORDER BY p.name ASC", nativeQuery = true)
+    List<Permission> findByParentPermissionIdAndType(
+            @Param("parentPermissionId") Long parentPermissionId,
+            @Param("type") Long type);
 }

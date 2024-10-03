@@ -60,7 +60,7 @@ public abstract class RecordAudit extends DateAudit {
     // @NotBlank
     // private String status;
 
-    @NotNull
+    @NotNull(message = "isActive cannot be null")
     private Boolean isActive = true;
 
     /**

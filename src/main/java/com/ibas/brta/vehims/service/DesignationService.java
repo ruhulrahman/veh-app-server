@@ -4,12 +4,15 @@ import com.ibas.brta.vehims.exception.BadRequestException;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IDesignation;
 import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.Status;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.repository.DesignationRepository;
 import com.ibas.brta.vehims.util.AppConstants;
 import com.ibas.brta.vehims.util.ModelMapper;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 import org.slf4j.Logger;
@@ -192,6 +195,15 @@ public class DesignationService implements IDesignation {
     @Override
     public void deleteDesignationById(Long id) {
         designationRepository.deleteById(id);
+    }
+
+    public DesignationResponse getDataById(Long id) {
+        Designation existingData = designationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        DesignationResponse response = new DesignationResponse();
+        BeanUtils.copyProperties(existingData, response);
+        return response;
     }
 
     public List<?> getActiveList() {

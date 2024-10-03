@@ -86,6 +86,15 @@ public class StatusService implements IStatus {
         return response;
     }
 
+    public StatusResponse getDataById(Long id) {
+        Status existingData = statusRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        StatusResponse response = new StatusResponse();
+        BeanUtils.copyProperties(existingData, response);
+        return response;
+    }
+
     @Override
     public Status findStatusByStatusCode(String statusCode) {
         return statusRepository.findByStatusCode(statusCode);
