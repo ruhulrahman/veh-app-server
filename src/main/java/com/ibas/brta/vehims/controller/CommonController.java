@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.CommonDropdownResponse;
+import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.service.*;
 // import com.ibas.brta.vehims.service.DesignationService;
 // import com.ibas.brta.vehims.service.StatusGroupService;
@@ -61,11 +62,11 @@ public class CommonController {
     @Autowired
     CommonService commonService;
 
-    @GetMapping("/v1/admin/configurations/common-dropdown-list")
-    public ResponseEntity<?> getParentDesignationList() {
+    @GetMapping("/v1/admin/common/dropdown-list")
+    public ResponseEntity<?> getCommonDropdownList() {
         List<?> designations = designationService.getActiveList();
         List<?> statusGroups = statusGroupService.getActiveList();
-        List<?> statuses = statusService.getActiveList();
+        // List<?> statuses = statusService.getActiveList();
         List<?> bloodGroups = bloodGroupService.getActiveList();
         List<?> vehicleColors = vehicleColorService.getActiveList();
         List<?> vehicleTypes = vehicleTypeService.getActiveList();
@@ -79,6 +80,7 @@ public class CommonController {
         List<?> routePermitTypes = commonService.findByStatusesByGroupCode("route_permit_types");
         List<?> locationList = commonService.findByStatusesByGroupCode("locations");
         List<?> userTypes = commonService.findByStatusesByGroupCode("user_types");
+        List<?> orgList = commonService.getActiveOrganizations();
 
         CommonDropdownResponse dropdowns = new CommonDropdownResponse();
         dropdowns.setDesignationList(designations);
@@ -96,9 +98,16 @@ public class CommonController {
         dropdowns.setRoutePermitTypes(routePermitTypes);
         dropdowns.setLocationTypeList(locationList);
         dropdowns.setUserTypeList(userTypes);
+        dropdowns.setOrganizationList(orgList);
         dropdowns.setPaymentStatusList(new ArrayList<>());
 
         return ResponseEntity.ok(ApiResponse.success("Fetched list", dropdowns));
+    }
+
+    @GetMapping("/v1/admin/common/get-active-orgation-list")
+    public ResponseEntity<?> getActiveOrganizations() {
+        List<?> orgList = commonService.getActiveOrganizations();
+        return ResponseEntity.ok(ApiResponse.success("Fetched list", orgList));
     }
 
 }

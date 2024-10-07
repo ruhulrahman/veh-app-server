@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.persistence.PreUpdate;
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
 
+@Slf4j
 @Component
 public class UserListener {
 
@@ -21,6 +24,10 @@ public class UserListener {
 
     @PreUpdate
     public void preUpdate(User user) {
+
+        log.info("user.getPreviousEmail() ========= {}", user.getPreviousEmail());
+        log.info("user.getPreviousMobile() ========= {}", user.getPreviousMobile());
+
         if (user.getPreviousEmail() != null && !user.getPreviousEmail().equals(user.getEmail())) {
             EmailAudit emailAudit = new EmailAudit();
             emailAudit.setUserId(user.getId());
@@ -28,8 +35,10 @@ public class UserListener {
             emailAudit.setNewEmail(user.getEmail());
             emailAudit.setChangedAt(LocalDateTime.now());
             emailAudit.setChangedBy(user.getUsername());
+            log.info("emailAudit ========= {}", emailAudit);
             emailAuditRepository.save(emailAudit);
         }
+
         if (user.getPreviousMobile() != null && !user.getPreviousMobile().equals(user.getMobile())) {
 
             MobileAudit mobileAudit = new MobileAudit();
@@ -38,6 +47,8 @@ public class UserListener {
             mobileAudit.setNewMobile(user.getMobile());
             mobileAudit.setChangedAt(LocalDateTime.now());
             mobileAudit.setChangedBy(user.getUsername());
+
+            log.info("mobileAudit ========= {}", mobileAudit);
             mobileAuditRepository.save(mobileAudit);
         }
     }

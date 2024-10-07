@@ -1,5 +1,7 @@
 package com.ibas.brta.vehims.payload.response;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,4 +26,5 @@ public class SUserResponse {
     private String userTypeNameBn;
     private String designationNameEn;
     private String designationNameBn;
+    private List<UserOfficeRoleResponse> userOfficeRoles;
 }

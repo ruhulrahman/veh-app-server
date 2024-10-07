@@ -28,4 +28,5 @@ public class CommonDropdownResponse {
     public List<?> locationTypeList;
     public List<?> routePermitTypes;
     public List<?> paymentStatusList;
+    public List<?> organizationList;
 }

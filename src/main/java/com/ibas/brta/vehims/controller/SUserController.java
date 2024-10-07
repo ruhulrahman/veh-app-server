@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ibas.brta.vehims.payload.request.SUserRequest;
+import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.SUserResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
@@ -13,6 +14,7 @@ import com.ibas.brta.vehims.service.UserService;
 import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
 
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/")
 public class SUserController {
@@ -34,6 +37,7 @@ public class SUserController {
 
     @PostMapping("/v1/admin/user-management/user/create")
     public ResponseEntity<?> createData(@RequestBody @Valid SUserRequest request) {
+
         SUserResponse saveData = userService.createData(request);
 
         URI location = ServletUriComponentsBuilder
@@ -46,13 +50,16 @@ public class SUserController {
 
     // Update an existing item
     @PutMapping("/v1/admin/user-management/user/update/{id}")
-    public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
-            @RequestBody SUserRequest request) {
+    public ResponseEntity<?> updateData(@PathVariable Long id,
+            @Valid @RequestBody SUserUpdateRequest request) {
+
+        log.info("request.getNameEn() ========= {}", request.getNameEn());
+        log.info("request.getNameBn() ========= {}", request.getNameBn());
 
         SUserResponse updatedData = userService.updateData(id, request);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/role/updated")
+                .fromCurrentContextPath().path("/user/updated")
                 .buildAndExpand(updatedData.getNameEn()).toUri();
 
         return ResponseEntity.created(location)
@@ -78,8 +85,8 @@ public class SUserController {
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
         PagedResponse<SUserResponse> responseData = userService.findAllBySearch(nameEn,
-                email,
-                mobile,
+                email.trim(),
+                mobile.trim(),
                 userTypeId,
                 designationId,
                 isActive,

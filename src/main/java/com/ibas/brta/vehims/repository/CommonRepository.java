@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.ibas.brta.vehims.model.StatusGroup;
 import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.projection.StatusProjection;
 
 @Repository
@@ -33,4 +34,10 @@ public interface CommonRepository extends JpaRepository<User, Long> {
             "WHERE sg.status_group_code = :statusGroupCode AND s.is_active = true " +
             "ORDER BY s.priority ASC", nativeQuery = true)
     List<StatusProjection> findByStatusesByGroupCode(String statusGroupCode);
+
+    @Query(value = "SELECT org_id as id, name_en as nameEn, name_bn as nameBn FROM c_organizations WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+    List<CommonProjection> getActiveOrganizations();
+
+    @Query(value = "SELECT org_id as id, name_en as nameEn, name_bn as nameBn FROM c_organizations WHERE office_type_id = :officeTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
+    List<CommonProjection> getActiveOrganizationsByOfficeTypeId(Long officeTypeId);
 }

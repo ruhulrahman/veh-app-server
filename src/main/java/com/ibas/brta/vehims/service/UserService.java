@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.model.SUser;
 import com.ibas.brta.vehims.payload.request.SUserRequest;
+import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
 import com.ibas.brta.vehims.payload.response.SUserResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
@@ -35,9 +37,14 @@ public class UserService {
     @Autowired
     StatusService statusService;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     // Create or Insert operation
     public SUserResponse createData(SUserRequest request) {
 
+        request.setIsProfileCompleted(true);
+        request.setPassword(passwordEncoder.encode(request.getPassword()));
         SUser requestObject = new SUser();
         BeanUtils.copyProperties(request, requestObject);
         SUser savedData = userRepository.save(requestObject);
@@ -48,13 +55,24 @@ public class UserService {
     }
 
     // Update operation
-    public SUserResponse updateData(Long id, SUserRequest request) {
+    public SUserResponse updateData(Long id, SUserUpdateRequest request) {
+
+        // log.info("request.getNameBn() ========== {}", request.getNameBn());
 
         Optional<SUser> existingData = userRepository.findById(id);
 
         if (existingData.isPresent()) {
+
             SUser requestObject = existingData.get();
             BeanUtils.copyProperties(request, requestObject);
+            // requestObject.setNameEn(request.getNameEn());
+            // requestObject.setNameBn(request.getNameBn());
+            // requestObject.setUsername(request.getUsername());
+            // requestObject.setMobile(request.getMobile());
+            // requestObject.setEmail(request.getEmail());
+            // requestObject.setUserTypeId(request.getUserTypeId());
+            // requestObject.setDesignationId(request.getDesignationId());
+            // requestObject.setIsActive(request.getIsActive());
 
             SUser updatedData = userRepository.save(requestObject);
 
