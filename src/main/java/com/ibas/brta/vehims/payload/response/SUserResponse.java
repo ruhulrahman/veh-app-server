@@ -2,6 +2,8 @@ package com.ibas.brta.vehims.payload.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,7 +19,10 @@ public class SUserResponse {
     private String username;
     private String mobile;
     private String email;
+
+    @JsonIgnore
     private String password;
+
     private Long userTypeId;
     private Long designationId;
     private Boolean isProfileCompleted;

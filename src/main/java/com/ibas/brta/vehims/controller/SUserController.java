@@ -53,9 +53,6 @@ public class SUserController {
     public ResponseEntity<?> updateData(@PathVariable Long id,
             @Valid @RequestBody SUserUpdateRequest request) {
 
-        log.info("request.getNameEn() ========= {}", request.getNameEn());
-        log.info("request.getNameBn() ========= {}", request.getNameBn());
-
         SUserResponse updatedData = userService.updateData(id, request);
 
         URI location = ServletUriComponentsBuilder

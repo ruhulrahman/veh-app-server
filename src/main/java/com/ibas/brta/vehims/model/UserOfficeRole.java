@@ -1,7 +1,5 @@
 package com.ibas.brta.vehims.model;
 
-import static com.ibas.brta.vehims.model.audit.RecordAudit.logger;
-
 import java.time.Instant;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,9 +7,6 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.ibas.brta.vehims.model.audit.RecordAudit;
 import com.ibas.brta.vehims.security.UserPrincipal;
 
 import jakarta.persistence.*;

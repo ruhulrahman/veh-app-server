@@ -33,7 +33,7 @@ public class RoleUController {
     @Autowired
     RoleUService roleService;
 
-    @PostMapping("/v1/admin/configurations/role/create")
+    @PostMapping("/v1/admin/user-management/role/create")
     public ResponseEntity<?> createData(@RequestBody @Valid RoleURequest request) {
         RoleUResponse saveData = roleService.createData(request);
 
@@ -46,7 +46,7 @@ public class RoleUController {
     }
 
     // Update an existing item
-    @PutMapping("/v1/admin/configurations/role/update/{id}")
+    @PutMapping("/v1/admin/user-management/role/update/{id}")
     public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
             @RequestBody RoleURequest request) {
 
@@ -61,13 +61,13 @@ public class RoleUController {
     }
 
     // Delete a item
-    @DeleteMapping("/v1/admin/configurations/role/delete/{id}")
+    @DeleteMapping("/v1/admin/user-management/role/delete/{id}")
     public ResponseEntity<?> deleteData(@PathVariable Long id) {
         roleService.deleteData(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/v1/admin/configurations/role/list")
+    @GetMapping("/v1/admin/user-management/role/list")
     public PagedResponse<?> findListWithPaginationBySearch(
             @RequestParam(required = false) String nameEn,
             @RequestParam(required = false) Boolean isActive,
@@ -83,14 +83,14 @@ public class RoleUController {
     }
 
     // Get a single item by ID
-    @GetMapping("/v1/admin/configurations/role/{id}")
+    @GetMapping("/v1/admin/user-management/role/{id}")
     public ResponseEntity<?> getDataById(@PathVariable Long id) {
         RoleUResponse response = roleService.getDataById(id);
         return ResponseEntity.ok(response);
     }
 
     // Active List
-    @GetMapping("/v1/admin/configurations/role/active-list")
+    @GetMapping("/v1/admin/user-management/role/active-list")
     public ResponseEntity<?> getActiveList() {
         List<?> response = roleService.getActiveList();
         return ResponseEntity.ok(response);

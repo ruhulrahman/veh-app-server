@@ -1,8 +1,10 @@
 package com.ibas.brta.vehims.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +15,21 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.model.SUser;
+import com.ibas.brta.vehims.model.UserOfficeRole;
 import com.ibas.brta.vehims.payload.request.SUserRequest;
 import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
+import com.ibas.brta.vehims.payload.request.UserOfficeRoleRequest;
 import com.ibas.brta.vehims.payload.response.SUserResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
+import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.repository.SUserRepository;
+import com.ibas.brta.vehims.repository.UserOfficeRoleRepository;
 
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -40,6 +48,12 @@ public class UserService {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @Autowired
+    UserOfficeRoleRepository userOfficeRoleRepository;
+
+    @Autowired
+    EntityManager entityManager;
+
     // Create or Insert operation
     public SUserResponse createData(SUserRequest request) {
 
@@ -49,15 +63,24 @@ public class UserService {
         BeanUtils.copyProperties(request, requestObject);
         SUser savedData = userRepository.save(requestObject);
 
+        // Save new roles
+        request.getUserOfficeRoles().forEach(userOfficeRole -> {
+
+            UserOfficeRole userOfficeRoleRequest = new UserOfficeRole();
+            BeanUtils.copyProperties(userOfficeRole, userOfficeRoleRequest);
+
+            userOfficeRoleRequest.setUserId(savedData.getId());
+            userOfficeRoleRepository.save(userOfficeRoleRequest);
+        });
+
         SUserResponse response = new SUserResponse();
         BeanUtils.copyProperties(savedData, response);
         return response;
     }
 
     // Update operation
+    @Transactional
     public SUserResponse updateData(Long id, SUserUpdateRequest request) {
-
-        // log.info("request.getNameBn() ========== {}", request.getNameBn());
 
         Optional<SUser> existingData = userRepository.findById(id);
 
@@ -65,14 +88,21 @@ public class UserService {
 
             SUser requestObject = existingData.get();
             BeanUtils.copyProperties(request, requestObject);
-            // requestObject.setNameEn(request.getNameEn());
-            // requestObject.setNameBn(request.getNameBn());
-            // requestObject.setUsername(request.getUsername());
-            // requestObject.setMobile(request.getMobile());
-            // requestObject.setEmail(request.getEmail());
-            // requestObject.setUserTypeId(request.getUserTypeId());
-            // requestObject.setDesignationId(request.getDesignationId());
-            // requestObject.setIsActive(request.getIsActive());
+
+            userOfficeRoleRepository.deleteAllByUserId(requestObject.getId());
+            // Delete existing roles and flush the EntityManager
+            userOfficeRoleRepository.deleteAllByUserId(requestObject.getId());
+            entityManager.flush(); // Ensure delete operation is executed immediately
+
+            // Save new roles
+            request.getUserOfficeRoles().forEach(userOfficeRole -> {
+
+                UserOfficeRole userOfficeRoleRequest = new UserOfficeRole();
+                BeanUtils.copyProperties(userOfficeRole, userOfficeRoleRequest);
+
+                userOfficeRoleRequest.setUserId(requestObject.getId());
+                userOfficeRoleRepository.save(userOfficeRoleRequest);
+            });
 
             SUser updatedData = userRepository.save(requestObject);
 
@@ -112,8 +142,6 @@ public class UserService {
             return new PagedResponse<>(Collections.emptyList(), records.getNumber(), records.getSize(),
                     records.getTotalElements(), records.getTotalPages(), records.isLast());
         }
-
-        log.info("records ======", records);
 
         // Map Responses with all information
         List<SUserResponse> responseData = records.map(record -> {
@@ -158,6 +186,20 @@ public class UserService {
             DesignationResponse designationResponse = designationService.getDataById(existingData.getDesignationId());
             response.setDesignationNameEn(designationResponse.getNameEn());
             response.setDesignationNameBn(designationResponse.getNameBn());
+        }
+
+        List<UserOfficeRole> userOfficeRoles = userOfficeRoleRepository.findByUserId(id);
+
+        if (!userOfficeRoles.isEmpty()) {
+            List<UserOfficeRoleResponse> userOfficeRoleResponses = userOfficeRoles.stream().map(userOfficeRole -> {
+                UserOfficeRoleResponse officeRoleResponse = new UserOfficeRoleResponse();
+                BeanUtils.copyProperties(userOfficeRole, officeRoleResponse);
+                return officeRoleResponse;
+            }).collect(Collectors.toList());
+
+            response.setUserOfficeRoles(userOfficeRoleResponses);
+        } else {
+            response.setUserOfficeRoles(Collections.emptyList());
         }
 
         return response;

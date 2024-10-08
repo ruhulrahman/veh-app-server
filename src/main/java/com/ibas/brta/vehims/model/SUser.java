@@ -1,12 +1,20 @@
 package com.ibas.brta.vehims.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ibas.brta.vehims.listener.UserListener;
 import com.ibas.brta.vehims.model.audit.DateAudit;
 import com.ibas.brta.vehims.model.audit.RecordAudit;
+import com.ibas.brta.vehims.security.UserPrincipal;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -29,6 +37,7 @@ import java.util.Objects;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 // @EntityListeners(UserListener.class)
 @EqualsAndHashCode(callSuper = false)
 
@@ -50,18 +59,17 @@ public class SUser extends DateAudit {
         @Column(name = "name_bn", nullable = true)
         private String nameBn;
 
+        @NaturalId
         @NotBlank(message = "Username cannot be blank")
         @Size(max = 15)
         @Column(nullable = false)
         private String username;
 
-        @NaturalId
         @NotBlank(message = "Mobile cannot be blank")
         @Size(min = 11, max = 11, message = "Mobile number must be exactly 11 digits")
         @Column(nullable = false)
         private String mobile;
 
-        @NaturalId
         @NotBlank(message = "Email cannot be blank")
         @Size(max = 60)
         @Column(nullable = false)
@@ -70,6 +78,7 @@ public class SUser extends DateAudit {
         @NotBlank(message = "Password cannot be blank")
         @Size(max = 100)
         @Column(nullable = false)
+        @JsonIgnore
         private String password;
 
         @NotNull(message = "User Type cannot be null")
@@ -132,6 +141,37 @@ public class SUser extends DateAudit {
                         this.previousMobile = this.mobile; // Store the old Mobile before changing.
                         this.mobile = mobile;
                 }
+        }
+
+        @CreatedBy
+        @Column(name = "create_user_id")
+        private Long createdBy;
+
+        @LastModifiedBy
+        @Column(name = "update_user_id")
+        private Long updatedBy;
+
+        @PrePersist
+        public void prePersist() {
+                // setCreatedBy(getLoggedinUserId());
+                Long createdUserId = getLoggedinUserId();
+                this.createdBy = createdUserId;
+        }
+
+        @PreUpdate
+        public void preUpdate() {
+                // setUpdatedBy(getLoggedinUserId());
+                Long updateUserId = getLoggedinUserId();
+                this.updatedBy = updateUserId;
+        }
+
+        private Long getLoggedinUserId() {
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.isAuthenticated()) {
+                        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                        return userPrincipal.getId();
+                }
+                return null;
         }
 
 }

@@ -1,5 +1,7 @@
 package com.ibas.brta.vehims.payload.request;
 
+import java.util.List;
+
 import org.hibernate.annotations.NaturalId;
 
 import jakarta.persistence.*;
@@ -42,4 +44,6 @@ public class SUserUpdateRequest {
 
     @NotNull(message = "Active status cannot be null")
     private Boolean isActive;
+
+    private List<UserOfficeRoleRequest> userOfficeRoles;
 }

@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.listener;
 
+import com.ibas.brta.vehims.model.SUser;
 import com.ibas.brta.vehims.model.User;
 import com.ibas.brta.vehims.model.audit.EmailAudit;
 import com.ibas.brta.vehims.model.audit.MobileAudit;
@@ -22,8 +23,18 @@ public class UserListener {
     @Autowired
     private MobileAuditRepository mobileAuditRepository;
 
+    // @Autowired
+    // public UserListener(EmailAuditRepository emailAuditRepository) {
+    // this.emailAuditRepository = emailAuditRepository;
+    // }
+
+    // @Autowired
+    // public UserListener(MobileAuditRepository mobileAuditRepository) {
+    // this.mobileAuditRepository = mobileAuditRepository;
+    // }
+
     @PreUpdate
-    public void preUpdate(User user) {
+    public void preUpdate(SUser user) {
 
         log.info("user.getPreviousEmail() ========= {}", user.getPreviousEmail());
         log.info("user.getPreviousMobile() ========= {}", user.getPreviousMobile());
@@ -37,6 +48,12 @@ public class UserListener {
             emailAudit.setChangedBy(user.getUsername());
             log.info("emailAudit ========= {}", emailAudit);
             emailAuditRepository.save(emailAudit);
+
+            // if (this.emailAuditRepository != null) {
+            // this.emailAuditRepository.save(emailAudit);
+            // } else {
+            // log.error("EmailAuditRepository is null!");
+            // }
         }
 
         if (user.getPreviousMobile() != null && !user.getPreviousMobile().equals(user.getMobile())) {
@@ -50,6 +67,12 @@ public class UserListener {
 
             log.info("mobileAudit ========= {}", mobileAudit);
             mobileAuditRepository.save(mobileAudit);
+
+            // if (this.mobileAuditRepository != null) {
+            // this.mobileAuditRepository.save(mobileAudit);
+            // } else {
+            // log.error("EmailAuditRepository is null!");
+            // }
         }
     }
 }

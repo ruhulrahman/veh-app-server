@@ -107,7 +107,7 @@ public class CommonController {
     @GetMapping("/v1/admin/common/get-active-orgation-list")
     public ResponseEntity<?> getActiveOrganizations() {
         List<?> orgList = commonService.getActiveOrganizations();
-        return ResponseEntity.ok(ApiResponse.success("Fetched list", orgList));
+        return ResponseEntity.ok(orgList);
     }
 
 }
