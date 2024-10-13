@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.ibas.brta.vehims.model.StatusGroup;
@@ -40,4 +41,11 @@ public interface CommonRepository extends JpaRepository<User, Long> {
 
     @Query(value = "SELECT org_id as id, name_en as nameEn, name_bn as nameBn FROM c_organizations WHERE office_type_id = :officeTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
     List<CommonProjection> getActiveOrganizationsByOfficeTypeId(Long officeTypeId);
+
+    
+    @Query(value = "SELECT status_id as id, name_en as nameEn, name_bn as nameBn FROM c_statuses WHERE status_code = :statusCodeOrId OR CAST(status_id AS CHAR) = :statusCodeOrId", nativeQuery = true)
+    StatusProjection getStatusByStatusCodeOrId(@Param("statusCodeOrId") String statusCodeOrId);
+    
+    @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE location_type_id = :locationTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
+    List<CommonProjection> getActiveLocationsByLocationTypeId(@Param("locationTypeId") Long locationTypeId);
 }

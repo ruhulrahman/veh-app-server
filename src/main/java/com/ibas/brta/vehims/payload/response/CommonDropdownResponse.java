@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.payload.response;
 
-import java.util.*;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,4 +29,9 @@ public class CommonDropdownResponse {
     public List<?> routePermitTypes;
     public List<?> paymentStatusList;
     public List<?> organizationList;
+    public List<?> officeTypeList;
+    public List<?> divisionList;
+    public List<?> locationList;
+    public List<?> userTypes;
+    public List<?> orgList;
 }

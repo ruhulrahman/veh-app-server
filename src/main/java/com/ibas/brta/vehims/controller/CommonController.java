@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,11 +11,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.CommonDropdownResponse;
-import com.ibas.brta.vehims.projection.CommonProjection;
-import com.ibas.brta.vehims.service.*;
+import com.ibas.brta.vehims.projection.StatusProjection;
 // import com.ibas.brta.vehims.service.DesignationService;
 // import com.ibas.brta.vehims.service.StatusGroupService;
 // import com.ibas.brta.vehims.service.StatusService;
+import com.ibas.brta.vehims.service.AppointmentTimeSlotService;
+import com.ibas.brta.vehims.service.BloodGroupService;
+import com.ibas.brta.vehims.service.CommonService;
+import com.ibas.brta.vehims.service.CountryService;
+import com.ibas.brta.vehims.service.DesignationService;
+import com.ibas.brta.vehims.service.DocumentTypeService;
+import com.ibas.brta.vehims.service.FuelTypeService;
+import com.ibas.brta.vehims.service.GenderService;
+import com.ibas.brta.vehims.service.ServiceEntityService;
+import com.ibas.brta.vehims.service.StatusGroupService;
+import com.ibas.brta.vehims.service.StatusService;
+import com.ibas.brta.vehims.service.VehicleColorService;
+import com.ibas.brta.vehims.service.VehicleTypeService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,6 +93,7 @@ public class CommonController {
         List<?> routePermitTypes = commonService.findByStatusesByGroupCode("route_permit_types");
         List<?> locationList = commonService.findByStatusesByGroupCode("locations");
         List<?> userTypes = commonService.findByStatusesByGroupCode("user_types");
+        List<?> officeTypeList = commonService.findByStatusesByGroupCode("office_types");
         List<?> orgList = commonService.getActiveOrganizations();
 
         CommonDropdownResponse dropdowns = new CommonDropdownResponse();
@@ -99,7 +113,16 @@ public class CommonController {
         dropdowns.setLocationTypeList(locationList);
         dropdowns.setUserTypeList(userTypes);
         dropdowns.setOrganizationList(orgList);
+        dropdowns.setOfficeTypeList(officeTypeList);
         dropdowns.setPaymentStatusList(new ArrayList<>());
+
+        StatusProjection locationTypeDivision = commonService.getStatusByStatusCodeOrId("division");
+ 
+        if (locationTypeDivision != null) {
+            List<?> divisionList = commonService.getActiveLocationsByLocationTypeId(locationTypeDivision.getId());
+            dropdowns.setDivisionList(divisionList);
+        }
+ 
 
         return ResponseEntity.ok(ApiResponse.success("Fetched list", dropdowns));
     }
