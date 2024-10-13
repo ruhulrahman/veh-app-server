@@ -1,11 +1,12 @@
 package com.ibas.brta.vehims.repository;
 
-import com.ibas.brta.vehims.model.User;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
+import com.ibas.brta.vehims.model.User;
 
 /**
  * An interface that handles data access for user entities.
