@@ -32,4 +32,5 @@ public class SUserResponse {
     private String designationNameEn;
     private String designationNameBn;
     private List<UserOfficeRoleResponse> userOfficeRoles;
+    private List<String> permissionCodes;
 }

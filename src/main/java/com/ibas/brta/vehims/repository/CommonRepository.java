@@ -42,10 +42,18 @@ public interface CommonRepository extends JpaRepository<User, Long> {
     @Query(value = "SELECT org_id as id, name_en as nameEn, name_bn as nameBn FROM c_organizations WHERE office_type_id = :officeTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
     List<CommonProjection> getActiveOrganizationsByOfficeTypeId(Long officeTypeId);
 
-    
     @Query(value = "SELECT status_id as id, name_en as nameEn, name_bn as nameBn FROM c_statuses WHERE status_code = :statusCodeOrId OR CAST(status_id AS CHAR) = :statusCodeOrId", nativeQuery = true)
     StatusProjection getStatusByStatusCodeOrId(@Param("statusCodeOrId") String statusCodeOrId);
-    
+
     @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE location_type_id = :locationTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
     List<CommonProjection> getActiveLocationsByLocationTypeId(@Param("locationTypeId") Long locationTypeId);
+
+    @Query(value = "SELECT role_id FROM s_user_organization_roles WHERE user_id = :userId", nativeQuery = true)
+    List<Integer> getRoleIdsByUserId(@Param("userId") Long userId);
+
+    @Query(value = "SELECT permission_id FROM u_role_permissions WHERE role_id IN (:roleIds)", nativeQuery = true)
+    List<Integer> getPermissionIdsByRoleIds(@Param("roleIds") List<Integer> roleIds);
+
+    @Query(value = "SELECT permission_code FROM u_permissions WHERE permission_id IN (:permissionIds)", nativeQuery = true)
+    List<String> getPermissionCodeByPermissionIds(@Param("permissionIds") List<Integer> permissionIds);
 }

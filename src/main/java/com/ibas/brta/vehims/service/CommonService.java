@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,5 +78,17 @@ public class CommonService {
         });
 
         return customArray;
+    }
+
+    public List<Integer> getRoleIdsByUserId(Long userId) {
+        return commonRepository.getRoleIdsByUserId(userId);
+    }
+
+    public List<Integer> getPermissionIdsByRoleIds(List<Integer> roleIds) {
+        return commonRepository.getPermissionIdsByRoleIds(roleIds);
+    }
+
+    public List<String> getPermissionCodeByPermissionIds(List<Integer> permissionIds) {
+        return commonRepository.getPermissionCodeByPermissionIds(permissionIds);
     }
 }

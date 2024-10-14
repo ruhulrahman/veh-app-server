@@ -5,11 +5,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.ibas.brta.vehims.payload.UserSummary;
 import com.ibas.brta.vehims.payload.request.SUserRequest;
 import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.SUserResponse;
+import com.ibas.brta.vehims.payload.response.UserResponse;
+import com.ibas.brta.vehims.security.CurrentUser;
+import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.service.CommonService;
+import com.ibas.brta.vehims.service.PermissionService;
+import com.ibas.brta.vehims.service.RolePermissionService;
+import com.ibas.brta.vehims.service.RoleUService;
 import com.ibas.brta.vehims.service.UserService;
 import com.ibas.brta.vehims.util.AppConstants;
 
@@ -17,9 +25,12 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +45,18 @@ public class SUserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RoleUService roleService;
+
+    @Autowired
+    RolePermissionService rolePermissionService;
+
+    @Autowired
+    PermissionService permissionService;
+
+    @Autowired
+    CommonService commonService;
 
     @PostMapping("/v1/admin/user-management/user/create")
     public ResponseEntity<?> createData(@RequestBody @Valid SUserRequest request) {
@@ -98,6 +121,35 @@ public class SUserController {
     public ResponseEntity<?> getDataById(@PathVariable Long id) {
         SUserResponse response = userService.getDataById(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/v1/auth/get-auth-user-by-id")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> getCurrentUser(@CurrentUser UserPrincipal currentUser) {
+
+        SUserResponse userResponse = userService.getDataById(currentUser.getId());
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @GetMapping("/v1/auth/get-auth-user")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> getSystemAdminRolePermission(@CurrentUser UserPrincipal currentUser) {
+
+        SUserResponse userResponse = userService.getDataById(currentUser.getId());
+
+        List<Integer> roleIds = commonService.getRoleIdsByUserId(currentUser.getId());
+        log.info("roleIds ========= {}", roleIds);
+        if (roleIds != null) {
+            List<Integer> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
+            log.info("permissionIds ========= {}", permissionIds);
+            if (permissionIds != null) {
+                List<String> permissionCodes = commonService.getPermissionCodeByPermissionIds(permissionIds);
+                userResponse.setPermissionCodes(permissionCodes);
+            }
+        }
+
+        return ResponseEntity.ok(userResponse);
     }
 
 }

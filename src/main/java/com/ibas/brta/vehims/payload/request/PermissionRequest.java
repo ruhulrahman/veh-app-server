@@ -16,21 +16,19 @@ public class PermissionRequest {
 
     @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
-    @Column(name = "name_en", nullable = false)
     private String nameEn;
 
-    // @NotBlank(message = "Name in Bangla cannot be blank")
-    // @Size(max = 100)
-    // @Column(name = "name_bn", nullable = false)
-    // private String nameBn;
+    @NotBlank(message = "Name in Bangla cannot be blank")
+    @Size(max = 100)
+    private String nameBn;
 
     @NotBlank(message = "Address cannot be blank")
-    @Column(name = "permission_code", nullable = false)
     private String permissionCode;
 
     @NotNull(message = "Type cannot be null")
-    @Column(name = "type", nullable = false)
     private Integer type;
+
+    private String pageUrl;
 
     @NotNull(message = "Active status cannot be null")
     private Boolean isActive;

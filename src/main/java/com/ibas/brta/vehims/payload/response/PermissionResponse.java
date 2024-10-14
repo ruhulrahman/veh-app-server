@@ -13,8 +13,10 @@ public class PermissionResponse {
     private Long parentId;
     private String parentName;
     private String nameEn;
+    private String nameBn;
     private String permissionCode;
     private Integer type;
     private String typeName;
+    private String pageUrl;
     private Boolean isActive;
 }

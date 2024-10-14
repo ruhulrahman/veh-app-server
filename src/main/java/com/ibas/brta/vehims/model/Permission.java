@@ -28,13 +28,13 @@ public class Permission extends RecordAudit {
 
     @NotBlank(message = "Name in English cannot be blank")
     @Size(max = 100)
-    @Column(name = "name", nullable = false)
+    @Column(name = "name_en", nullable = false)
     private String nameEn;
 
-    // @NotBlank(message = "Name in Bangla cannot be blank")
-    // @Size(max = 100)
-    // @Column(name = "name_bn", nullable = false)
-    // private String nameBn;
+    @NotBlank(message = "Name in Bangla cannot be blank")
+    @Size(max = 100)
+    @Column(name = "name_bn", nullable = false)
+    private String nameBn;
 
     @NotBlank(message = "Address cannot be blank")
     @Column(name = "permission_code", nullable = false)
@@ -43,6 +43,9 @@ public class Permission extends RecordAudit {
     @NotNull(message = "Type cannot be null")
     @Column(name = "type", nullable = false)
     private Integer type;
+
+    @Column(name = "page_url")
+    private String pageUrl;
 
     // @ManyToMany(mappedBy = "permissions")
     // private Collection<Role> roles;

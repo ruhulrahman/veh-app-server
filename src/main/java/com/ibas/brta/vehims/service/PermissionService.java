@@ -143,6 +143,7 @@ public class PermissionService {
             Map<String, Object> object = new HashMap<>();
             object.put("id", item.getId());
             object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
             object.put("permissionCode", item.getPermissionCode());
             object.put("type", item.getType());
             object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
@@ -154,7 +155,7 @@ public class PermissionService {
     }
 
     public List<?> getAllList() {
-        List<Permission> listData = permissionRepository.findAllOrderByNameAsc();
+        List<Permission> listData = permissionRepository.findAllOrderByNameEnAsc();
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
@@ -163,6 +164,7 @@ public class PermissionService {
             Map<String, Object> object = new HashMap<>();
             object.put("id", item.getId());
             object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
             object.put("permissionCode", item.getPermissionCode());
             object.put("type", item.getType());
             object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
@@ -174,7 +176,7 @@ public class PermissionService {
     }
 
     public List<?> getParentList() {
-        List<Permission> listData = permissionRepository.findParentOrderByNameAsc();
+        List<Permission> listData = permissionRepository.findParentOrderByNameEnAsc();
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
@@ -183,6 +185,7 @@ public class PermissionService {
             Map<String, Object> object = new HashMap<>();
             object.put("id", item.getId());
             object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
             object.put("permissionCode", item.getPermissionCode());
             object.put("type", item.getType());
             object.put("typeName", item.getType() == 1 ? "Page" : "Feature");
@@ -194,7 +197,7 @@ public class PermissionService {
     }
 
     public List<?> getPermissionParentChildList() {
-        List<Permission> listData = permissionRepository.findParentOrderByNameAsc();
+        List<Permission> listData = permissionRepository.findParentOrderByNameEnAsc();
 
         List<Map<String, Object>> customArray = new ArrayList<>();
 
@@ -203,12 +206,16 @@ public class PermissionService {
             Map<String, Object> object = new HashMap<>();
             object.put("id", item.getId());
             object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
             object.put("type", item.getType());
             object.put("permissionCode", item.getPermissionCode());
 
             List<Permission> pages = permissionRepository.findByParentPermissionIdAndType(item.getId(), 1L);
             List<Permission> features = permissionRepository.findByParentPermissionIdAndType(item.getId(),
                     2L);
+
+            log.info("pages ========= {}", pages);
+            log.info("features ========= {}", features);
 
             // Map Responses with all information
             List<PermissionResponse> pageList = pages.stream()
@@ -225,8 +232,8 @@ public class PermissionService {
                         return response;
                     }).collect(Collectors.toList());
 
-            object.put("featureList", featureList);
             object.put("pageList", pageList);
+            object.put("featureList", featureList);
             object.put("checkedAll", false);
 
             customArray.add(object);

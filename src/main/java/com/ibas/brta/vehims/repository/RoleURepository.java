@@ -28,10 +28,10 @@ public interface RoleURepository extends JpaRepository<RoleU, Long> {
             Pageable pageable);
 
     @Query(value = "SELECT * FROM u_permissions p ORDER BY p.name_en ASC", nativeQuery = true)
-    List<RoleU> findAllOrderByNameAsc();
+    List<RoleU> findAllOrderByNameEnAsc();
 
     @Query(value = "SELECT * FROM u_permissions p WHERE p.parent_permission_id IS NULL ORDER BY p.name_en ASC", nativeQuery = true)
-    List<RoleU> findParentOrderByNameAsc();
+    List<RoleU> findParentOrderByNameEnAsc();
 
     @Modifying
     @Transactional

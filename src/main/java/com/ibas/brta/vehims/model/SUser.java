@@ -48,7 +48,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+// @AllArgsConstructor
 // @EntityListeners(UserListener.class)
 @EqualsAndHashCode(callSuper = false)
 
