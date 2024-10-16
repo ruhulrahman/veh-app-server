@@ -45,7 +45,8 @@ import java.util.Objects;
 public class User extends DateAudit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // @Column(name = "user_id")
+    // @Column(name = "user_id") // Use user_id in the database, but expose as id in
+    // Java
     private Long id;
 
     @NotBlank
@@ -58,18 +59,17 @@ public class User extends DateAudit {
     @Column(name = "name_bn", nullable = true)
     private String nameBn;
 
+    @NaturalId
     @NotBlank
     @Size(max = 15)
     @Column(nullable = false)
     private String username;
 
-    @NaturalId
     @NotBlank
     @Size(max = 13)
     @Column(nullable = false)
     private String mobile;
 
-    @NaturalId
     @NotBlank
     @Size(max = 40)
     @Column(nullable = false)

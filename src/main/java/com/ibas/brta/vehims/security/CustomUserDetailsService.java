@@ -19,28 +19,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    UserRepository userRepository;
+        @Autowired
+        UserRepository userRepository;
 
-    @Override
-    @Transactional
-    public UserDetails loadUserByUsername(String usernameOrMobile)
-            throws UsernameNotFoundException {
-        // Let people login with either username or mobile
-        User user = userRepository.findByUsernameOrMobile(usernameOrMobile, usernameOrMobile)
-                .orElseThrow(() ->
-                        new UsernameNotFoundException("No User found with username or mobile : " + usernameOrMobile)
-                );
+        @Override
+        @Transactional
+        public UserDetails loadUserByUsername(String usernameOrMobile)
+                        throws UsernameNotFoundException {
+                // Let people login with either username or mobile
+                User user = userRepository.findByUsernameOrMobile(usernameOrMobile, usernameOrMobile)
+                                .orElseThrow(() -> new UsernameNotFoundException(
+                                                "No User found with username or mobile : " + usernameOrMobile));
 
-        return UserPrincipal.create(user);
-    }
+                return UserPrincipal.create(user);
+        }
 
-    @Transactional
-    public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("User", "id", id)
-        );
+        @Transactional
+        public UserDetails loadUserById(Long id) {
+                User user = userRepository.findById(id).orElseThrow(
+                                () -> new ResourceNotFoundException("User", "id", id));
 
-        return UserPrincipal.create(user);
-    }
+                return UserPrincipal.create(user);
+        }
 }

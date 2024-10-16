@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.model.StatusGroup;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
+import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import com.ibas.brta.vehims.repository.CommonRepository;
@@ -88,7 +89,17 @@ public class CommonService {
         return commonRepository.getPermissionIdsByRoleIds(roleIds);
     }
 
+    public List<Integer> getPermissionIdsByRoleId(Integer roleId) {
+        return commonRepository.getPermissionIdsByRoleIds(roleId);
+    }
+
     public List<String> getPermissionCodeByPermissionIds(List<Integer> permissionIds) {
         return commonRepository.getPermissionCodeByPermissionIds(permissionIds);
+    }
+
+    public List<UserOfficeRoleResponse> getUserOfficeRolesByUserId(Long userId) {
+        List<UserOfficeRoleResponse> userOfficeRoles = commonRepository.getUserOfficeRolesByUserId(userId);
+        log.info("userOfficeRoles in service ====== {}" + userOfficeRoles);
+        return userOfficeRoles;
     }
 }

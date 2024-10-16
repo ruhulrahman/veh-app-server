@@ -2,7 +2,9 @@ package com.ibas.brta.vehims.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,22 +16,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.ibas.brta.vehims.exception.FieldValidationException;
 import com.ibas.brta.vehims.model.SUser;
+import com.ibas.brta.vehims.model.User;
 import com.ibas.brta.vehims.model.UserOfficeRole;
+import com.ibas.brta.vehims.payload.request.ChangePasswordRequest;
 import com.ibas.brta.vehims.payload.request.SUserRequest;
 import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
-import com.ibas.brta.vehims.payload.request.UserOfficeRoleRequest;
 import com.ibas.brta.vehims.payload.response.SUserResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.repository.SUserRepository;
+import com.ibas.brta.vehims.repository.UserRepository;
 import com.ibas.brta.vehims.repository.UserOfficeRoleRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -37,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 public class UserService {
 
     @Autowired
-    SUserRepository userRepository;
+    UserRepository userRepository;
 
     @Autowired
     DesignationService designationService;
@@ -59,9 +64,9 @@ public class UserService {
 
         request.setIsProfileCompleted(true);
         request.setPassword(passwordEncoder.encode(request.getPassword()));
-        SUser requestObject = new SUser();
+        User requestObject = new User();
         BeanUtils.copyProperties(request, requestObject);
-        SUser savedData = userRepository.save(requestObject);
+        User savedData = userRepository.save(requestObject);
 
         // Save new roles
         request.getUserOfficeRoles().forEach(userOfficeRole -> {
@@ -82,11 +87,11 @@ public class UserService {
     @Transactional
     public SUserResponse updateData(Long id, SUserUpdateRequest request) {
 
-        Optional<SUser> existingData = userRepository.findById(id);
+        Optional<User> existingData = userRepository.findById(id);
 
         if (existingData.isPresent()) {
 
-            SUser requestObject = existingData.get();
+            User requestObject = existingData.get();
             BeanUtils.copyProperties(request, requestObject);
 
             userOfficeRoleRepository.deleteAllByUserId(requestObject.getId());
@@ -104,7 +109,7 @@ public class UserService {
                 userOfficeRoleRepository.save(userOfficeRoleRequest);
             });
 
-            SUser updatedData = userRepository.save(requestObject);
+            User updatedData = userRepository.save(requestObject);
 
             SUserResponse response = new SUserResponse();
             BeanUtils.copyProperties(updatedData, response);
@@ -170,7 +175,7 @@ public class UserService {
     // Find a single record by ID
     public SUserResponse getDataById(Long id) {
 
-        SUser existingData = userRepository.findById(id)
+        User existingData = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
 
         SUserResponse response = new SUserResponse();
@@ -203,6 +208,33 @@ public class UserService {
         }
 
         return response;
+    }
+
+    public void changeUserPassword(Long id, @Valid ChangePasswordRequest request) {
+        userRepository.findById(id).ifPresent(user -> {
+
+            Map<String, String> errors = new HashMap<>();
+
+            if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+                errors.put("currentPassword", "Current password is incorrect");
+            }
+
+            if (request.getCurrentPassword().equals(request.getNewPassword())) {
+                errors.put("newPassword", "New password cannot be the same as the current password");
+            }
+
+            if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+                errors.put("confirmPassword", "Passwords do not match");
+            }
+
+            // Add other generic validation errors if needed
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors); // Throw generic field validation exception
+            }
+
+            user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            userRepository.save(user);
+        });
     }
 
 }

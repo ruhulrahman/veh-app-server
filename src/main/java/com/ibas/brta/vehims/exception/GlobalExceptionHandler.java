@@ -26,4 +26,9 @@ public class GlobalExceptionHandler {
                 .forEach(fieldError -> errors.put(fieldError.getField(), fieldError.getDefaultMessage()));
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(FieldValidationException.class)
+    public ResponseEntity<Map<String, String>> handleFieldValidationException(FieldValidationException ex) {
+        return new ResponseEntity<>(ex.getFieldErrors(), HttpStatus.BAD_REQUEST);
+    }
 }
