@@ -24,7 +24,7 @@ public class VehicleClass extends RecordAudit {
     private Long id;
 
     @NotNull(message = "Vehicle Type cannot be null")
-    @Column(name = "vehicle_type_id", nullable = false)
+    @Column(name = "vehicle_type_id", nullable = true)
     private Long vehicleTypeId;
 
     @NotBlank(message = "Name in English cannot be blank")
@@ -38,7 +38,7 @@ public class VehicleClass extends RecordAudit {
     private String nameBn;
 
     @NotBlank(message = "Vehicle Class Code cannot be blank")
-    @Column(name = "vehicle_class_code", nullable = false)
+    @Column(name = "vehicle_class_code", nullable = true)
     private String vehicleClassCode;
 
     @Column(name = "cc_min")
