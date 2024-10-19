@@ -1,7 +1,9 @@
 package com.ibas.brta.vehims.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -117,12 +119,11 @@ public class CommonController {
         dropdowns.setPaymentStatusList(new ArrayList<>());
 
         StatusProjection locationTypeDivision = commonService.getStatusByStatusCodeOrId("division");
- 
+
         if (locationTypeDivision != null) {
             List<?> divisionList = commonService.getActiveLocationsByLocationTypeId(locationTypeDivision.getId());
             dropdowns.setDivisionList(divisionList);
         }
- 
 
         return ResponseEntity.ok(ApiResponse.success("Fetched list", dropdowns));
     }
@@ -131,6 +132,18 @@ public class CommonController {
     public ResponseEntity<?> getActiveOrganizations() {
         List<?> orgList = commonService.getActiveOrganizations();
         return ResponseEntity.ok(orgList);
+    }
+
+    @GetMapping("/v1/admin/common/get-vehile-registration-related-dropdown-list")
+    public ResponseEntity<?> getVehicleRegistrationRelatedDropdownList() {
+        List<?> exporterList = commonService.getActiveExporters();
+        List<?> importerList = commonService.getActiveImporters();
+
+        Map<String, Object> customArray = new HashMap<>();
+        customArray.put("exporterList", exporterList);
+        customArray.put("importerList", importerList);
+
+        return ResponseEntity.ok(customArray);
     }
 
 }

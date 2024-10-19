@@ -23,13 +23,11 @@ public class VehicleClassResponse {
     private String nameEn;
     private String nameBn;
     private String vehicleClassCode;
-    private Integer ccMin;
-    private Integer ccMax;
-    private Integer seatMin;
-    private Integer seatMax;
-    private Integer loadedWeightMinKg;
-    private Integer loadedWeightMaxKg;
-    private Integer motorCapacityMinKw;
-    private Integer motorCapacityMaxKw;
+    private String symbolEn;
+    private String symbolBn;
+    private Integer startNumber;
+    private Integer end_number;
+    private String remarksEn;
+    private String remarksBn;
     private Boolean isActive;
 }

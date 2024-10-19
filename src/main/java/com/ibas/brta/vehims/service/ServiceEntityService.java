@@ -35,12 +35,6 @@ public class ServiceEntityService {
 
         BeanUtils.copyProperties(serviceDTO, serviceEntity, "id", "parentService");
 
-        if (serviceDTO.getParentServiceId() != null) {
-            ServiceEntity parentService = serviceRepository.findById(serviceDTO.getParentServiceId())
-                    .orElseThrow(() -> new IllegalArgumentException("Parent service not found"));
-            serviceEntity.setParentService(parentService);
-        }
-
         ServiceEntity saveData = serviceRepository.save(serviceEntity);
 
         ServiceEntityDTO responseData = new ServiceEntityDTO();
@@ -58,11 +52,6 @@ public class ServiceEntityService {
             ServiceEntity serviceEntity = existingData.get();
             BeanUtils.copyProperties(serviceDTO, serviceEntity, "id", "parentService"); // Exclude ID
             // Set parent service if parentServiceId is provided
-            if (serviceDTO.getParentServiceId() != null) {
-                ServiceEntity parentService = serviceRepository.findById(serviceDTO.getParentServiceId())
-                        .orElseThrow(() -> new IllegalArgumentException("Parent service not found"));
-                serviceEntity.setParentService(parentService);
-            }
 
             ServiceEntity saveData = serviceRepository.save(serviceEntity);
 
@@ -86,11 +75,13 @@ public class ServiceEntityService {
     }
 
     // List all records
-    public PagedResponse<ServiceEntityResponse> findAllBySearch(String nameEn, Boolean isActive, int page, int size) {
+    public PagedResponse<ServiceEntityResponse> findAllBySearch(String nameEn, Long parentServiceId, Boolean isActive,
+            int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         // Retrieve all records from the database
-        Page<ServiceEntity> records = serviceRepository.findListWithPaginationBySearch(nameEn, isActive, pageable);
+        Page<ServiceEntity> records = serviceRepository.findListWithPaginationBySearch(nameEn, parentServiceId,
+                isActive, pageable);
         if (records.getNumberOfElements() == 0) {
             return new PagedResponse<>(Collections.emptyList(), records.getNumber(), records.getSize(),
                     records.getTotalElements(), records.getTotalPages(), records.isLast());
@@ -101,10 +92,9 @@ public class ServiceEntityService {
             ServiceEntityResponse response = new ServiceEntityResponse();
             BeanUtils.copyProperties(record, response);
 
-            if (record.getParentService() != null) {
-                response.setParentServiceId(record.getParentService().getId());
+            if (record.getParentServiceId() != null) {
 
-                Optional<ServiceEntity> parentService = serviceRepository.findById(record.getParentService().getId());
+                Optional<ServiceEntity> parentService = serviceRepository.findById(record.getParentServiceId());
                 if (parentService.isPresent()) {
                     ServiceEntityResponse parentServiceResponse = new ServiceEntityResponse();
                     BeanUtils.copyProperties(parentService.get(), parentServiceResponse);
@@ -143,6 +133,7 @@ public class ServiceEntityService {
             object.put("nameEn", serviceEntity.getNameEn());
             object.put("nameBn", serviceEntity.getNameBn());
             object.put("isActive", serviceEntity.getIsActive());
+            object.put("parentServiceId", serviceEntity.getParentServiceId());
 
             customArray.add(object);
         });

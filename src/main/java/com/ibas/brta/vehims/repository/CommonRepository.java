@@ -56,6 +56,9 @@ public interface CommonRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT permission_id FROM u_role_permissions WHERE role_id IN (:roleIds)", nativeQuery = true)
         List<Integer> getPermissionIdsByRoleIds(@Param("roleIds") List<Integer> roleIds);
 
+        @Query(value = "SELECT permission_id FROM u_role_permissions WHERE role_id = :roleIds", nativeQuery = true)
+        List<Integer> getPermissionIdsByRoleId(@Param("roleIds") Integer roleIds);
+
         @Query(value = "SELECT permission_code FROM u_permissions WHERE permission_id IN (:permissionIds)", nativeQuery = true)
         List<String> getPermissionCodeByPermissionIds(@Param("permissionIds") List<Integer> permissionIds);
 
@@ -71,4 +74,10 @@ public interface CommonRepository extends JpaRepository<User, Long> {
                         "JOIN u_roles role ON suor.role_id = role.role_id " +
                         "WHERE suor.user_id = :userId", nativeQuery = true)
         List<UserOfficeRoleResponse> getUserOfficeRolesByUserId(@Param("userId") Long userId);
+
+        @Query(value = "SELECT exporter_id as id, name_en as nameEn, name_bn as nameBn FROM v_exporters WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveExporters();
+
+        @Query(value = "SELECT importer_id as id, name_en as nameEn, name_bn as nameBn FROM v_importers WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveImporters();
 }

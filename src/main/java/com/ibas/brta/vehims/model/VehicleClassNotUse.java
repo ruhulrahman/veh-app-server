@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Table(name = "c_vehicle_classes")
+@Table(name = "c_vehicle_classes_not_use")
 
 @Data
 @AllArgsConstructor
@@ -17,7 +17,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @AttributeOverride(name = "id", column = @Column(name = "vehicle_class_id"))
 
-public class VehicleClass extends RecordAudit {
+public class VehicleClassNotUse extends RecordAudit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,28 +41,27 @@ public class VehicleClass extends RecordAudit {
     @Column(name = "vehicle_class_code", nullable = true)
     private String vehicleClassCode;
 
-    @NotBlank(message = "Symbol in English cannot be blank")
-    @Size(max = 15)
-    @Column(name = "symbol_en", nullable = false)
-    private String symbolEn;
+    @Column(name = "cc_min")
+    private Integer ccMin;
 
-    @NotBlank(message = "Symbol in Bangla cannot be blank")
-    @Size(max = 15)
-    @Column(name = "symbol_bn", nullable = false)
-    private String symbolBn;
+    @Column(name = "cc_max")
+    private Integer ccMax;
 
-    @Column(name = "start_number")
-    private Integer startNumber;
+    @Column(name = "seat_min")
+    private Integer seatMin;
 
-    @Column(name = "end_number")
-    private Integer endNumber;
+    @Column(name = "seat_max")
+    private Integer seatMax;
 
-    @Size(max = 255)
-    @Column(name = "remarks_en", nullable = true)
-    private String remarksEn;
+    @Column(name = "loaded_weight_min_kg")
+    private Integer loadedWeightMinKg;
 
-    @Size(max = 255)
-    @Column(name = "remarks_bn", nullable = true)
-    private String remarksBn;
+    @Column(name = "loaded_weight_max_kg")
+    private Integer loadedWeightMaxKg;
 
+    @Column(name = "motor_capacity_min_kw")
+    private Integer motorCapacityMinKw;
+
+    @Column(name = "motor_capacity_max_kw")
+    private Integer motorCapacityMaxKw;
 }

@@ -40,14 +40,15 @@ public class ServiceEntity extends RecordAudit {
     @Column(name = "service_code", nullable = false, unique = true)
     private String serviceCode;
 
-    // @Column(name = "parent_service_id", nullable = true)
-    // private Long parentServiceId;
+    @Column(name = "parent_service_id", nullable = true)
+    private Long parentServiceId;
 
-    // Self-referencing relationship
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_service_id")
-    private ServiceEntity parentService;
+    // // Self-referencing relationship
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "parent_service_id")
+    // private ServiceEntity parentService;
 
-    @OneToMany(mappedBy = "parentService", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceEntity> childServices;
+    // @OneToMany(mappedBy = "parentService", cascade = CascadeType.ALL,
+    // orphanRemoval = true)
+    // private List<ServiceEntity> childServices;
 }

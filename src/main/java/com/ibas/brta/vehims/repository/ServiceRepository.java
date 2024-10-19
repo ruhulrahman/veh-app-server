@@ -28,9 +28,10 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
     List<ServiceEntity> findByIsActiveTrueOrderByNameEnAsc();
 
     // Complex query with JPQL and named parameters
-    @Query("SELECT s FROM ServiceEntity s WHERE (:nameEn IS NULL OR LOWER(s.nameEn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.nameBn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.serviceCode) LIKE LOWER(CONCAT('%', :nameEn, '%'))) AND (:isActive IS NULL OR s.isActive = :isActive) ORDER BY s.createdAt DESC")
+    @Query("SELECT s FROM ServiceEntity s WHERE (:nameEn IS NULL OR LOWER(s.nameEn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.nameBn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.serviceCode) LIKE LOWER(CONCAT('%', :nameEn, '%'))) AND (:parentServiceId IS NULL OR s.parentServiceId = :parentServiceId) AND (:isActive IS NULL OR s.isActive = :isActive) ORDER BY s.createdAt DESC")
     Page<ServiceEntity> findListWithPaginationBySearch(
             @Param("nameEn") String nameEn,
+            @Param("parentServiceId") Long parentServiceId,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
 }

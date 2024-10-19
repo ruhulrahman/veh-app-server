@@ -90,7 +90,7 @@ public class CommonService {
     }
 
     public List<Integer> getPermissionIdsByRoleId(Integer roleId) {
-        return commonRepository.getPermissionIdsByRoleIds(roleId);
+        return commonRepository.getPermissionIdsByRoleId(roleId);
     }
 
     public List<String> getPermissionCodeByPermissionIds(List<Integer> permissionIds) {
@@ -101,5 +101,41 @@ public class CommonService {
         List<UserOfficeRoleResponse> userOfficeRoles = commonRepository.getUserOfficeRolesByUserId(userId);
         log.info("userOfficeRoles in service ====== {}" + userOfficeRoles);
         return userOfficeRoles;
+    }
+
+    public List<?> getActiveExporters() {
+        List<CommonProjection> listData = commonRepository.getActiveExporters();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        listData.forEach(item -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
+
+            customArray.add(object);
+        });
+
+        return customArray;
+    }
+
+    public List<?> getActiveImporters() {
+        List<CommonProjection> listData = commonRepository.getActiveImporters();
+
+        List<Map<String, Object>> customArray = new ArrayList<>();
+
+        listData.forEach(item -> {
+            // Access and process each entity's fields
+            Map<String, Object> object = new HashMap<>();
+            object.put("id", item.getId());
+            object.put("nameEn", item.getNameEn());
+            object.put("nameBn", item.getNameBn());
+
+            customArray.add(object);
+        });
+
+        return customArray;
     }
 }

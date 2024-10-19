@@ -72,11 +72,13 @@ public class ServiceEntityController {
     @GetMapping("/v1/admin/configurations/service/list")
     public PagedResponse<?> findListWithPaginationBySearch(
             @RequestParam(required = false) String nameEn,
+            @RequestParam(required = false) Long parentServiceId,
             @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
         PagedResponse<ServiceEntityResponse> responseData = serviceEntityService.findAllBySearch(nameEn,
+                parentServiceId,
                 isActive,
                 page,
                 size);
