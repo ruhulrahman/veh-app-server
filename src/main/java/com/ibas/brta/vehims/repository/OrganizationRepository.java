@@ -19,10 +19,14 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
 
         // Complex query with JPQL and named parameters
         // @Query("SELECT s FROM Organization s WHERE (:nameEn IS NULL OR
-        // LOWER(s.nameEn) LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.nameBn) LIKE
-        // LOWER(CONCAT('%', :nameEn, '%'))) AND (:officeTypeId IS NULL OR
-        // s.officeTypeId = :officeTypeId) AND (:isActive IS NULL OR s.isActive =
-        // :isActive) ORDER BY s.createdAt DESC")
+        // LOWER(s.nameEn) " +
+        // "LIKE LOWER(CONCAT('%', :nameEn, '%')) OR LOWER(s.nameBn) LIKE
+        // LOWER(CONCAT('%', :nameEn, '%'))) "
+        // +
+        // "AND (:officeTypeId IS NULL OR s.officeTypeId = :officeTypeId) " +
+        // " AND (:isActive IS NULL OR s.isActive = :isActive) ORDER BY s.createdAt
+        // DESC")
+
         // Page<Organization> findListWithPaginationBySearch(
         // @Param("nameEn") String nameEn,
         // @Param("officeTypeId") Long officeTypeId,
@@ -44,7 +48,7 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
                         "AND (:divisionId IS NULL OR loc.parent_location_id = :divisionId) " +
                         "AND (:districtId IS NULL OR loc.location_id = :districtId) " +
                         "AND (:isActive IS NULL OR org.is_active = :isActive)", nativeQuery = true)
-        List<Organization> findListWithPaginationBySearchWithNativeQuery(
+        Page<Organization> findListWithPaginationBySearchWithNativeQuery(
                         @Param("nameEn") String nameEn,
                         @Param("officeTypeId") Long officeTypeId,
                         @Param("divisionId") Long divisionId,

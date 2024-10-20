@@ -13,6 +13,7 @@ import com.ibas.brta.vehims.model.UserOfficeRole;
 import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.projection.StatusProjection;
+import com.ibas.brta.vehims.projection.VehicleClassProjection;
 
 @Repository
 public interface CommonRepository extends JpaRepository<User, Long> {
@@ -80,4 +81,19 @@ public interface CommonRepository extends JpaRepository<User, Long> {
 
         @Query(value = "SELECT importer_id as id, name_en as nameEn, name_bn as nameBn FROM v_importers WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getActiveImporters();
+
+        @Query(value = "SELECT maker_id as id, name_en as nameEn, name_bn as nameBn, country_id as countryId FROM c_vehicle_makers WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveVehicleMakers();
+
+        @Query(value = "SELECT vehicle_color_id as id, name_en as nameEn, name_bn as nameBn FROM c_vehicle_colors WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveVehicleColors();
+
+        @Query(value = "SELECT vehicle_class_id as id, name_en as nameEn, name_bn as nameBn, vehicle_type_id as vehicleTypeId, symbol_en as symbolEn, symbol_bn as symbolBn FROM c_vehicle_classes WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<VehicleClassProjection> getActiveVehicleClasses();
+
+        @Query(value = "SELECT fuel_type_id as id, name_en as nameEn, name_bn as nameBn FROM c_fuel_types WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveFuelTypes();
+
+        @Query(value = "SELECT brand_id as id, name_en as nameEn, name_bn as nameBn FROM c_vehicle_brands WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveBrands();
 }

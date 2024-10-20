@@ -123,19 +123,7 @@ public class CommonService {
 
     public List<?> getActiveImporters() {
         List<CommonProjection> listData = commonRepository.getActiveImporters();
-
-        List<Map<String, Object>> customArray = new ArrayList<>();
-
-        listData.forEach(item -> {
-            // Access and process each entity's fields
-            Map<String, Object> object = new HashMap<>();
-            object.put("id", item.getId());
-            object.put("nameEn", item.getNameEn());
-            object.put("nameBn", item.getNameBn());
-
-            customArray.add(object);
-        });
-
-        return customArray;
+        return listData;
     }
+
 }

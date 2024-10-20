@@ -29,6 +29,7 @@ public class SUserResponse {
     private Boolean isActive;
     private String userTypeNameEn;
     private String userTypeNameBn;
+    private String userTypeCode;
     private String designationNameEn;
     private String designationNameBn;
     private List<UserOfficeRoleResponse> userOfficeRoles;

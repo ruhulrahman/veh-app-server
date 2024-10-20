@@ -6,4 +6,7 @@ public interface CommonProjection {
     String getNameEn();
 
     String getNameBn();
+
+    Long getCountryId();
+
 }

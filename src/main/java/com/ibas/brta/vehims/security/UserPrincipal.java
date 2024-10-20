@@ -2,6 +2,10 @@ package com.ibas.brta.vehims.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ibas.brta.vehims.model.User;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,6 +23,7 @@ import java.util.stream.Collectors;
  * @version 1.0 08/19/24
  */
 
+@Data
 public class UserPrincipal implements UserDetails {
     private final Long id;
 

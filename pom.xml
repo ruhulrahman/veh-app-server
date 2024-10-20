@@ -6,7 +6,7 @@
 	<groupId>com.ibas.brta.vehims</groupId>
 	<artifactId>vehims</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>vehims</name>
 	<description>BRTA Vehicle Information Management System (VehIMS)</description>

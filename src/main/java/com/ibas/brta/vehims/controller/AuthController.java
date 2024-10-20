@@ -2,6 +2,8 @@ package com.ibas.brta.vehims.controller;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +34,13 @@ import com.ibas.brta.vehims.payload.request.SignupRequest;
 import com.ibas.brta.vehims.payload.request.TokenRefreshRequest;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.AuthenticationResponse;
+import com.ibas.brta.vehims.payload.response.SUserResponse;
 import com.ibas.brta.vehims.repository.RoleRepository;
 import com.ibas.brta.vehims.repository.UserRepository;
 import com.ibas.brta.vehims.security.JwtTokenProvider;
+import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.service.RefreshTokenService;
+import com.ibas.brta.vehims.service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -70,6 +75,9 @@ public class AuthController {
         @Autowired
         RefreshTokenService refreshTokenService;
 
+        @Autowired
+        UserService userService;
+
         @PostMapping("/v1/login")
         @CrossOrigin(origins = "*")
         public ResponseEntity<?> authenticateUserV1(@Valid @RequestBody LoginRequest loginRequest) {
@@ -82,7 +90,18 @@ public class AuthController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 String jwt = tokenProvider.generateToken(authentication);
-                return ResponseEntity.ok(new AuthenticationResponse(jwt));
+
+                Map<String, Object> customArray = new HashMap<>();
+
+                if (authentication != null && authentication.isAuthenticated()) {
+                        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+                        SUserResponse userResponse = userService.getDataById(userPrincipal.getId());
+                        customArray.put("userInfo", userResponse);
+                }
+
+                customArray.put("tokenInfo", new AuthenticationResponse(jwt));
+
+                return ResponseEntity.ok(customArray);
         }
 
         @PostMapping("/v1/rt")

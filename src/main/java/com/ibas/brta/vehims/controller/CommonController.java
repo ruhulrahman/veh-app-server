@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.CommonDropdownResponse;
+import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.projection.StatusProjection;
+import com.ibas.brta.vehims.projection.VehicleClassProjection;
+import com.ibas.brta.vehims.repository.CommonRepository;
 // import com.ibas.brta.vehims.service.DesignationService;
 // import com.ibas.brta.vehims.service.StatusGroupService;
 // import com.ibas.brta.vehims.service.StatusService;
@@ -77,6 +80,9 @@ public class CommonController {
     @Autowired
     CommonService commonService;
 
+    @Autowired
+    CommonRepository commonRepository;
+
     @GetMapping("/v1/admin/common/dropdown-list")
     public ResponseEntity<?> getCommonDropdownList() {
         List<?> designations = designationService.getActiveList();
@@ -138,10 +144,24 @@ public class CommonController {
     public ResponseEntity<?> getVehicleRegistrationRelatedDropdownList() {
         List<?> exporterList = commonService.getActiveExporters();
         List<?> importerList = commonService.getActiveImporters();
+        List<StatusProjection> assembleOperationList = commonRepository
+                .findByStatusesByGroupCode("assemble_operations");
+
+        List<CommonProjection> vehicleMakerList = commonRepository.getActiveVehicleMakers();
+        List<CommonProjection> vehicleColorList = commonRepository.getActiveVehicleColors();
+        List<VehicleClassProjection> vehicleClassList = commonRepository.getActiveVehicleClasses();
+        List<CommonProjection> fuelTypeList = commonRepository.getActiveFuelTypes();
+        List<CommonProjection> brandList = commonRepository.getActiveBrands();
 
         Map<String, Object> customArray = new HashMap<>();
         customArray.put("exporterList", exporterList);
         customArray.put("importerList", importerList);
+        customArray.put("assembleOperationList", assembleOperationList);
+        customArray.put("vehicleMakerList", vehicleMakerList);
+        customArray.put("vehicleColorList", vehicleColorList);
+        customArray.put("vehicleClassList", vehicleClassList);
+        customArray.put("fuelTypeList", fuelTypeList);
+        customArray.put("brandList", brandList);
 
         return ResponseEntity.ok(customArray);
     }

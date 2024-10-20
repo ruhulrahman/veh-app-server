@@ -86,7 +86,7 @@ public class OrganizationService {
 
         Pageable pageable = PageRequest.of(page, size);
         // Retrieve all records from the database
-        Page<Organization> records = organizationRepository.findListWithPaginationBySearch(
+        Page<Organization> records = organizationRepository.findListWithPaginationBySearchWithNativeQuery(
                 nameEn,
                 officeTypeId,
                 divisionId,
@@ -105,7 +105,7 @@ public class OrganizationService {
             BeanUtils.copyProperties(record, response);
 
             StatusResponse statusResponse = statusService.findStatusById(record.getOfficeTypeId());
-            
+
             if (statusResponse != null) {
                 response.setOfficeTypeNameEn(statusResponse.getNameEn());
                 response.setOfficeTypeNameBn(statusResponse.getNameBn());
@@ -114,7 +114,7 @@ public class OrganizationService {
             LocationResponse locationResponse = locationService.getDataById(response.getLocationId());
             if (locationResponse != null) {
                 if (locationResponse.getParentId() != null) {
-                    
+
                     String locationEn = locationResponse.getNameEn();
                     String locationBn = locationResponse.getNameBn();
 
@@ -127,8 +127,10 @@ public class OrganizationService {
 
                             LocationResponse division = locationService.getDataById(district.getParentId());
                             if (division != null) {
-                                locationEn = locationResponse.getNameEn() + district.getNameEn() + ", " + division.getNameEn();
-                                locationBn = locationResponse.getNameBn() + district.getNameBn() + ", " + division.getNameBn();
+                                locationEn = locationResponse.getNameEn() + district.getNameEn() + ", "
+                                        + division.getNameEn();
+                                locationBn = locationResponse.getNameBn() + district.getNameBn() + ", "
+                                        + division.getNameBn();
                             }
                         }
                     }
@@ -163,21 +165,23 @@ public class OrganizationService {
         LocationResponse locationResponse = locationService.getDataById(response.getLocationId());
         if (locationResponse != null) {
             if (locationResponse.getParentId() != null) {
-                
+
                 String locationEn = locationResponse.getNameEn();
                 String locationBn = locationResponse.getNameBn();
 
                 LocationResponse district = locationService.getDataById(locationResponse.getParentId());
                 if (district != null) {
                     if (district.getParentId() != null) {
-                        
+
                         locationEn = locationResponse.getNameEn() + district.getNameEn();
                         locationBn = locationResponse.getNameBn() + district.getNameBn();
 
                         LocationResponse division = locationService.getDataById(district.getParentId());
                         if (division != null) {
-                            locationEn = locationResponse.getNameEn() + district.getNameEn() + ", " + division.getNameEn();
-                            locationBn = locationResponse.getNameBn() + district.getNameBn() + ", " + division.getNameBn();
+                            locationEn = locationResponse.getNameEn() + district.getNameEn() + ", "
+                                    + division.getNameEn();
+                            locationBn = locationResponse.getNameBn() + district.getNameBn() + ", "
+                                    + division.getNameBn();
                         }
                     }
                 }

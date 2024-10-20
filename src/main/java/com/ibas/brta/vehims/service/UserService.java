@@ -185,6 +185,7 @@ public class UserService {
             StatusResponse statusResponse = statusService.getDataById(existingData.getUserTypeId());
             response.setUserTypeNameEn(statusResponse.getNameEn());
             response.setUserTypeNameBn(statusResponse.getNameBn());
+            response.setUserTypeCode(statusResponse.getStatusCode());
         }
 
         if (existingData.getDesignationId() != null) {
