@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.payload.response;
 
-import java.time.LocalDateTime;
+import java.time.*;
 import java.util.List;
 
 import org.hibernate.annotations.NaturalId;
@@ -24,7 +24,7 @@ public class VehicleInfoResponse {
     private LocalDateTime routePermitIssueDate;
     private LocalDateTime routePermitExpireDate;
     private String billOfEntryNumber;
-    private LocalDateTime billOfEntryDate;
+    private LocalDate billOfEntryDate;
     private String billOfEntryOfficeCode;
     private String hsCode;
     private Long importerId;
@@ -35,7 +35,7 @@ public class VehicleInfoResponse {
     private String productLocation;
     private String productDescription;
     private String invoiceNumber;
-    private LocalDateTime invoiceDate;
+    private LocalDate invoiceDate;
     private Boolean isElectrictVehicle;
     private Integer ccOrKw;
     private Integer manufacturingYear;
@@ -50,12 +50,13 @@ public class VehicleInfoResponse {
     private Boolean isHirePurchase;
     private Integer totalSeat;
     private Long fuelId;
-    private LocalDateTime economicLife;
-    private LocalDateTime remainingLife;
-    private LocalDateTime vehiclePrice;
+    private LocalDate economicLife;
+    private LocalDate remainingLife;
+    private Integer vehiclePrice;
     private Boolean isAirConditioner;
     private Long brandId;
     private String model;
+    private Integer cylinder;
     private Integer horsePower;
     private Integer highestRpm;
     private String wheelBase;
@@ -71,6 +72,12 @@ public class VehicleInfoResponse {
     private Integer rearAxle1;
     private Integer rearAxle2;
     private Integer rearAxle3;
+    private Integer overallLength;
+    private Integer overallWidth;
+    private Integer overallHeight;
+    private Integer overhangsFront;
+    private Integer overhangsRear;
+    private Integer overhangsOther;
     private Integer statusId;
     private Integer pageCompleted;
 }

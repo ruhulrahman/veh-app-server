@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.payload.request;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class VehicleRegPage1Request {
     @Size(max = 100)
     private String billOfEntryNumber;
 
-    private LocalDateTime billOfEntryDate;
+    private LocalDate billOfEntryDate;
 
     @Size(max = 100)
     private String billOfEntryOfficeCode;
@@ -43,7 +44,7 @@ public class VehicleRegPage1Request {
 
     private String invoiceNumber;
 
-    private LocalDateTime invoiceDate;
+    private LocalDate invoiceDate;
 
     @NotBlank(message = "Chassis Number cannot be blank")
     @Size(max = 100)
@@ -52,4 +53,6 @@ public class VehicleRegPage1Request {
     @NotBlank(message = "Engine Number cannot be blank")
     @Size(max = 100)
     private String engineNumber;
+
+    private Integer pageCompleted;
 }

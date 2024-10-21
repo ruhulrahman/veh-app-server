@@ -147,21 +147,22 @@ public class CommonController {
         List<StatusProjection> assembleOperationList = commonRepository
                 .findByStatusesByGroupCode("assemble_operations");
 
+        // List<CommonProjection> vehicleColorList =
+        // commonRepository.getActiveVehicleColors();
+        // List<CommonProjection> fuelTypeList = commonRepository.getActiveFuelTypes();
         List<CommonProjection> vehicleMakerList = commonRepository.getActiveVehicleMakers();
-        List<CommonProjection> vehicleColorList = commonRepository.getActiveVehicleColors();
         List<VehicleClassProjection> vehicleClassList = commonRepository.getActiveVehicleClasses();
-        List<CommonProjection> fuelTypeList = commonRepository.getActiveFuelTypes();
-        List<CommonProjection> brandList = commonRepository.getActiveBrands();
+        List<CommonProjection> vehicleBrandList = commonRepository.getActiveBrands();
 
         Map<String, Object> customArray = new HashMap<>();
+        // customArray.put("vehicleColorList", vehicleColorList);
+        // customArray.put("fuelTypeList", fuelTypeList);
         customArray.put("exporterList", exporterList);
         customArray.put("importerList", importerList);
         customArray.put("assembleOperationList", assembleOperationList);
         customArray.put("vehicleMakerList", vehicleMakerList);
-        customArray.put("vehicleColorList", vehicleColorList);
         customArray.put("vehicleClassList", vehicleClassList);
-        customArray.put("fuelTypeList", fuelTypeList);
-        customArray.put("brandList", brandList);
+        customArray.put("vehicleBrandList", vehicleBrandList);
 
         return ResponseEntity.ok(customArray);
     }

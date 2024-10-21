@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -11,7 +12,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
-@Table(name = "u_permissions")
+@Table(name = "v_vehicle_infos")
 
 @Data
 @AllArgsConstructor
@@ -60,7 +61,7 @@ public class VehicleInfo extends DateAudit {
     private String billOfEntryNumber;
 
     @Column(name = "bill_of_entry_date")
-    private LocalDateTime billOfEntryDate;
+    private LocalDate billOfEntryDate;
 
     @Size(max = 100)
     @Column(name = "bill_of_entry_office_code", nullable = true)
@@ -95,10 +96,10 @@ public class VehicleInfo extends DateAudit {
     private String invoiceNumber;
 
     @Column(name = "invoice_date", nullable = true)
-    private LocalDateTime invoiceDate;
+    private LocalDate invoiceDate;
 
     @Column(name = "is_electrict_vehicle")
-    private Boolean isElectrictVehicle;
+    private Boolean isElectrictVehicle = false;
 
     @Column(name = "cc_or_kw")
     private Integer ccOrKw;
@@ -128,10 +129,10 @@ public class VehicleInfo extends DateAudit {
     private Integer maxLadenWeight;
 
     @Column(name = "is_hire")
-    private Boolean isHire;
+    private Boolean isHire = false;
 
     @Column(name = "is_hire_purchase")
-    private Boolean isHirePurchase;
+    private Boolean isHirePurchase = false;
 
     @Column(name = "total_seat")
     private Integer totalSeat;
@@ -140,16 +141,16 @@ public class VehicleInfo extends DateAudit {
     private Long fuelId;
 
     @Column(name = "economic_life")
-    private LocalDateTime economicLife;
+    private LocalDate economicLife;
 
     @Column(name = "remaining_life")
-    private LocalDateTime remainingLife;
+    private LocalDate remainingLife;
 
     @Column(name = "vehicle_price")
-    private LocalDateTime vehiclePrice;
+    private Integer vehiclePrice;
 
     @Column(name = "is_air_conditioner")
-    private Boolean isAirConditioner;
+    private Boolean isAirConditioner = false;
 
     @Column(name = "v_brand_id")
     private Long brandId;
@@ -157,6 +158,9 @@ public class VehicleInfo extends DateAudit {
     @Size(max = 100)
     @Column(name = "v_model")
     private String model;
+
+    @Column(name = "cylinder")
+    private Integer cylinder;
 
     @Column(name = "horse_power")
     private Integer horsePower;
@@ -204,6 +208,24 @@ public class VehicleInfo extends DateAudit {
 
     @Column(name = "rear_axle_3")
     private Integer rearAxle3;
+
+    @Column(name = "overall_length")
+    private Integer overallLength;
+
+    @Column(name = "overall_width")
+    private Integer overallWidth;
+
+    @Column(name = "overall_height")
+    private Integer overallHeight;
+
+    @Column(name = "overhangs_front")
+    private Integer overhangsFront;
+
+    @Column(name = "overhangs_rear")
+    private Integer overhangsRear;
+
+    @Column(name = "overhangs_other")
+    private Integer overhangsOther;
 
     @Column(name = "status_id")
     private Integer statusId;

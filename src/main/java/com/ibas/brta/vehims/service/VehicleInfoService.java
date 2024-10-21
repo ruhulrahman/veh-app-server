@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.model.VehicleInfo;
 import com.ibas.brta.vehims.payload.request.VehicleRegPage1Request;
+import com.ibas.brta.vehims.payload.request.VehicleRegPage2Request;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.repository.VehicleInfoRepository;
@@ -34,15 +35,46 @@ public class VehicleInfoService {
     CountryService countryService;
 
     // Create or Insert operation
-    public VehicleInfoResponse createData(VehicleRegPage1Request request) {
+    public VehicleInfoResponse storeVehicleRegPage1(VehicleRegPage1Request request) {
 
-        VehicleInfo requestObject = new VehicleInfo();
-        BeanUtils.copyProperties(request, requestObject);
-        VehicleInfo savedData = vehicleInfoRepository.save(requestObject);
+        Optional<VehicleInfo> existingData = vehicleInfoRepository.findById(request.getId());
 
-        VehicleInfoResponse response = new VehicleInfoResponse();
-        BeanUtils.copyProperties(savedData, response);
-        return response;
+        if (existingData.isPresent()) {
+            VehicleInfo requestObject = existingData.get();
+            BeanUtils.copyProperties(request, requestObject);
+
+            VehicleInfo updatedData = vehicleInfoRepository.save(requestObject);
+
+            VehicleInfoResponse response = new VehicleInfoResponse();
+            BeanUtils.copyProperties(updatedData, response);
+            return response;
+        } else {
+            VehicleInfo requestObject = new VehicleInfo();
+            BeanUtils.copyProperties(request, requestObject);
+            VehicleInfo savedData = vehicleInfoRepository.save(requestObject);
+
+            VehicleInfoResponse response = new VehicleInfoResponse();
+            BeanUtils.copyProperties(savedData, response);
+            return response;
+        }
+    }
+
+    public VehicleInfoResponse storeVehicleRegPage2(VehicleRegPage2Request request) {
+
+        Optional<VehicleInfo> existingData = vehicleInfoRepository.findById(request.getId());
+
+        if (existingData.isPresent()) {
+            VehicleInfo requestObject = existingData.get();
+            BeanUtils.copyProperties(request, requestObject);
+
+            VehicleInfo updatedData = vehicleInfoRepository.save(requestObject);
+
+            VehicleInfoResponse response = new VehicleInfoResponse();
+            BeanUtils.copyProperties(updatedData, response);
+            return response;
+        } else {
+            throw new EntityNotFoundException("Data not found with id: " + request.getId());
+        }
     }
 
     // Update operation
