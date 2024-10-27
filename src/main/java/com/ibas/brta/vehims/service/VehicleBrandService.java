@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.VehicleBrand;
+import com.ibas.brta.vehims.model.configurations.VehicleBrand;
 import com.ibas.brta.vehims.payload.request.VehicleBrandRequest;
 import com.ibas.brta.vehims.payload.response.VehicleBrandResponse;
 import com.ibas.brta.vehims.payload.response.VehicleMakerResponse;

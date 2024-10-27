@@ -115,4 +115,7 @@ public class VehicleRegPage2Request {
     private Integer overhangsOther;
     private Integer pageCompleted;
 
+    private Long serviceRequestId;
+    private Long vehicleInfoId;
+
 }

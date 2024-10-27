@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.Location;
+import com.ibas.brta.vehims.model.configurations.Location;
 import com.ibas.brta.vehims.payload.request.LocationRequest;
 import com.ibas.brta.vehims.payload.response.LocationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

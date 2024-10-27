@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ibas.brta.vehims.model.Permission;
+import com.ibas.brta.vehims.model.userManagement.Permission;
 
 @Repository
 public interface PermissionRepository extends JpaRepository<Permission, Long> {

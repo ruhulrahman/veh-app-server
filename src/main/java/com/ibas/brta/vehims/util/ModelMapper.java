@@ -1,22 +1,18 @@
 package com.ibas.brta.vehims.util;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
-import com.ibas.brta.vehims.model.Designation;
-import com.ibas.brta.vehims.model.Status;
-import com.ibas.brta.vehims.model.StatusGroup;
-import com.ibas.brta.vehims.model.VehicleType;
+import com.ibas.brta.vehims.model.configurations.Designation;
+import com.ibas.brta.vehims.model.configurations.Status;
+import com.ibas.brta.vehims.model.configurations.StatusGroup;
+import com.ibas.brta.vehims.model.configurations.VehicleType;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.StatusResponse;
 import com.ibas.brta.vehims.payload.response.VehicleTypeResponse;
-import com.ibas.brta.vehims.service.StatusService;
 
 /**
  * Converting Domain Objects to DTOs (Data Transfer Object) or vice-versa

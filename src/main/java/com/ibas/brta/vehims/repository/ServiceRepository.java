@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.configurations.ServiceEntity;
 
 public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
     ServiceEntity findByNameEn(String nameEn);

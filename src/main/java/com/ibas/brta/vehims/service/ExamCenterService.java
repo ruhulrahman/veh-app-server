@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.ExamCenter;
-import com.ibas.brta.vehims.model.Organization;
+import com.ibas.brta.vehims.model.configurations.ExamCenter;
+import com.ibas.brta.vehims.model.configurations.Organization;
 import com.ibas.brta.vehims.payload.request.ExamCenterRequest;
 import com.ibas.brta.vehims.payload.response.ExamCenterResponse;
 import com.ibas.brta.vehims.payload.response.LocationResponse;

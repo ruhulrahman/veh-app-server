@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.ServiceEntity;
-import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.model.configurations.ServiceEntity;
 import com.ibas.brta.vehims.payload.request.ServiceEntityDTO;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.ServiceEntityResponse;

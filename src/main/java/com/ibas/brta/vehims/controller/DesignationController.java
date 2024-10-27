@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.controller;
 
-import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.configurations.Designation;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.DesignationResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
@@ -11,8 +11,6 @@ import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

@@ -1,6 +1,5 @@
 package com.ibas.brta.vehims.service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -8,6 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ibas.brta.vehims.model.userManagement.UserTinInfo;
+import com.ibas.brta.vehims.payload.response.user.UserTinInfoResponse;
+import com.ibas.brta.vehims.repository.UserTinInfoRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,9 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.exception.FieldValidationException;
-import com.ibas.brta.vehims.model.SUser;
-import com.ibas.brta.vehims.model.User;
-import com.ibas.brta.vehims.model.UserOfficeRole;
+import com.ibas.brta.vehims.model.userManagement.SUser;
+import com.ibas.brta.vehims.model.userManagement.User;
+import com.ibas.brta.vehims.model.userManagement.UserOfficeRole;
 import com.ibas.brta.vehims.payload.request.ChangePasswordRequest;
 import com.ibas.brta.vehims.payload.request.SUserRequest;
 import com.ibas.brta.vehims.payload.request.SUserUpdateRequest;
@@ -58,6 +60,9 @@ public class UserService {
 
     @Autowired
     EntityManager entityManager;
+
+    @Autowired
+    private UserTinInfoRepository userTinInfoRepository;
 
     // Create or Insert operation
     public SUserResponse createData(SUserRequest request) {
@@ -236,6 +241,15 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(request.getNewPassword()));
             userRepository.save(user);
         });
+    }
+
+    public UserTinInfoResponse getUserTinInfo(Long id) {
+        UserTinInfo dbEntity = userTinInfoRepository.findByUserId(id);
+        UserTinInfoResponse obj = new UserTinInfoResponse();
+        if (dbEntity != null) {
+            BeanUtils.copyProperties(dbEntity, obj);
+        }
+        return obj;
     }
 
 }

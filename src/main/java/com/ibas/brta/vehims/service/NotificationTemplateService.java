@@ -14,8 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.NotificationTemplate;
-import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.configurations.NotificationTemplate;
+import com.ibas.brta.vehims.model.configurations.ServiceEntity;
 import com.ibas.brta.vehims.payload.request.NotificationTemplateRequest;
 import com.ibas.brta.vehims.payload.response.NotificationTemplateResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

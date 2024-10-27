@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.configurations.ServiceEntity;
 import com.ibas.brta.vehims.payload.request.ServiceEntityDTO;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

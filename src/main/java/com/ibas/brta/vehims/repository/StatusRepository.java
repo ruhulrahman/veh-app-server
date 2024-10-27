@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ibas.brta.vehims.model.Status;
+import com.ibas.brta.vehims.model.configurations.Status;
 
 public interface StatusRepository extends JpaRepository<Status, Long> {
     Status findByStatusCode(String statusCode);

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.model.audit.EmailAudit;
 import com.ibas.brta.vehims.model.audit.MobileAudit;
 import com.ibas.brta.vehims.repository.audit.EmailAuditRepository;

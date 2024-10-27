@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.listener;
 
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.service.UserAuditService;
 
 import org.springframework.beans.factory.annotation.Autowired;

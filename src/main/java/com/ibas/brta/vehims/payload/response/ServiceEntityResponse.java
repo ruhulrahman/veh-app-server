@@ -1,10 +1,5 @@
 package com.ibas.brta.vehims.payload.response;
 
-import java.io.Serializable;
-import java.util.*;
-
-import com.ibas.brta.vehims.model.ServiceEntity;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

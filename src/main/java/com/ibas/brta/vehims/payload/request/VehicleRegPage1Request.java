@@ -55,4 +55,6 @@ public class VehicleRegPage1Request {
     private String engineNumber;
 
     private Integer pageCompleted;
+    private Long serviceRequestId;
+    private Long vehicleInfoId;
 }

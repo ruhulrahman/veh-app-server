@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.repository;
 
-import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.configurations.Designation;
 
 import java.util.List;
 

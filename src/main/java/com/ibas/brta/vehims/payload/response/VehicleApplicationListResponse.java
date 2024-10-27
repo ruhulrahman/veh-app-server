@@ -1,14 +1,9 @@
 package com.ibas.brta.vehims.payload.response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import org.hibernate.annotations.NaturalId;
+import com.ibas.brta.vehims.model.configurations.Status;
 
-import com.ibas.brta.vehims.model.Status;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Data

@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ibas.brta.vehims.model.VehicleColor;
+import com.ibas.brta.vehims.model.configurations.VehicleColor;
 
 @Repository
 public interface VehicleColorRepository extends JpaRepository<VehicleColor, Long> {

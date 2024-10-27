@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -102,7 +103,12 @@ public class CommonController {
         List<?> locationList = commonService.findByStatusesByGroupCode("locations");
         List<?> userTypes = commonService.findByStatusesByGroupCode("user_types");
         List<?> officeTypeList = commonService.findByStatusesByGroupCode("office_types");
+        List<?> ownerTypeList = commonService.findByStatusesByGroupCode("owner_types");
         List<?> orgList = commonService.getActiveOrganizations();
+        List<?> revenueCheckStatusList=commonService.findByStatusesByGroupCode("revenue_check_statuses");
+        List<?> inspectionStatusList=commonService.findByStatusesByGroupCode("inspection_statuses");
+        List<?> vehicleApplicationCheckStatusList=commonService.findByStatusesByGroupCode("vehicle_application_statuses");
+        List<?> userList=commonService.getUsers();
 
         CommonDropdownResponse dropdowns = new CommonDropdownResponse();
         dropdowns.setDesignationList(designations);
@@ -122,7 +128,12 @@ public class CommonController {
         dropdowns.setUserTypeList(userTypes);
         dropdowns.setOrganizationList(orgList);
         dropdowns.setOfficeTypeList(officeTypeList);
+        dropdowns.setOwnerTypeList(ownerTypeList);
         dropdowns.setPaymentStatusList(new ArrayList<>());
+        dropdowns.setRevenueCheckStatusList(revenueCheckStatusList);
+        dropdowns.setInspectionStatusList(inspectionStatusList);
+        dropdowns.setVehicleApplicationCheckStatusList(vehicleApplicationCheckStatusList);
+        dropdowns.setUserList(userList);
 
         StatusProjection locationTypeDivision = commonService.getStatusByStatusCodeOrId("division");
 
@@ -165,6 +176,26 @@ public class CommonController {
         customArray.put("vehicleBrandList", vehicleBrandList);
 
         return ResponseEntity.ok(customArray);
+    }
+
+    @GetMapping("/v1/admin/common/get-locations-by-parent-location-id/{parentLocationId}")
+    public ResponseEntity<?> getLocationsByParentId(@PathVariable Long parentLocationId) {
+        List<CommonProjection> locationList = commonRepository
+                .getActiveLocationsByParentLocationId(parentLocationId);
+
+        Map<String, Object> customArray = new HashMap<>();
+        customArray.put("locationList", locationList);
+
+        return ResponseEntity.ok(customArray);
+    }
+
+    @GetMapping("/v1/admin/common/get-organization-by-thana-id/{thanaId}")
+    public CommonProjection getOrganizationByThanaId(@PathVariable Long thanaId) {
+        log.info("thanaId: {}", thanaId);
+        CommonProjection locationList = commonRepository
+                .getOrganizationByThanaId(thanaId);
+
+        return locationList;
     }
 
 }

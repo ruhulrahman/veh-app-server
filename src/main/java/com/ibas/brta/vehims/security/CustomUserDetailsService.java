@@ -1,7 +1,7 @@
 package com.ibas.brta.vehims.security;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

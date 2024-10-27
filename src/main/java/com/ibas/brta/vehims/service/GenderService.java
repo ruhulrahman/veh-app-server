@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.Gender;
+import com.ibas.brta.vehims.model.configurations.Gender;
 import com.ibas.brta.vehims.payload.request.GenderRequest;
 import com.ibas.brta.vehims.payload.response.GenderResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

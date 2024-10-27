@@ -14,15 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.AppointmentTimeSlot;
-import com.ibas.brta.vehims.model.NotificationTemplate;
-import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.configurations.AppointmentTimeSlot;
 import com.ibas.brta.vehims.payload.request.AppointmentTimeSlotRequest;
-import com.ibas.brta.vehims.payload.request.AppointmentTimeSlotRequest;
-import com.ibas.brta.vehims.payload.response.AppointmentTimeSlotResponse;
 import com.ibas.brta.vehims.payload.response.AppointmentTimeSlotResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.payload.response.ServiceEntityResponse;
 import com.ibas.brta.vehims.repository.AppointmentTimeSlotRepository;
 
 import jakarta.persistence.EntityNotFoundException;

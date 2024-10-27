@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.controller;
 
-import com.ibas.brta.vehims.model.BloodGroup;
+import com.ibas.brta.vehims.model.configurations.BloodGroup;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

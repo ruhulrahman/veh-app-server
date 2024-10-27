@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.model.FuelType;
+import com.ibas.brta.vehims.model.configurations.FuelType;
 import com.ibas.brta.vehims.payload.request.FuelTypeDTO;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
 import com.ibas.brta.vehims.payload.response.FuelTypeResponse;

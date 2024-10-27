@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.VehicleColor;
+import com.ibas.brta.vehims.model.configurations.VehicleColor;
 import com.ibas.brta.vehims.payload.request.VehicleColorDTO;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.VehicleColorResponse;

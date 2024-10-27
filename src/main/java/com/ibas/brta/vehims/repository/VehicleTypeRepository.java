@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import com.ibas.brta.vehims.model.VehicleType;
+import com.ibas.brta.vehims.model.configurations.VehicleType;
 
 @Repository
 public interface VehicleTypeRepository extends JpaRepository<VehicleType, Long> {

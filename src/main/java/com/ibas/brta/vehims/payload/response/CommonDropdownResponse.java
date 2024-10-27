@@ -34,4 +34,9 @@ public class CommonDropdownResponse {
     public List<?> locationList;
     public List<?> userTypes;
     public List<?> orgList;
+    public List<?> ownerTypeList;
+    public List<?> userList;
+    public List<?> revenueCheckStatusList;
+    public List<?> inspectionStatusList;
+    public List<?> vehicleApplicationCheckStatusList;
 }

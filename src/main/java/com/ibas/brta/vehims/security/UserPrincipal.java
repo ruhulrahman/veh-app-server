@@ -1,9 +1,8 @@
 package com.ibas.brta.vehims.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import org.springframework.security.core.GrantedAuthority;

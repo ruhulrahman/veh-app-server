@@ -14,8 +14,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.RolePermission;
-import com.ibas.brta.vehims.model.RoleU;
+import com.ibas.brta.vehims.model.userManagement.RolePermission;
+import com.ibas.brta.vehims.model.userManagement.RoleU;
 import com.ibas.brta.vehims.payload.request.RolePermissionDTO;
 import com.ibas.brta.vehims.payload.request.RoleURequest;
 import com.ibas.brta.vehims.payload.response.RoleUResponse;

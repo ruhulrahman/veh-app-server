@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.EmailTemplate;
-import com.ibas.brta.vehims.model.ServiceEntity;
+import com.ibas.brta.vehims.model.configurations.EmailTemplate;
+import com.ibas.brta.vehims.model.configurations.ServiceEntity;
 import com.ibas.brta.vehims.payload.request.EmailTemplateRequest;
 import com.ibas.brta.vehims.payload.response.EmailTemplateResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

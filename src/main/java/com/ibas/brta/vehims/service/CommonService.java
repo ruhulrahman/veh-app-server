@@ -1,7 +1,6 @@
 package com.ibas.brta.vehims.service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.model.configurations.StatusGroup;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
 import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.projection.CommonProjection;
@@ -123,6 +122,11 @@ public class CommonService {
 
     public List<?> getActiveImporters() {
         List<CommonProjection> listData = commonRepository.getActiveImporters();
+        return listData;
+    }
+
+    public List<?> getUsers() {
+        List<CommonProjection> listData = commonRepository.getUsers();
         return listData;
     }
 

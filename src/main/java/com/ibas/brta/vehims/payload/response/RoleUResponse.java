@@ -1,11 +1,6 @@
 package com.ibas.brta.vehims.payload.response;
 
-import java.io.Serializable;
 import java.util.List;
-import java.util.Set;
-
-import com.ibas.brta.vehims.model.Status;
-import com.ibas.brta.vehims.model.StatusGroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

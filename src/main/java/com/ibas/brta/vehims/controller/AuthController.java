@@ -26,7 +26,7 @@ import com.ibas.brta.vehims.exception.AppException;
 import com.ibas.brta.vehims.exception.ErrorDetails;
 import com.ibas.brta.vehims.exception.TokenRefreshException;
 import com.ibas.brta.vehims.model.RefreshToken;
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.model.rbac.Role;
 import com.ibas.brta.vehims.model.rbac.RoleName;
 import com.ibas.brta.vehims.payload.request.LoginRequest;

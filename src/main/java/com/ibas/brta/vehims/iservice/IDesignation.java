@@ -1,13 +1,6 @@
 package com.ibas.brta.vehims.iservice;
 
-import com.ibas.brta.vehims.model.Designation;
-import com.ibas.brta.vehims.payload.request.DesignationRequest;
-import com.ibas.brta.vehims.payload.response.DesignationResponse;
-import com.ibas.brta.vehims.payload.response.PagedResponse;
-
-import javax.swing.text.html.Option;
-
-import org.springframework.data.domain.Page;
+import com.ibas.brta.vehims.model.configurations.Designation;
 
 import java.util.List;
 import java.util.Optional;

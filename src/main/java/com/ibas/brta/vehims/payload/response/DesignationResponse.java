@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.payload.response;
 
-import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.configurations.Designation;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

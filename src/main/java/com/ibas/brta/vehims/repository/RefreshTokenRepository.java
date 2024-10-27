@@ -1,7 +1,7 @@
 package com.ibas.brta.vehims.repository;
 
 import com.ibas.brta.vehims.model.RefreshToken;
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;

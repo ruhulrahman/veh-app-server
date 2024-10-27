@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.controller;
 
-import com.ibas.brta.vehims.model.VehicleColor;
+import com.ibas.brta.vehims.model.configurations.VehicleColor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

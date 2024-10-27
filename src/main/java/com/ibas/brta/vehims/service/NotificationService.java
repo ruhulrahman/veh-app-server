@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.repository.SUserRepository;
 import com.ibas.brta.vehims.repository.UserRepository;
 

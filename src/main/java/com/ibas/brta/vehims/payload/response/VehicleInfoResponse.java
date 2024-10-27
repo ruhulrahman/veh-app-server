@@ -80,4 +80,8 @@ public class VehicleInfoResponse {
     private Integer overhangsOther;
     private Integer statusId;
     private Integer pageCompleted;
+    private UserNidInfoResponse userNidInfo;
+    private VServiceRequestResponse serviceRequest;
+    private VehicleOwnerResponse vehicleOwner;
+    private List<VehicleOwnerResponse> vehicleOwners;
 }

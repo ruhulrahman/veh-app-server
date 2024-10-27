@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IStatus;
-import com.ibas.brta.vehims.model.Status;
-import com.ibas.brta.vehims.model.StatusGroup;
+import com.ibas.brta.vehims.model.configurations.Status;
+import com.ibas.brta.vehims.model.configurations.StatusGroup;
 import com.ibas.brta.vehims.payload.request.StatusRequest;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
 import com.ibas.brta.vehims.payload.response.StatusGroupResponse;

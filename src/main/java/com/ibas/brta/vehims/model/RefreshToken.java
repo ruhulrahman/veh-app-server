@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.model;
 
+import com.ibas.brta.vehims.model.userManagement.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

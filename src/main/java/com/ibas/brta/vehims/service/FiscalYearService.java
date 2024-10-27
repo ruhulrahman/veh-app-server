@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.FiscalYear;
+import com.ibas.brta.vehims.model.configurations.FiscalYear;
 import com.ibas.brta.vehims.payload.request.FiscalYearRequest;
 import com.ibas.brta.vehims.payload.response.FiscalYearResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

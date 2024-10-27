@@ -15,7 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.iservice.ICountry;
-import com.ibas.brta.vehims.model.Country;
+import com.ibas.brta.vehims.model.configurations.Country;
 import com.ibas.brta.vehims.payload.request.CountryDTO;
 import com.ibas.brta.vehims.payload.response.CountryResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

@@ -5,29 +5,26 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.ibas.brta.vehims.payload.request.PermissionRequest;
 import com.ibas.brta.vehims.payload.request.VehicleRegPage1Request;
 import com.ibas.brta.vehims.payload.request.VehicleRegPage2Request;
+import com.ibas.brta.vehims.payload.request.VehicleRegPage3Request;
 import com.ibas.brta.vehims.payload.response.ApiResponse;
-import com.ibas.brta.vehims.payload.response.PermissionResponse;
 import com.ibas.brta.vehims.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.service.PermissionService;
+import com.ibas.brta.vehims.payload.response.VServiceRequestResponse;
+import com.ibas.brta.vehims.service.VServiceRequestService;
 import com.ibas.brta.vehims.service.VehicleInfoService;
 import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
 
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
@@ -37,9 +34,12 @@ public class VehicleInfoController {
         @Autowired
         VehicleInfoService vehicleInfoService;
 
+        @Autowired
+        VServiceRequestService serviceRequestService;
+
         @PostMapping("/v1/applicant/vehicle/registration-application-page1")
         public ResponseEntity<?> storeVehicleRegPage1(@Valid @RequestBody VehicleRegPage1Request request) {
-                VehicleInfoResponse saveData = vehicleInfoService.storeVehicleRegPage1(request);
+                VServiceRequestResponse saveData = vehicleInfoService.storeVehicleRegPage1(request);
 
                 URI location = ServletUriComponentsBuilder
                                 .fromCurrentContextPath().path("/")
@@ -61,6 +61,18 @@ public class VehicleInfoController {
                                 .body(ApiResponse.success("Page 2 data saved.", saveData));
         }
 
+        @PostMapping("/v1/applicant/vehicle/registration-application-page3")
+        public ResponseEntity<?> storeVehicleRegPage3(@Valid @RequestBody VehicleRegPage3Request request) {
+                VehicleInfoResponse saveData = vehicleInfoService.storeVehicleRegPage3(request);
+
+                URI location = ServletUriComponentsBuilder
+                                .fromCurrentContextPath().path("/")
+                                .buildAndExpand("").toUri();
+
+                return ResponseEntity.created(location)
+                                .body(ApiResponse.success("Page 3 data saved.", saveData));
+        }
+
         @GetMapping("/v1/applicant/vehicle/registration-application/list")
         public PagedResponse<?> findListWithPaginationBySearch(
                         @RequestParam(required = false) String chassisNumber,
@@ -79,8 +91,16 @@ public class VehicleInfoController {
 
         // Get a single item by ID
         @GetMapping("/v1/applicant/vehicle/{id}")
-        public ResponseEntity<?> getDataById(@PathVariable Long id) {
-                VehicleInfoResponse response = vehicleInfoService.getDataById(id);
+        public ResponseEntity<?> getDataById(@PathVariable Long serviceRequestId) {
+                VehicleInfoResponse response = vehicleInfoService.getDataById(serviceRequestId);
+                return ResponseEntity.ok(response);
+        }
+
+        // Get a single item by ID
+        @GetMapping("/v1/applicant/vehicle/service/{serviceRequestId}")
+        public ResponseEntity<?> getVerhicleServiceReqeustById(@PathVariable Long serviceRequestId) {
+                VServiceRequestResponse response = serviceRequestService
+                                .getServiceRequestWithDetailsById(serviceRequestId);
                 return ResponseEntity.ok(response);
         }
 

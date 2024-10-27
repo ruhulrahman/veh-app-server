@@ -41,6 +41,6 @@ public abstract class DateAudit implements Serializable {
 
     @Version
     @Column(name = "version_no")
-    private Integer version;
+    private Integer version = 0;
 
 }

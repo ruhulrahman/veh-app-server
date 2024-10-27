@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.repository;
 
-import com.ibas.brta.vehims.model.UserOfficeRole;
+import com.ibas.brta.vehims.model.userManagement.UserOfficeRole;
 
 import java.util.List;
 

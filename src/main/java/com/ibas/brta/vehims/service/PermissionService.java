@@ -15,7 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.Permission;
+import com.ibas.brta.vehims.model.userManagement.Permission;
 import com.ibas.brta.vehims.payload.request.PermissionRequest;
 import com.ibas.brta.vehims.payload.response.PermissionResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

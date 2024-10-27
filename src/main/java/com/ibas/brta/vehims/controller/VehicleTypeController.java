@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.controller;
 
-import com.ibas.brta.vehims.model.VehicleType;
+import com.ibas.brta.vehims.model.configurations.VehicleType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,6 @@ import com.ibas.brta.vehims.util.AppConstants;
 import jakarta.validation.Valid;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")

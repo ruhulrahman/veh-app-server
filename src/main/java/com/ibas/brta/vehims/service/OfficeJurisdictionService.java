@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.OfficeJurisdiction;
-import com.ibas.brta.vehims.model.Organization;
+import com.ibas.brta.vehims.model.configurations.OfficeJurisdiction;
+import com.ibas.brta.vehims.model.configurations.Organization;
 import com.ibas.brta.vehims.payload.request.OfficeJurisdictionRequest;
 import com.ibas.brta.vehims.payload.response.LocationResponse;
 import com.ibas.brta.vehims.payload.response.OfficeJurisdictionResponse;

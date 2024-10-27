@@ -7,9 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ibas.brta.vehims.model.StatusGroup;
-import com.ibas.brta.vehims.model.User;
-import com.ibas.brta.vehims.model.UserOfficeRole;
+import com.ibas.brta.vehims.model.configurations.StatusGroup;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.payload.response.UserOfficeRoleResponse;
 import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.projection.StatusProjection;
@@ -45,11 +44,24 @@ public interface CommonRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT org_id as id, name_en as nameEn, name_bn as nameBn FROM c_organizations WHERE office_type_id = :officeTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getActiveOrganizationsByOfficeTypeId(Long officeTypeId);
 
-        @Query(value = "SELECT status_id as id, name_en as nameEn, name_bn as nameBn FROM c_statuses WHERE status_code = :statusCodeOrId OR CAST(status_id AS CHAR) = :statusCodeOrId", nativeQuery = true)
+        @Query(value = "SELECT status_id as id, name_en as nameEn, name_bn as nameBn, status_code as statusCode FROM c_statuses WHERE status_code = :statusCodeOrId OR CAST(status_id AS character varying) = :statusCodeOrId", nativeQuery = true)
         StatusProjection getStatusByStatusCodeOrId(@Param("statusCodeOrId") String statusCodeOrId);
+
+        @Query(value = "SELECT service_id as id, name_en as nameEn, name_bn as nameBn FROM c_services WHERE service_code = :codeOrId OR CAST(service_id AS character varying) = :codeOrId", nativeQuery = true)
+        StatusProjection getServiceByCodeOrId(@Param("codeOrId") String codeOrId);
 
         @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE location_type_id = :locationTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getActiveLocationsByLocationTypeId(@Param("locationTypeId") Long locationTypeId);
+
+        @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE parent_location_id = :parentLocationId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveLocationsByParentLocationId(@Param("parentLocationId") Long parentLocationId);
+
+        @Query(value = "SELECT org.org_id as id, org.name_en as nameEn, org.name_bn as nameBn " // Added space after
+                                                                                                // nameBn
+                        + "FROM c_organizations org "
+                        + "JOIN c_office_jurisdictions as oj ON org.org_id = oj.org_id "
+                        + "WHERE oj.thana_id = :thanaId", nativeQuery = true)
+        CommonProjection getOrganizationByThanaId(@Param("thanaId") Long thanaId);
 
         @Query(value = "SELECT role_id FROM s_user_organization_roles WHERE user_id = :userId", nativeQuery = true)
         List<Integer> getRoleIdsByUserId(@Param("userId") Long userId);
@@ -96,4 +108,9 @@ public interface CommonRepository extends JpaRepository<User, Long> {
 
         @Query(value = "SELECT brand_id as id, name_en as nameEn, name_bn as nameBn FROM c_vehicle_brands WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getActiveBrands();
+
+        @Query(value = "SELECT user_id as id, name_en as nameEn, name_bn as nameBn FROM s_users WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getUsers();
+
+
 }

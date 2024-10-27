@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.VehicleMaker;
+import com.ibas.brta.vehims.model.configurations.VehicleMaker;
 import com.ibas.brta.vehims.payload.request.VehicleMakerRequest;
 import com.ibas.brta.vehims.payload.response.VehicleMakerResponse;
 import com.ibas.brta.vehims.payload.response.CountryResponse;

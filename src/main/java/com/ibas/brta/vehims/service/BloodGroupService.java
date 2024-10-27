@@ -15,8 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.ibas.brta.vehims.model.BloodGroup;
-import com.ibas.brta.vehims.model.Designation;
+import com.ibas.brta.vehims.model.configurations.BloodGroup;
 import com.ibas.brta.vehims.payload.request.BloodGroupDTO;
 import com.ibas.brta.vehims.payload.response.BloodGroupResponse;
 import com.ibas.brta.vehims.payload.response.PagedResponse;

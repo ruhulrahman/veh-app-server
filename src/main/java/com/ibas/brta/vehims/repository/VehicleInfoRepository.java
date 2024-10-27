@@ -1,7 +1,5 @@
 package com.ibas.brta.vehims.repository;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ibas.brta.vehims.model.VehicleInfo;
+import com.ibas.brta.vehims.model.vehicle.VehicleInfo;
 import com.ibas.brta.vehims.payload.response.VehicleInfoResponse;
 
 @Repository
@@ -27,4 +25,5 @@ public interface VehicleInfoRepository extends JpaRepository<VehicleInfo, Long> 
                         @Param("chassisNumber") String chassisNumber,
                         @Param("engineNumber") String engineNumber,
                         Pageable pageable);
+
 }

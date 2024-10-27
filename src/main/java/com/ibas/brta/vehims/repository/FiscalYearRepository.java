@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ibas.brta.vehims.model.FiscalYear;
+import com.ibas.brta.vehims.model.configurations.FiscalYear;
 
 @Repository
 public interface FiscalYearRepository extends JpaRepository<FiscalYear, Long> {

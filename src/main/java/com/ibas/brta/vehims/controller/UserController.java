@@ -1,7 +1,7 @@
 package com.ibas.brta.vehims.controller;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
-import com.ibas.brta.vehims.model.User;
+import com.ibas.brta.vehims.model.userManagement.User;
 import com.ibas.brta.vehims.payload.UserIdentityAvailability;
 import com.ibas.brta.vehims.payload.UserProfile;
 import com.ibas.brta.vehims.payload.UserSummary;
@@ -32,8 +32,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -254,6 +252,11 @@ public class UserController {
 
         return ResponseEntity.created(location)
                 .body(ApiResponse.success("Your password has been changed."));
+    }
+
+    @GetMapping("v1/admin/user-management/user/get-tin-info")
+    public ResponseEntity<?> getUserTinInfo(@CurrentUser UserPrincipal currentUser) {
+        return ResponseEntity.ok(userService.getUserTinInfo(currentUser.getId()));
     }
 
 }
