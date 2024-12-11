@@ -2,9 +2,9 @@ package com.ibas.brta.vehims.iservice;
 
 import java.util.*;
 
-import com.ibas.brta.vehims.model.configurations.StatusGroup;
-import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
+import com.ibas.brta.vehims.configurations.model.StatusGroup;
+import com.ibas.brta.vehims.common.payload.response.PagedResponse;
+import com.ibas.brta.vehims.configurations.payload.response.StatusGroupResponse;
 
 public interface IStatusGroup {
 

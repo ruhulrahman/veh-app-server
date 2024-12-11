@@ -1,8 +1,8 @@
 package com.ibas.brta.vehims.util;
 
-import com.ibas.brta.vehims.model.rbac.Menu;
-import com.ibas.brta.vehims.payload.request.MenuRequest;
-import com.ibas.brta.vehims.payload.response.MenuResponse;
+import com.ibas.brta.vehims.common.model.rbac.Menu;
+import com.ibas.brta.vehims.common.payload.request.MenuRequest;
+import com.ibas.brta.vehims.common.payload.response.MenuResponse;
 
 /**
  * Mapper to convert DTO objects to Entity class object and vice-versa.

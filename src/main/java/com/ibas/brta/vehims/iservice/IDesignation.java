@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.iservice;
 
-import com.ibas.brta.vehims.model.configurations.Designation;
+import com.ibas.brta.vehims.configurations.model.Designation;
 
 import java.util.List;
 import java.util.Optional;

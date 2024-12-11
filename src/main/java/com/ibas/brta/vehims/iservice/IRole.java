@@ -1,9 +1,9 @@
 package com.ibas.brta.vehims.iservice;
 
-import com.ibas.brta.vehims.model.rbac.Role;
-import com.ibas.brta.vehims.model.rbac.RoleName;
-import com.ibas.brta.vehims.payload.response.PagedResponse;
-import com.ibas.brta.vehims.payload.response.RoleResponse;
+import com.ibas.brta.vehims.common.model.rbac.Role;
+import com.ibas.brta.vehims.common.model.rbac.RoleName;
+import com.ibas.brta.vehims.common.payload.response.PagedResponse;
+import com.ibas.brta.vehims.userManagement.payload.response.RoleResponse;
 
 import java.util.List;
 import java.util.Optional;

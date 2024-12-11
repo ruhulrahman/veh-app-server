@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+    name="DrivingLicenseReport" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="12345678-1234-1234-1234-123456789abc">
+
+    <!-- Fields from DTO -->
+    <field name="serviceRequestNo" class="java.lang.String"/>
+    <field name="applicantName" class="java.lang.String"/>
+    <field name="applicantType" class="java.lang.String"/>
+    <field name="licenseType" class="java.lang.String"/>
+    <field name="applicationStatus" class="java.lang.String"/>
+    <field name="applicationDate" class="java.time.LocalDateTime"/>
+
+    <!-- Title -->
+    <title>
+        <band height="50">
+            <textElement>
+                <font size="18" isBold="true"/>
+            </textElement>
+            <textField>
+                <reportElement x="0" y="0" width="535" height="30" uuid="title-element"/>
+                <textFieldExpression><![CDATA["Driving License Report"]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <!-- Column Headers -->
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="90" height="20" uuid="header-1"/>
+                <text><![CDATA[Service Req No]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="100" y="0" width="120" height="20" uuid="header-2"/>
+                <text><![CDATA[Applicant Name]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="230" y="0" width="100" height="20" uuid="header-3"/>
+                <text><![CDATA[Applicant Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="340" y="0" width="80" height="20" uuid="header-4"/>
+                <text><![CDATA[License Type]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="430" y="0" width="100" height="20" uuid="header-5"/>
+                <text><![CDATA[Status]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <!-- Data Rows -->
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="90" height="20" uuid="detail-1"/>
+                <textFieldExpression><![CDATA[$F{serviceRequestNo}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="100" y="0" width="120" height="20" uuid="detail-2"/>
+                <textFieldExpression><![CDATA[$F{applicantName}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="230" y="0" width="100" height="20" uuid="detail-3"/>
+                <textFieldExpression><![CDATA[$F{applicantType}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="340" y="0" width="80" height="20" uuid="detail-4"/>
+                <textFieldExpression><![CDATA[$F{licenseType}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="430" y="0" width="100" height="20" uuid="detail-5"/>
+                <textFieldExpression><![CDATA[$F{applicationStatus}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>

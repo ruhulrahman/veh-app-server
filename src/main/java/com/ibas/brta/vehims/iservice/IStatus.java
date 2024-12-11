@@ -2,8 +2,8 @@ package com.ibas.brta.vehims.iservice;
 
 import java.util.*;
 
-import com.ibas.brta.vehims.model.configurations.Status;
-import com.ibas.brta.vehims.payload.request.StatusRequest;
+import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.payload.request.StatusRequest;
 
 public interface IStatus {
 

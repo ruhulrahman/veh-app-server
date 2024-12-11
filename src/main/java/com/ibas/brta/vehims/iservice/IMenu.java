@@ -1,9 +1,9 @@
 package com.ibas.brta.vehims.iservice;
 
-import com.ibas.brta.vehims.model.rbac.Role;
-import com.ibas.brta.vehims.model.rbac.Menu;
-import com.ibas.brta.vehims.payload.response.MenuResponse;
-import com.ibas.brta.vehims.payload.response.PagedResponse;
+import com.ibas.brta.vehims.common.model.rbac.Role;
+import com.ibas.brta.vehims.common.model.rbac.Menu;
+import com.ibas.brta.vehims.common.payload.response.MenuResponse;
+import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.projection.MenuProjection;
 
 import java.util.Collection;

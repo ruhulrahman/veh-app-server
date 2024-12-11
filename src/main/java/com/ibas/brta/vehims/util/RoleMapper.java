@@ -1,10 +1,10 @@
 package com.ibas.brta.vehims.util;
 
-import com.ibas.brta.vehims.model.rbac.Role;
-import com.ibas.brta.vehims.model.rbac.RoleName;
-import com.ibas.brta.vehims.model.rbac.Privilege;
-import com.ibas.brta.vehims.payload.request.RoleRequest;
-import com.ibas.brta.vehims.payload.response.RoleResponse;
+import com.ibas.brta.vehims.common.model.rbac.Role;
+import com.ibas.brta.vehims.common.model.rbac.RoleName;
+import com.ibas.brta.vehims.common.model.rbac.Privilege;
+import com.ibas.brta.vehims.userManagement.payload.request.RoleRequest;
+import com.ibas.brta.vehims.userManagement.payload.response.RoleResponse;
 
 import java.util.Collection;
 

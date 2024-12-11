@@ -21,7 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  */
 @SpringBootApplication
 @EnableJpaAuditing
-@EnableScheduling  // Enable scheduling functionality
+// @EnableScheduling // Enable scheduling functionality
 public class ServletInitializer extends SpringBootServletInitializer {
     private final String devUrl = "localhost:8080";
 
@@ -34,11 +34,11 @@ public class ServletInitializer extends SpringBootServletInitializer {
     public static void main(String[] args) {
         SpringApplication.run(ServletInitializer.class, args);
 
-//        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-//        String rawPassword = "123456"; // The plain text password
-//        String encodedPassword = passwordEncoder.encode(rawPassword);
-//
-//        System.out.println("Encoded password: " + encodedPassword);
+        // BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        // String rawPassword = "123456"; // The plain text password
+        // String encodedPassword = passwordEncoder.encode(rawPassword);
+        //
+        // System.out.println("Encoded password: " + encodedPassword);
     }
 
     @Override

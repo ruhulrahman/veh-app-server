@@ -1,11 +1,7 @@
 package com.ibas.brta.vehims.util;
 
-import com.ibas.brta.vehims.model.rbac.Menu;
-import com.ibas.brta.vehims.payload.response.MenuResponse;
-import com.ibas.brta.vehims.payload.response.RegistrationApplicationResponse;
+import com.ibas.brta.vehims.vehicle.payload.response.RegistrationApplicationResponse;
 import com.ibas.brta.vehims.projection.RegistrationApplications;
-
-import java.time.Instant;
 
 public class FilterModelMapper {
 
@@ -26,7 +22,7 @@ public class FilterModelMapper {
         response.setApplicationStatusId(applications.getApplicationStatusId());
         response.setApplicationStatusName(applications.getApplicationStatusName());
         response.setApplicationStatusCode(applications.getApplicationStatusCode());
-        response.setAplicationDate(applications.getAplicationDate());
+        response.setApplicationDate(applications.getApplicationDate());
 
         response.setForwardDateForInspection(applications.getForwardDateForInspection());
         response.setInspectorId(applications.getInspectorId());

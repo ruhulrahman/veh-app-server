@@ -5,14 +5,14 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ibas.brta.vehims.model.configurations.Designation;
-import com.ibas.brta.vehims.model.configurations.Status;
-import com.ibas.brta.vehims.model.configurations.StatusGroup;
-import com.ibas.brta.vehims.model.configurations.VehicleType;
-import com.ibas.brta.vehims.payload.response.DesignationResponse;
-import com.ibas.brta.vehims.payload.response.StatusGroupResponse;
-import com.ibas.brta.vehims.payload.response.StatusResponse;
-import com.ibas.brta.vehims.payload.response.VehicleTypeResponse;
+import com.ibas.brta.vehims.configurations.model.Designation;
+import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.model.StatusGroup;
+import com.ibas.brta.vehims.configurations.model.VehicleType;
+import com.ibas.brta.vehims.configurations.payload.response.DesignationResponse;
+import com.ibas.brta.vehims.configurations.payload.response.StatusGroupResponse;
+import com.ibas.brta.vehims.configurations.payload.response.StatusResponse;
+import com.ibas.brta.vehims.configurations.payload.response.VehicleTypeResponse;
 
 /**
  * Converting Domain Objects to DTOs (Data Transfer Object) or vice-versa

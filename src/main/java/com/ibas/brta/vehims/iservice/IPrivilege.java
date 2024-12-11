@@ -1,6 +1,6 @@
 package com.ibas.brta.vehims.iservice;
 
-import com.ibas.brta.vehims.model.rbac.Privilege;
+import com.ibas.brta.vehims.common.model.rbac.Privilege;
 
 import java.util.List;
 import java.util.Optional;

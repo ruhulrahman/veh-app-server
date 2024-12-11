@@ -32,7 +32,7 @@ public interface RegistrationApplications {
 
     Long getApplicantId();
 
-    Instant getAplicationDate();
+    Instant getApplicationDate();
 
     Long getApplicationStatusId();
 

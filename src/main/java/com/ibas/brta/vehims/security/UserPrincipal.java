@@ -1,7 +1,7 @@
 package com.ibas.brta.vehims.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ibas.brta.vehims.model.userManagement.User;
+import com.ibas.brta.vehims.userManagement.model.User;
 
 import lombok.Data;
 

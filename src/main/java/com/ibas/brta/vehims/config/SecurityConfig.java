@@ -63,8 +63,9 @@ public class SecurityConfig {
                 .authorizeRequests(authorizeRequests -> authorizeRequests
                         // .requestMatchers("/", "/favicon.ico", "/**/*.png", "/**/*.gif", "/**/*.svg",
                         // "/**/*.jpg", "/**/*.html", "/**/*.css", "/**/*.js").permitAll()
-                        .requestMatchers("/api/auth/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability")
+                        .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/user/checkUsernameAvailability", "/api/user/checkEmailAvailability",
+                                "/api/otp/**", "/api/nid/v1/get-data-from-nid-service")
                         .permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/veh/**", "/api/users/**").permitAll()
                         .requestMatchers("/error").permitAll()
