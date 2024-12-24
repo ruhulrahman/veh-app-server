@@ -18,26 +18,39 @@ import com.ibas.brta.vehims.userManagement.repository.UserRepository;
 import com.ibas.brta.vehims.security.CurrentUser;
 import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.configurations.service.CommonService;
+import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
+import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.userManagement.service.PermissionService;
 import com.ibas.brta.vehims.userManagement.service.RolePermissionService;
 import com.ibas.brta.vehims.userManagement.service.RoleUService;
 import com.ibas.brta.vehims.userManagement.service.UserService;
 import com.ibas.brta.vehims.util.AppConstants;
+import com.ibas.brta.vehims.util.Utils;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URI;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -259,6 +272,29 @@ public class UserController {
     @GetMapping("v1/admin/user-management/user/get-tin-info")
     public ResponseEntity<?> getUserTinInfo(@CurrentUser UserPrincipal currentUser) {
         return ResponseEntity.ok(userService.getUserTinInfo(currentUser.getId()));
+    }
+
+    @PostMapping("v1/admin/user-management/user/upload-profile-photo")
+    public ResponseEntity<?> uploadUserPhotoFile(@CurrentUser UserPrincipal currentUser,
+            @RequestParam("attachment") MultipartFile attachment) {
+
+        if (attachment.isEmpty()) {
+            throw new RuntimeException("File is empty.");
+        }
+
+        String fileExtension = StringUtils.getFilenameExtension(attachment.getOriginalFilename());
+        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension)) {
+            return ResponseEntity
+                    .badRequest().body("Invalid file type. Only JPG, PNG, and PDF are allowed.");
+        }
+
+        return userService.uploadUserPhoto(attachment, currentUser.getId());
+    }
+
+    @GetMapping("v1/admin/user-management/user/get-profile-photo")
+    public ResponseEntity<?> getUserPhotoFile(@CurrentUser UserPrincipal currentUser) {
+
+        return userService.getUserPhoto(currentUser.getId());
     }
 
     @GetMapping("v1/admin/user-management/user/get-nid-info")

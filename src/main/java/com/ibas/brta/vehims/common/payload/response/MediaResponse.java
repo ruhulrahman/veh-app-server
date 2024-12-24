@@ -7,6 +7,11 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+
+import jakarta.validation.constraints.Size;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -14,9 +19,9 @@ import java.time.LocalDateTime;
 public class MediaResponse {
     private Long id;
 
-    private String model;
+    // private String model;
 
-    private Integer modelId;
+    // private Long modelId;
 
     private String originalName;
 
@@ -24,18 +29,16 @@ public class MediaResponse {
 
     private String file;
 
+    @Size(max = 20)
     private String extension;
 
+    @Size(max = 20)
     private String type;
 
-    private Integer size;
+    private Resource resource;
+
+    private Long size;
 
     private LocalDateTime createdDate;
-
-    private LocalDateTime updatedDate;
-
-    private LocalDateTime deletedDate;
-
-    private Integer versionNo;
 
 }

@@ -6,17 +6,31 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-@Getter
-@Setter
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ibas.brta.vehims.util.Utils;
+
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.Size;
+
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class MediaRequest {
     private Long id;
 
-    private String model;
+    private MultipartFile attachmentFile;
 
-    private Integer modelId;
+    // private String model;
+
+    // private Long modelId;
 
     private String originalName;
 
@@ -24,18 +38,12 @@ public class MediaRequest {
 
     private String file;
 
+    @Size(max = 20)
     private String extension;
 
+    @Size(max = 20)
     private String type;
 
-    private Integer size;
-
-    private LocalDateTime createdDate;
-
-    private LocalDateTime updatedDate;
-
-    private LocalDateTime deletedDate;
-
-    private Integer versionNo;
+    private Long size;
 
 }

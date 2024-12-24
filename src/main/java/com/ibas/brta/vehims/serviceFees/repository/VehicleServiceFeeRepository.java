@@ -48,12 +48,15 @@ public interface VehicleServiceFeeRepository extends JpaRepository<VehicleServic
                 FROM VehicleServiceFees vsf
                 LEFT JOIN ServiceEntity ce ON vsf.serviceId = ce.id
                 LEFT JOIN VehicleServiceFeesVehicleTypeMap fMap ON vsf.id = fMap.serviceFeesId
-                WHERE (:serviceId IS NULL OR vsf.serviceId = :serviceId)
-                   OR (:isAirCondition IS NULL OR vsf.isAirCondition = :isAirCondition)
-                   OR (:isHire IS NULL OR vsf.isHire = :isHire)
-                   OR (:vehicleTypeId IS NULL OR fMap.vehicleTypeId = :vehicleTypeId)
-                  AND (:isActive IS NULL OR vsf.isActive = :isActive OR
-                      (vsf.effectiveStartDate <= CURRENT_TIMESTAMP AND vsf.effectiveEndDate >= CURRENT_TIMESTAMP))
+                WHERE
+                    (:serviceId IS NULL OR vsf.serviceId = :serviceId)
+                    AND (:isAirCondition IS NULL OR vsf.isAirCondition = :isAirCondition)
+                    AND (:isHire IS NULL OR vsf.isHire = :isHire)
+                    AND (:vehicleTypeId IS NULL OR fMap.vehicleTypeId = :vehicleTypeId)
+                    AND (
+                        :isActive IS NULL OR vsf.isActive = :isActive OR
+                        (vsf.effectiveStartDate <= CURRENT_TIMESTAMP AND vsf.effectiveEndDate >= CURRENT_TIMESTAMP)
+                    )
                 GROUP BY vsf.id, vsf.serviceId, ce.nameEn, ce.nameBn, vsf.isYearlyFee, vsf.mainFee, vsf.lateFee,
                          vsf.vatPercentage, vsf.sdPercentage, vsf.effectiveStartDate, vsf.effectiveEndDate, vsf.isActive,
                          vsf.ccMin, vsf.ccMax, vsf.seatMin, vsf.seatMax, vsf.weightMin, vsf.weightMax, vsf.kwMin, vsf.kwMax,
@@ -99,7 +102,30 @@ public interface VehicleServiceFeeRepository extends JpaRepository<VehicleServic
             LEFT JOIN ServiceEntity ce ON vsf.serviceId = ce.id
             WHERE vsf.serviceId IN :serviceIds
             AND (vsf.isActive = true OR vsf.effectiveEndDate >= CURRENT_TIMESTAMP)
-            GROUP BY vsf.serviceId, ce.nameEn, ce.nameBn
+            GROUP BY
+                vsf.id,
+                vsf.serviceId,
+                ce.nameEn,
+                ce.nameBn,
+                vsf.isYearlyFee,
+                vsf.mainFee,
+                vsf.lateFee,
+                vsf.vatPercentage,
+                vsf.sdPercentage,
+                vsf.effectiveStartDate,
+                vsf.effectiveEndDate,
+                vsf.isActive,
+                vsf.ccMin,
+                vsf.ccMax,
+                vsf.seatMin,
+                vsf.seatMax,
+                vsf.weightMin,
+                vsf.weightMax,
+                vsf.kwMin,
+                vsf.kwMax,
+                vsf.isAirCondition,
+                vsf.isHire,
+                ce.priority
             ORDER BY ce.priority ASC
             """)
     List<VehicleServiceFeesResponse> getServiceWithFeesByServiceIds(List<Long> serviceIds);

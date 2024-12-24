@@ -117,6 +117,8 @@ public class VehicleServiceFeesService {
     public PagedResponse<VehicleServiceFeesResponse> findAllBySearch(VehicleServiceFeesSearchFilter filter) {
 
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize());
+
+        log.info("filter ============== {}", filter);
         // Retrieve all records from the database
         Page<VehicleServiceFeesResponse> records = vehicleServiceFeeRepository
                 .findListWithPaginationBySearch(
@@ -155,6 +157,17 @@ public class VehicleServiceFeesService {
 
     // List all records
     public List<VehicleServiceFeesResponse> getServiceWithFeesByParentServiceCode(String serviceCode) {
+
+        List<Long> serviceIds = serviceRepository.findChildServiceIdsByServiceCode(serviceCode);
+        List<VehicleServiceFeesResponse> records = vehicleServiceFeeRepository
+                .getServiceWithFeesByServiceIds(serviceIds);
+
+        return records;
+    }
+
+    // List all records
+    public List<VehicleServiceFeesResponse> getServiceWithFeesByServiceRequestId(Long serviceRequestId,
+            String serviceCode) {
 
         List<Long> serviceIds = serviceRepository.findChildServiceIdsByServiceCode(serviceCode);
         List<VehicleServiceFeesResponse> records = vehicleServiceFeeRepository

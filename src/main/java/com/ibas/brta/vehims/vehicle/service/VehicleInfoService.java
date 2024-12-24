@@ -174,14 +174,20 @@ public class VehicleInfoService {
             AddressRequest addressRequest = new AddressRequest();
             BeanUtils.copyProperties(request.getAddressInfo(), addressRequest);
             addressRequest.setUserId(serviceRequest.getApplicantId());
-            addressRequest.setLocationId(7L); // FIXME
-            AddressResponse address = addressService.createData(addressRequest);
+            // addressRequest.setLocationId(7L); // FIXME
+            AddressResponse address;
+            AddressResponse addressExist = addressService.getDataById(addressRequest.getId());
+            if (addressExist != null) {
+                address = addressService.updateData(addressExist.getId(), addressRequest);
+            } else {
+                address = addressService.createData(addressRequest);
+            }
 
             VehicleOwnerRequest vehicleOwnerRequest = new VehicleOwnerRequest();
             BeanUtils.copyProperties(request.getVehicleOwner(), vehicleOwnerRequest);
             vehicleOwnerRequest.setServiceRequestId(serviceRequest.getId());
             vehicleOwnerRequest.setVehicleInfoId(serviceRequest.getVehicleInfoId());
-            vehicleOwnerRequest.setGenderId(1L);// FIXME
+            // vehicleOwnerRequest.setGenderId(1L);// FIXME
             vehicleOwnerRequest.setAddressId(address.getId());
 
             VehicleOwner vehicleOwnerExistingData = vehicleOwnerRepository

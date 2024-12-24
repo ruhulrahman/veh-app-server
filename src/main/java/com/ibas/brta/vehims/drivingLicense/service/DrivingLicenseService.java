@@ -1,35 +1,47 @@
 package com.ibas.brta.vehims.drivingLicense.service;
 
+import com.ibas.brta.vehims.common.model.Media;
+import com.ibas.brta.vehims.common.repository.MediaRepository;
 import com.ibas.brta.vehims.iservice.IRegistrationDrivingLicense;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import com.ibas.brta.vehims.userManagement.model.UserNidInfo;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
 import com.ibas.brta.vehims.drivingLicense.model.DLInformation;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
 import com.ibas.brta.vehims.drivingLicense.model.DrivingLicenseClass;
 import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage1Request;
 import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage2Request;
+import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.request.LearnerLicenseRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLApplicationResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLInformationResponse;
+import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceRequestDetailsResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DrivingLicenseApplicationDto;
 import com.ibas.brta.vehims.drivingLicense.payload.response.LearnerLicenseResponse;
 import com.ibas.brta.vehims.common.model.Address;
 import com.ibas.brta.vehims.common.model.CardDeliveryAddress;
 import com.ibas.brta.vehims.common.payload.request.CardDeliveryAddressRequest;
+import com.ibas.brta.vehims.common.payload.request.MediaRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.common.payload.response.CardDeliveryAddressResponse;
+import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.common.repository.AddressRepository;
 import com.ibas.brta.vehims.common.repository.CardDeliveryAddressRepository;
 import com.ibas.brta.vehims.common.service.AddressService;
 import com.ibas.brta.vehims.common.service.CardDeliveryAddressService;
+import com.ibas.brta.vehims.common.service.MediaService;
 import com.ibas.brta.vehims.configurations.payload.request.AddressRequest;
+import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
+import com.ibas.brta.vehims.configurations.payload.response.ExamCenterResponse;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
 import com.ibas.brta.vehims.configurations.repository.StatusRepository;
+import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
 import com.ibas.brta.vehims.drivingLicense.repository.DLInformationRepository;
+import com.ibas.brta.vehims.drivingLicense.repository.DLServiceMediaRepository;
 import com.ibas.brta.vehims.drivingLicense.repository.DLServiceRequestRepository;
 import com.ibas.brta.vehims.drivingLicense.repository.DrivingLicenseClassRepository;
 import com.ibas.brta.vehims.exception.FieldValidationException;
@@ -56,6 +68,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -100,6 +113,18 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
 
     @Autowired
     DrivingLicenseClassRepository drivingLicenseClassRepository;
+
+    @Autowired
+    DLServiceMediaRepository dlServiceMediaRepository;
+
+    @Autowired
+    MediaService mediaService;
+
+    @Autowired
+    MediaRepository mediaRepository;
+
+    @Autowired
+    DocumentTypeService documentTypeService;
 
     @Override
     public PagedResponse<DrivingLicenseApplicationDto> searchDrivingLicenseApplications(int page, int size,
@@ -369,6 +394,107 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
             return cardDeliveryAddressService.updateData(existingData.getCardDeliveryAddressId(), request);
         } else {
             return cardDeliveryAddressService.createData(request);
+        }
+    }
+
+    // Create or Insert operation
+    @Transactional
+    public DLServiceMediaResponse uploadLearnerDocument(DLServiceMediaRequest request) {
+
+        if (request.getServiceRequestNo() != null && !request.getServiceRequestNo().isEmpty()) {
+
+            DLServiceRequest existingServiceRequest = serviceRequestRepository
+                    .findByServiceRequestNo(request.getServiceRequestNo());
+
+            if (existingServiceRequest != null) {
+
+                MediaRequest mediaRequest = new MediaRequest();
+
+                BeanUtils.copyProperties(request, mediaRequest);
+
+                mediaRequest.setAttachmentFile(request.getAttachment());
+
+                MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
+
+                if (request.getMediaId() != null) {
+                    mediaService.deleteDlServiceMediaId(request.getMediaId());
+                }
+
+                DLServiceMedia dlServiceMedia = new DLServiceMedia();
+
+                BeanUtils.copyProperties(request, dlServiceMedia, "id");
+
+                dlServiceMedia.setServiceRequestId(existingServiceRequest.getId());
+                dlServiceMedia.setDlInfoId(existingServiceRequest.getDlInfoId());
+                dlServiceMedia.setMediaId(mediaResponse.getId());
+
+                DLServiceMedia savedDlServiceMedia = dlServiceMediaRepository.save(dlServiceMedia);
+
+                DLServiceMediaResponse response = new DLServiceMediaResponse();
+
+                BeanUtils.copyProperties(savedDlServiceMedia, response);
+
+                return response;
+
+            } else {
+                throw new EntityNotFoundException("Service Request Not Found");
+            }
+        } else {
+            throw new EntityNotFoundException("Service Request Not Found");
+        }
+    }
+
+    public List<DLServiceMediaResponse> getDlServiceMediasByServiceRequestNo(String serviceRequestNo) {
+
+        if (serviceRequestNo != null && !serviceRequestNo.isEmpty()) {
+
+            DLServiceRequest existingServiceRequest = serviceRequestRepository
+                    .findByServiceRequestNo(serviceRequestNo);
+
+            if (existingServiceRequest != null) {
+
+                List<DLServiceMedia> records = dlServiceMediaRepository
+                        .findByServiceRequestId(existingServiceRequest.getId());
+
+                List<DLServiceMediaResponse> responseData = records.stream()
+                        .map(dlServiceMedia -> {
+                            DLServiceMediaResponse response = new DLServiceMediaResponse();
+                            BeanUtils.copyProperties(dlServiceMedia, response);
+
+                            Optional<Media> media = mediaRepository.findById(response.getMediaId());
+
+                            if (media.isPresent()) {
+
+                                MediaResponse mediaResponse = new MediaResponse();
+                                BeanUtils.copyProperties(media.get(), mediaResponse);
+
+                                response.setMedia(mediaResponse);
+                                response.setFileName(mediaResponse.getFile());
+                            }
+                            // MediaResponse mediaResponse =
+                            // mediaService.getDataById(response.getMediaId());
+                            // response.setMedia(mediaResponse);
+                            //
+                            // if (mediaResponse != null) {
+                            // response.setFileName(mediaResponse.getFile());
+                            // }
+
+                            DocumentTypeResponse documentType = documentTypeService
+                                    .getDataById(response.getDocumentTypeId());
+                            if (documentType != null) {
+                                response.setDocumentTypeNameEn(documentType.getNameEn());
+                                response.setDocumentTypeNameBn(documentType.getNameBn());
+                            }
+                            return response;
+                        }).collect(Collectors.toList());
+
+                return responseData;
+
+            } else {
+                throw new EntityNotFoundException("Service Request Not Found");
+            }
+        } else {
+            throw new EntityNotFoundException("Service Request Not Found");
         }
     }
 

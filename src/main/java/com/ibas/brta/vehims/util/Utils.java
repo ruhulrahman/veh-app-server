@@ -5,6 +5,8 @@ import com.ibas.brta.vehims.security.UserPrincipal;
 import com.ibas.brta.vehims.userManagement.payload.response.UserFullResponse;
 import com.ibas.brta.vehims.userManagement.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.postgresql.util.PGobject;
@@ -23,6 +26,8 @@ public class Utils {
 
     @Autowired
     private static UserService userService;
+
+    private static final long MIN_FILE_SIZE = 1024; // Minimum file size in bytes
 
     public static Date getDateFromString(String date, String format) {
         try {
@@ -124,6 +129,21 @@ public class Utils {
         return formattedDateTime;
     }
 
+    public static String generateUniqueFileName(String originalFileName) {
+        // Extract file extension
+        String fileExtension = "";
+        int dotIndex = originalFileName.lastIndexOf('.');
+        if (dotIndex > 0 && dotIndex < originalFileName.length() - 1) {
+            fileExtension = originalFileName.substring(dotIndex); // Includes the dot (e.g., ".jpg")
+        }
+
+        // Generate unique file name using UUID
+        String uniqueFileName = UUID.randomUUID().toString();
+
+        // Return the unique file name with the extension
+        return uniqueFileName + fileExtension;
+    }
+
     public static Long getLoggedinUserId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
@@ -154,6 +174,31 @@ public class Utils {
             // Log the exception or handle it according to your needs
             throw new RuntimeException("Error parsing PostgreSQL array", e);
         }
+    }
+
+    // public static boolean isFileSizeValid(File file) {
+    // if (file.isEmpty()) {
+    // return false;
+    // }
+    // long fileSize = file.length();
+    // return fileSize >= MIN_FILE_SIZE;
+    // }
+
+    public static boolean isAllowedFileType(String contentType) {
+        // Allowed MIME types
+        List<String> allowedTypes = Arrays.asList("image/jpeg", "image/png", "application/pdf");
+        return allowedTypes.contains(contentType);
+    }
+
+    public static boolean isAllowedFileExtension(String fileName) {
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "pdf");
+        String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1).toLowerCase();
+        return allowedExtensions.contains(fileExtension);
+    }
+
+    public static String getFileUrl(HttpServletRequest request, String fileName) {
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
+                + "/api/files/" + fileName;
     }
 
 }

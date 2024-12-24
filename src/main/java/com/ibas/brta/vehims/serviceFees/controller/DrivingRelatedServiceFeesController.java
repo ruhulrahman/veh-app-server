@@ -24,6 +24,7 @@ import com.ibas.brta.vehims.common.payload.response.ServiceEconomicCodeResponse;
 import com.ibas.brta.vehims.serviceFees.payload.request.DrivingRelatedServiceFeesRequest;
 import com.ibas.brta.vehims.serviceFees.payload.response.DrivingRelatedServiceFeesResponse;
 import com.ibas.brta.vehims.serviceFees.service.DrivingRelatedServiceFeesService;
+import com.ibas.brta.vehims.serviceFees.service.VehicleServiceFeesService;
 import com.ibas.brta.vehims.util.AppConstants;
 
 import jakarta.validation.Valid;
@@ -34,88 +35,89 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api")
 public class DrivingRelatedServiceFeesController {
 
-    @Autowired
-    private DrivingRelatedServiceFeesService drivingRelatedServiceFeesService;
+        @Autowired
+        private DrivingRelatedServiceFeesService drivingRelatedServiceFeesService;
 
-    @PostMapping("/v1/admin/configurations/driving-related-service-fees/create")
-    public ResponseEntity<?> createData(@Valid @RequestBody DrivingRelatedServiceFeesRequest request) {
-        DrivingRelatedServiceFeesResponse saveData = drivingRelatedServiceFeesService.createData(request);
+        @PostMapping("/v1/admin/configurations/driving-related-service-fees/create")
+        public ResponseEntity<?> createData(@Valid @RequestBody DrivingRelatedServiceFeesRequest request) {
+                DrivingRelatedServiceFeesResponse saveData = drivingRelatedServiceFeesService.createData(request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/appointment-timeslot/")
-                .buildAndExpand().toUri();
+                URI location = ServletUriComponentsBuilder
+                                .fromCurrentContextPath().path("/appointment-timeslot/")
+                                .buildAndExpand().toUri();
 
-        return ResponseEntity.created(location)
-                .body(ApiResponse.success("Service fees saved.", saveData));
-    }
+                return ResponseEntity.created(location)
+                                .body(ApiResponse.success("Service fees saved.", saveData));
+        }
 
-    // Update an existing item
-    @PutMapping("/v1/admin/configurations/driving-related-service-fees/update/{id}")
-    public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
-            @RequestBody DrivingRelatedServiceFeesRequest request) {
+        // Update an existing item
+        @PutMapping("/v1/admin/configurations/driving-related-service-fees/update/{id}")
+        public ResponseEntity<?> updateData(@Valid @PathVariable Long id,
+                        @RequestBody DrivingRelatedServiceFeesRequest request) {
 
-        DrivingRelatedServiceFeesResponse updatedData = drivingRelatedServiceFeesService.updateData(id, request);
+                DrivingRelatedServiceFeesResponse updatedData = drivingRelatedServiceFeesService.updateData(id,
+                                request);
 
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/driving-related-service-fees/updated")
-                .buildAndExpand().toUri();
+                URI location = ServletUriComponentsBuilder
+                                .fromCurrentContextPath().path("/driving-related-service-fees/updated")
+                                .buildAndExpand().toUri();
 
-        return ResponseEntity.created(location)
-                .body(ApiResponse.success("Service fees updated.", updatedData));
-    }
+                return ResponseEntity.created(location)
+                                .body(ApiResponse.success("Service fees updated.", updatedData));
+        }
 
-    // Delete a item
-    @DeleteMapping("/v1/admin/configurations/driving-related-service-fees/delete/{id}")
-    public ResponseEntity<?> deleteData(@PathVariable Long id) {
-        drivingRelatedServiceFeesService.deleteData(id);
-        return ResponseEntity.noContent().build();
-    }
+        // Delete a item
+        @DeleteMapping("/v1/admin/configurations/driving-related-service-fees/delete/{id}")
+        public ResponseEntity<?> deleteData(@PathVariable Long id) {
+                drivingRelatedServiceFeesService.deleteData(id);
+                return ResponseEntity.noContent().build();
+        }
 
-    @GetMapping("/v1/admin/configurations/driving-related-service-fees/list")
-    public ResponseEntity<?> findListWithPaginationBySearch(
-            @RequestParam(required = false) String nameEn,
-            @RequestParam(required = false) Boolean isActive,
-            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-            @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
+        @GetMapping("/v1/admin/configurations/driving-related-service-fees/list")
+        public ResponseEntity<?> findListWithPaginationBySearch(
+                        @RequestParam(required = false) String nameEn,
+                        @RequestParam(required = false) Boolean isActive,
+                        @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                        @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
 
-        PagedResponse<DrivingRelatedServiceFeesResponse> responseData = drivingRelatedServiceFeesService
-                .findAllBySearch(
-                        nameEn,
-                        isActive,
-                        page,
-                        size);
+                PagedResponse<DrivingRelatedServiceFeesResponse> responseData = drivingRelatedServiceFeesService
+                                .findAllBySearch(
+                                                nameEn,
+                                                isActive,
+                                                page,
+                                                size);
 
-        // return responseData;
+                // return responseData;
 
-        List<Long> serviceIds = drivingRelatedServiceFeesService.getServicesIds();
+                List<Long> serviceIds = drivingRelatedServiceFeesService.getServicesIds();
 
-        Map<String, Object> object = new HashMap<>();
-        object.put("list", responseData);
-        object.put("serviceIds", serviceIds);
+                Map<String, Object> object = new HashMap<>();
+                object.put("list", responseData);
+                object.put("serviceIds", serviceIds);
 
-        return ResponseEntity.ok(ApiResponse.success("Fetched list", object));
-    }
+                return ResponseEntity.ok(ApiResponse.success("Fetched list", object));
+        }
 
-    // Get a single item by ID
-    @GetMapping("/v1/admin/configurations/driving-related-service-fees/{id}")
-    public ResponseEntity<?> getDataById(@PathVariable Long id) {
-        DrivingRelatedServiceFeesResponse response = drivingRelatedServiceFeesService.getDataById(id);
-        return ResponseEntity.ok(response);
-    }
+        // Get a single item by ID
+        @GetMapping("/v1/admin/configurations/driving-related-service-fees/{id}")
+        public ResponseEntity<?> getDataById(@PathVariable Long id) {
+                DrivingRelatedServiceFeesResponse response = drivingRelatedServiceFeesService.getDataById(id);
+                return ResponseEntity.ok(response);
+        }
 
-    // Get a single item by ID
-    @GetMapping("/v1/admin/configurations/driving-related-service-fees-with-parent-service-code/{serviceCode}")
-    public ResponseEntity<?> getServiceWithFeesByParentServiceCode(@PathVariable String serviceCode) {
-        List<DrivingRelatedServiceFeesResponse> response = drivingRelatedServiceFeesService
-                .getServiceWithFeesByParentServiceCode(serviceCode);
+        // Get a single item by ID
+        @GetMapping("/v1/admin/configurations/driving-related-service-fees-with-parent-service-code/{serviceCode}")
+        public ResponseEntity<?> getServiceWithFeesByParentServiceCode(@PathVariable String serviceCode) {
+                List<DrivingRelatedServiceFeesResponse> response = drivingRelatedServiceFeesService
+                                .getServiceWithFeesByParentServiceCode(serviceCode);
 
-        ServiceEconomicCodeResponse serviceEconomicCode = drivingRelatedServiceFeesService
-                .getServiceEconomicCodeByServiceCode(serviceCode);
+                ServiceEconomicCodeResponse serviceEconomicCode = drivingRelatedServiceFeesService
+                                .getServiceEconomicCodeByServiceCode(serviceCode);
 
-        Map<String, Object> object = new HashMap<>();
-        object.put("list", response);
-        object.put("serviceEconomicCode", serviceEconomicCode);
-        return ResponseEntity.ok(object);
-    }
+                Map<String, Object> object = new HashMap<>();
+                object.put("list", response);
+                object.put("serviceEconomicCode", serviceEconomicCode);
+                return ResponseEntity.ok(object);
+        }
 
 }

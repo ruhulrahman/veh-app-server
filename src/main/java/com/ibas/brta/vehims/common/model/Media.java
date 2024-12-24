@@ -3,36 +3,45 @@ package com.ibas.brta.vehims.common.model;
 import com.ibas.brta.vehims.common.model.audit.DateAudit;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+@Slf4j
 @Entity
 @Table(name = "medias")
-public class Media extends DateAudit {
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+public class Media {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "media_id", nullable = false)
     private Long id;
 
-    @Column(name = "model", length = Integer.MAX_VALUE)
-    private String model;
-
-    @Column(name = "model_id")
-    private Long modelId;
-
-    @Column(name = "original_name", length = Integer.MAX_VALUE)
+    @Column(name = "original_name")
     private String originalName;
 
-    @Column(name = "folder_path", length = Integer.MAX_VALUE)
+    @Column(name = "folder_path")
     private String folderPath;
 
-    @Column(name = "file", length = Integer.MAX_VALUE)
+    @Column(name = "file")
     private String file;
 
     @Size(max = 20)
@@ -44,9 +53,10 @@ public class Media extends DateAudit {
     private String type;
 
     @Column(name = "size")
-    private Integer size;
+    private Long size;
 
-    @Column(name = "deleted_date")
-    private LocalDateTime deletedDate;
+    @CreationTimestamp
+    @Column(name = "created_date", nullable = false, updatable = false)
+    private Instant createdAt;
 
 }

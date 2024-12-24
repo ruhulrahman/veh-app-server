@@ -514,7 +514,7 @@ public class PaymentController {
 
             String jString = requestGson.toJson(paymentRequest);
 
-            // logger.error("Sending json-->" + jString);
+             logger.error("Sending json-->" + jString);
 
             RequestBody body = RequestBody.create(jString, mediaType);
 
@@ -534,7 +534,7 @@ public class PaymentController {
 
             jString = response.body().string();
 
-            // logger.error("Received jSon:-->" + jString);
+            logger.error("Received jSon:-->" + jString);
 
             PaymentInitiateResponse piresponse = gson.fromJson(jString, PaymentInitiateResponse.class);
 

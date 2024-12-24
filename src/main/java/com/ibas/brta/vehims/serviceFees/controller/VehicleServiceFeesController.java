@@ -107,10 +107,19 @@ public class VehicleServiceFeesController {
         }
 
         // Get a single item by ID
-        @GetMapping("/v1/admin/configurations/vehicle-related-service-fees-with-parent-service-code/{serviceCode}")
-        public ResponseEntity<?> getServiceWithFeesByParentServiceCode(@PathVariable String serviceCode) {
-                List<VehicleServiceFeesResponse> response = vehicleServiceFeesService
-                                .getServiceWithFeesByParentServiceCode(serviceCode);
+        @GetMapping("/v1/admin/configurations/vehicle-related-service-fees")
+        public ResponseEntity<?> getServiceWithFeesByParentServiceCode(
+                        @RequestParam(required = false) String serviceCode,
+                        @RequestParam(required = false) Long serviceRequestId) {
+
+                List<VehicleServiceFeesResponse> response;
+
+                if (serviceRequestId != null) {
+                        response = vehicleServiceFeesService.getServiceWithFeesByServiceRequestId(serviceRequestId,
+                                        serviceCode);
+                } else {
+                        response = vehicleServiceFeesService.getServiceWithFeesByParentServiceCode(serviceCode);
+                }
 
                 ServiceEconomicCodeResponse serviceEconomicCode = vehicleServiceFeesService
                                 .getServiceEconomicCodeByServiceCode(serviceCode);

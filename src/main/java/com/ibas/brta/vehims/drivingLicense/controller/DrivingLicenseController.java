@@ -1,12 +1,14 @@
 package com.ibas.brta.vehims.drivingLicense.controller;
 
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLApplicationResponse;
+import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceRequestDetailsResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceRequestResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DrivingLicenseApplicationDto;
 import com.ibas.brta.vehims.drivingLicense.payload.response.LearnerDetailsResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage1Request;
 import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage2Request;
+import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.request.GetDrivingLicenseApplicationRequest;
 import com.ibas.brta.vehims.common.payload.response.ApiResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
@@ -21,12 +23,15 @@ import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
 import jakarta.validation.Valid;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 // @RequestMapping("/api/reg/applications")
@@ -80,6 +85,48 @@ public class DrivingLicenseController {
 
         DLApplicationResponse dlServiceRequestResponse = drivingLicenseService.storeDLApplicationPage2(request);
         return ResponseEntity.ok(ApiResponse.success("Page 2 data saved.", dlServiceRequestResponse));
+    }
+
+    @PostMapping("/driving-license/v1/learner-document-upload")
+    public ResponseEntity<?> uploadLearnerDocument(
+            @RequestParam("serviceRequestNo") String serviceRequestNo,
+            @RequestParam(required = false) String mediaId,
+            @RequestParam("documentTypeId") Long documentTypeId,
+            @RequestParam("attachment") MultipartFile attachment) {
+
+        if (attachment.isEmpty()) {
+            throw new RuntimeException("File is empty.");
+        }
+
+        String fileExtension = StringUtils.getFilenameExtension(attachment.getOriginalFilename());
+        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension)
+                && !"pdf".equalsIgnoreCase(fileExtension)) {
+            // throw new RuntimeException("Invalid file type. Only JPG, PNG, and PDF are
+            // allowed.");
+            return ResponseEntity
+                    .badRequest().body("Invalid file type. Only JPG, PNG, and PDF are allowed.");
+        }
+
+        DLServiceMediaRequest request = new DLServiceMediaRequest();
+        request.setServiceRequestNo(serviceRequestNo);
+        request.setDocumentTypeId(documentTypeId);
+        if ("null".equalsIgnoreCase(mediaId)) {
+            mediaId = null;
+        } else {
+            request.setMediaId(Long.parseLong(mediaId));
+        }
+        request.setAttachment(attachment);
+
+        DLServiceMediaResponse response = drivingLicenseService.uploadLearnerDocument(request);
+        return ResponseEntity.ok(ApiResponse.success("Document uploaded.", response));
+    }
+
+    @GetMapping("/driving-license/v1/get-dl-service-medias-by-service-request-no/{serviceRequestNo}")
+    public ResponseEntity<?> getDlServiceMediasByServiceRequestNo(@PathVariable String serviceRequestNo) {
+
+        List<DLServiceMediaResponse> dlServiceMedias = drivingLicenseService
+                .getDlServiceMediasByServiceRequestNo(serviceRequestNo);
+        return ResponseEntity.ok(dlServiceMedias);
     }
 
     @GetMapping("/driving-license/v1/get-application-details-by-service-request-no/{serviceRequestNo}")

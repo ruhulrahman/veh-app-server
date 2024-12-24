@@ -25,7 +25,8 @@ public class UserDetailRequest {
     private Long permanentAddressId;
     private String passportNumber;
     private String birthRegNumber;
-    private String photo;
+    // private String photo;
+    private Long photoMediaId;
     private Long bloodGroupId;
 
     private AddressRequest presentAddress;

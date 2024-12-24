@@ -44,5 +44,7 @@ public class UserDetailResponse {
 
     private String photo;
 
+    private Long photoMediaId;
+
     private Long bloodGroupId;
 }

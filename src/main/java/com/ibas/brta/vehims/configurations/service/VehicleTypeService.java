@@ -34,6 +34,7 @@ public class VehicleTypeService {
     private VehicleTypeClassMapRepository vehicleTypeClassMapRepository;
 
     // Create or Insert operation
+    @Transactional
     public VehicleType createData(VehicleTypeRequest request) {
         VehicleType vehicleType = new VehicleType();
         BeanUtils.copyProperties(request, vehicleType);

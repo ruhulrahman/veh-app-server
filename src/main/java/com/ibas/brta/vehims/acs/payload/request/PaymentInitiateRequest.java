@@ -27,6 +27,8 @@ public class PaymentInitiateRequest {
     String organizationCode;
     @JsonProperty("nid")
     String nid;
+    @JsonProperty("dob")
+    String dob;
     @JsonProperty("tin")
     String tin;
     @JsonProperty("mobile")

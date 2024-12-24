@@ -31,4 +31,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleFieldValidationException(FieldValidationException ex) {
         return new ResponseEntity<>(ex.getFieldErrors(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalState(IllegalStateException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
 }

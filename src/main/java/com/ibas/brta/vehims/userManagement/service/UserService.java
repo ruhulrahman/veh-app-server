@@ -9,6 +9,9 @@ import java.util.stream.Collectors;
 
 import com.ibas.brta.vehims.configurations.service.DesignationService;
 import com.ibas.brta.vehims.configurations.service.StatusService;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
+import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.userManagement.model.UserTinInfo;
 import com.ibas.brta.vehims.userManagement.payload.response.UserTinInfoResponse;
 import com.ibas.brta.vehims.userManagement.repository.UserTinInfoRepository;
@@ -19,8 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ibas.brta.vehims.exception.FieldValidationException;
 import com.ibas.brta.vehims.userManagement.model.SUser;
@@ -42,9 +47,12 @@ import com.ibas.brta.vehims.userManagement.payload.response.UserOfficeRoleRespon
 import com.ibas.brta.vehims.userManagement.payload.response.UserProfileResponse;
 import com.ibas.brta.vehims.configurations.payload.request.AddressRequest;
 import com.ibas.brta.vehims.configurations.payload.response.DesignationResponse;
+import com.ibas.brta.vehims.common.payload.request.MediaRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
+import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.common.service.AddressService;
+import com.ibas.brta.vehims.common.service.MediaService;
 import com.ibas.brta.vehims.userManagement.repository.UserRepository;
 import com.ibas.brta.vehims.userManagement.repository.UserDetailRepository;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
@@ -89,6 +97,9 @@ public class UserService {
 
     @Autowired
     AddressService addressService;
+
+    @Autowired
+    MediaService mediaService;
 
     // Create Applicant user account
     public UserFullResponse createApplicantUserData(ApplicantUserRequest request) {
@@ -397,6 +408,45 @@ public class UserService {
         }
 
         return userProfileResponse;
+    }
+
+    public ResponseEntity<?> uploadUserPhoto(MultipartFile attachment, Long userId) {
+
+        UserDetail userDetail = userDetailRepository.findByUserId(userId);
+
+        if (userDetail != null) {
+
+            MediaRequest mediaRequest = new MediaRequest();
+
+            mediaRequest.setAttachmentFile(attachment);
+
+            MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
+
+            if (userDetail.getPhotoMediaId() != null) {
+                mediaService.deleteMediaById(userDetail.getPhotoMediaId());
+            }
+
+            userDetail.setPhotoMediaId(mediaResponse.getId());
+
+            userDetailRepository.save(userDetail);
+
+            return ResponseEntity.ok(userDetail);
+        } else {
+            throw new EntityNotFoundException("User Detail Not Found");
+        }
+    }
+
+    public ResponseEntity<?> getUserPhoto(Long userId) {
+
+        UserDetail userDetail = userDetailRepository.findByUserId(userId);
+
+        if (userDetail != null) {
+
+            return mediaService.getMediaById(userDetail.getPhotoMediaId());
+
+        } else {
+            throw new EntityNotFoundException("User Detail Not Found");
+        }
     }
 
 }
