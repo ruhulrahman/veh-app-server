@@ -16,6 +16,12 @@ public interface VServiceMediaRepository extends JpaRepository<VServiceMedia, Lo
 
     VServiceMedia findByMediaId(Long mediaId);
 
+    // VServiceMedia findByDocumentTypeIdAndServiceRequestId(
+    // Long documentTypeId, Long serviceRequestId);
+
+    List<VServiceMedia> findByDocumentTypeIdAndServiceRequestId(
+            Long documentTypeId, Long serviceRequestId);
+
     @Modifying
     void deleteByMediaId(Long mediaId);
 }

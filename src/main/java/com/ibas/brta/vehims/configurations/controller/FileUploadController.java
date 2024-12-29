@@ -152,6 +152,26 @@ public class FileUploadController {
         }
     }
 
+    @GetMapping("/view-sample/{fileName}")
+    public ResponseEntity<Resource> viewSampleFile(@PathVariable String fileName) {
+        try {
+            Path filePath = Paths.get(UPLOAD_DIR + "sampleFiles/" + fileName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists()) {
+                String mimeType = Files.probeContentType(filePath);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(mimeType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + fileName + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
 
     @GetMapping("/get-file-by-name/{fileName}")
@@ -197,8 +217,13 @@ public class FileUploadController {
     }
 
     @DeleteMapping("/delete-dl-service-document/{mediaId}")
-    public ResponseEntity<?> deleteFile(@PathVariable Long mediaId) {
+    public ResponseEntity<?> deleteDrivingLicenseFile(@PathVariable Long mediaId) {
         return mediaService.deleteDlServiceMediaId(mediaId);
+    }
+
+    @DeleteMapping("/delete-vehicle-service-document/{mediaId}")
+    public ResponseEntity<?> deleteVehicleFile(@PathVariable Long mediaId) {
+        return mediaService.deleteVehicleServiceMediaId(mediaId);
     }
 
     // Get File URL

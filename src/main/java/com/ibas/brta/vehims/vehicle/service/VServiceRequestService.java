@@ -2,31 +2,45 @@ package com.ibas.brta.vehims.vehicle.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+import com.ibas.brta.vehims.configurations.model.ServiceDocumentMap;
 import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
+import com.ibas.brta.vehims.configurations.payload.response.FileResponse;
+import com.ibas.brta.vehims.configurations.payload.response.ServiceDocumentMapResponse;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
+import com.ibas.brta.vehims.configurations.repository.ServiceDocumentMapRepository;
 import com.ibas.brta.vehims.configurations.repository.StatusRepository;
 import com.ibas.brta.vehims.configurations.service.CountryService;
+import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.common.model.Address;
+import com.ibas.brta.vehims.common.model.Media;
 import com.ibas.brta.vehims.userManagement.model.UserNidInfo;
+import com.ibas.brta.vehims.vehicle.model.VServiceMedia;
 import com.ibas.brta.vehims.vehicle.model.VServiceRequest;
 import com.ibas.brta.vehims.vehicle.model.VehicleInfo;
 import com.ibas.brta.vehims.vehicle.model.VehicleOwner;
 import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
+import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleOwnerResponse;
+import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
 import com.ibas.brta.vehims.common.repository.AddressRepository;
+import com.ibas.brta.vehims.common.repository.MediaRepository;
 import com.ibas.brta.vehims.common.service.AddressService;
+import com.ibas.brta.vehims.common.service.MediaService;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleOwnerRepository;
@@ -67,6 +81,21 @@ public class VServiceRequestService {
 
     @Autowired
     AddressService addressService;
+
+    @Autowired
+    ServiceDocumentMapRepository serviceDocumentMapRepository;
+
+    @Autowired
+    DocumentTypeService documentTypeService;
+
+    @Autowired
+    VServiceMediaRepository serviceMediaRepository;
+
+    @Autowired
+    MediaService mediaService;
+
+    @Autowired
+    MediaRepository mediaRepository;
 
     // Create or Insert operation
     public VServiceRequestResponse createData(VServiceRequestCreateRequest request) {
@@ -319,5 +348,77 @@ public class VServiceRequestService {
         } else {
             throw new EntityNotFoundException("Data not found with id: " + request.getServiceId());
         }
+    }
+
+    public List<ServiceDocumentMapResponse> getServiceDocumentsByServiceRequestId(Long serviceRequestId) {
+
+        Optional<VServiceRequest> serviceRequest = serviceRequestRepository
+                .findById(serviceRequestId);
+
+        if (!serviceRequest.isPresent()) {
+            throw new EntityNotFoundException("Data not found with id: " + serviceRequestId);
+        }
+
+        Long serviceId = serviceRequest.get().getServiceId();
+        // log.info("serviceId ============== {}", serviceId);
+
+        List<ServiceDocumentMap> existingData = serviceDocumentMapRepository
+                .findByServiceIdOrderByPriorityAsc(serviceId);
+
+        // log.info("existingData ============== {}", existingData);
+
+        List<ServiceDocumentMapResponse> responseData = new ArrayList<>();
+
+        if (existingData.isEmpty()) {
+            return responseData;
+        }
+
+        existingData.forEach(record -> {
+            ServiceDocumentMapResponse response = new ServiceDocumentMapResponse();
+            BeanUtils.copyProperties(record, response);
+
+            DocumentTypeResponse documentTypeResponse = documentTypeService.getDataById(record.getDocumentTypeId());
+            response.setDocumentType(documentTypeResponse);
+
+            List<VServiceMedia> vServiceMedias = serviceMediaRepository.findByDocumentTypeIdAndServiceRequestId(
+                    record.getDocumentTypeId(),
+                    serviceRequestId);
+
+            if (vServiceMedias != null && !vServiceMedias.isEmpty()) {
+                response.setFileExist(true);
+
+                List<FileResponse> fileResponses = new ArrayList<>();
+
+                for (VServiceMedia vServiceMedia : vServiceMedias) {
+
+                    log.info("mediaId ============== {}", vServiceMedia.getMediaId());
+
+                    Optional<Media> existingMedia = mediaRepository.findById(vServiceMedia.getMediaId());
+                    log.info("existingMedia ============== {}", existingMedia);
+                    if (existingMedia.isPresent()) {
+                        Media media = existingMedia.get();
+                        FileResponse fileResponse = new FileResponse();
+                        fileResponse.setMediaId(media.getId());
+                        fileResponse.setFileName(media.getFile());
+                        fileResponses.add(fileResponse);
+                    }
+                }
+
+                response.setFiles(fileResponses);
+
+            } else {
+                response.setFileExist(false);
+            }
+
+            // ServiceEntity serviceEntity =
+            // serviceEntityService.getDataById(record.getServiceId());
+            // ServiceEntityResponse serviceEntityResponse = new ServiceEntityResponse();
+            // BeanUtils.copyProperties(serviceEntity, serviceEntityResponse);
+            // response.setService(serviceEntityResponse);
+
+            responseData.add(response);
+        });
+
+        return responseData;
     }
 }

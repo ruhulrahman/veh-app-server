@@ -3,9 +3,18 @@ package com.ibas.brta.vehims.vehicle.service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.ibas.brta.vehims.common.service.AddressService;
+import com.ibas.brta.vehims.common.service.MediaService;
 import com.ibas.brta.vehims.configurations.service.CountryService;
+import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
+import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
+import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
+import com.ibas.brta.vehims.drivingLicense.repository.DLServiceMediaRepository;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -13,23 +22,32 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.ibas.brta.vehims.vehicle.model.VServiceMedia;
 import com.ibas.brta.vehims.vehicle.model.VServiceRequest;
 import com.ibas.brta.vehims.vehicle.model.VehicleInfo;
 import com.ibas.brta.vehims.vehicle.model.VehicleOwner;
 import com.ibas.brta.vehims.configurations.payload.request.AddressRequest;
+import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
+import com.ibas.brta.vehims.vehicle.payload.request.VServiceMediaRequest;
 import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleOwnerRequest;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage1Request;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage2Request;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage3Request;
+import com.ibas.brta.vehims.common.model.Media;
+import com.ibas.brta.vehims.common.payload.request.MediaRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
+import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
+import com.ibas.brta.vehims.common.repository.MediaRepository;
+import com.ibas.brta.vehims.vehicle.payload.response.VServiceMediaResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleOwnerResponse;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
+import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleOwnerRepository;
@@ -69,6 +87,18 @@ public class VehicleInfoService {
 
     @Autowired
     VehicleOwnerRepository vehicleOwnerRepository;
+
+    @Autowired
+    VServiceMediaRepository vServiceMediaRepository;
+
+    @Autowired
+    MediaService mediaService;
+
+    @Autowired
+    MediaRepository mediaRepository;
+
+    @Autowired
+    DocumentTypeService documentTypeService;
 
     // Create or Insert operation
     @Transactional
@@ -282,6 +312,106 @@ public class VehicleInfoService {
         BeanUtils.copyProperties(existingData, response);
 
         return response;
+    }
+
+    @Transactional
+    public VServiceMediaResponse uploadDocument(VServiceMediaRequest request) {
+
+        if (request.getServiceRequestId() != null) {
+
+            Optional<VServiceRequest> existingServiceRequest = serviceRequestRepository
+                    .findById(request.getServiceRequestId());
+
+            if (existingServiceRequest.isPresent()) {
+
+                MediaRequest mediaRequest = new MediaRequest();
+
+                BeanUtils.copyProperties(request, mediaRequest);
+
+                mediaRequest.setAttachmentFile(request.getAttachment());
+
+                MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
+
+                if (request.getMediaId() != null) {
+                    mediaService.deleteDlServiceMediaId(request.getMediaId());
+                }
+
+                VServiceMedia dlServiceMedia = new VServiceMedia();
+
+                BeanUtils.copyProperties(request, dlServiceMedia, "id");
+
+                dlServiceMedia.setServiceRequestId(existingServiceRequest.get().getId());
+                dlServiceMedia.setVehicleInfoId(existingServiceRequest.get().getVehicleInfoId());
+                dlServiceMedia.setMediaId(mediaResponse.getId());
+
+                VServiceMedia savedDlServiceMedia = vServiceMediaRepository.save(dlServiceMedia);
+
+                VServiceMediaResponse response = new VServiceMediaResponse();
+
+                BeanUtils.copyProperties(savedDlServiceMedia, response);
+
+                return response;
+
+            } else {
+                throw new EntityNotFoundException("Service Request Not Found");
+            }
+        } else {
+            throw new EntityNotFoundException("Service Request Not Found");
+        }
+    }
+
+    public List<VServiceMediaResponse> getServiceMediasByServiceRequestId(Long serviceRequestId) {
+
+        if (serviceRequestId != null) {
+
+            Optional<VServiceRequest> existingServiceRequest = serviceRequestRepository
+                    .findById(serviceRequestId);
+
+            if (existingServiceRequest.isPresent()) {
+
+                List<VServiceMedia> records = vServiceMediaRepository
+                        .findByServiceRequestId(existingServiceRequest.get().getId());
+
+                List<VServiceMediaResponse> responseData = records.stream()
+                        .map(dlServiceMedia -> {
+                            VServiceMediaResponse response = new VServiceMediaResponse();
+                            BeanUtils.copyProperties(dlServiceMedia, response);
+
+                            Optional<Media> media = mediaRepository.findById(response.getMediaId());
+
+                            if (media.isPresent()) {
+
+                                MediaResponse mediaResponse = new MediaResponse();
+                                BeanUtils.copyProperties(media.get(), mediaResponse);
+
+                                response.setMedia(mediaResponse);
+                                response.setFileName(mediaResponse.getFile());
+                            }
+                            // MediaResponse mediaResponse =
+                            // mediaService.getDataById(response.getMediaId());
+                            // response.setMedia(mediaResponse);
+                            //
+                            // if (mediaResponse != null) {
+                            // response.setFileName(mediaResponse.getFile());
+                            // }
+
+                            DocumentTypeResponse documentType = documentTypeService
+                                    .getDataById(response.getDocumentTypeId());
+                            if (documentType != null) {
+                                response.setDocumentTypeNameEn(documentType.getNameEn());
+                                response.setDocumentTypeNameBn(documentType.getNameBn());
+                            }
+                            return response;
+                        }).collect(Collectors.toList());
+
+                return responseData;
+
+            } else {
+                throw new EntityNotFoundException("Service Request Not Found");
+            }
+        } else {
+            throw new EntityNotFoundException("Service Request Not Found");
+        }
     }
 
 }

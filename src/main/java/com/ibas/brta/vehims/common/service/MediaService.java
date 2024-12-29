@@ -25,6 +25,7 @@ import com.ibas.brta.vehims.common.payload.request.MediaRequest;
 import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.common.repository.MediaRepository;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
+import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -50,6 +51,9 @@ public class MediaService {
 
     @Autowired
     DLServiceMediaRepository dlServiceMediaRepository;
+
+    @Autowired
+    VServiceMediaRepository vehicleServiceMediaRepository;
 
     private final String UPLOAD_DIR = "uploads/";
     private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
@@ -223,6 +227,39 @@ public class MediaService {
             String message = "File deleted successfully: " + existingData.getFile();
 
             dlServiceMediaRepository.deleteByMediaId(mediaId);
+
+            mediaRepository.deleteById(mediaId);
+
+            return ResponseEntity.ok(message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error deleting file: " + existingData.getFile());
+        }
+    }
+
+    // Find a single record by ID
+    @Transactional
+    public ResponseEntity<?> deleteVehicleServiceMediaId(Long mediaId) {
+
+        Media existingData = mediaRepository.findById(mediaId)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with mediaId: " + mediaId));
+
+        try {
+            // Build the path to the file
+            Path filePath = Paths.get(uploadDirectory).resolve(existingData.getFile()).normalize();
+
+            // Check if the file exists
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.badRequest().body("File not found: " + existingData.getFile());
+            }
+
+            // Delete the file
+            Files.delete(filePath);
+
+            String message = "File deleted successfully: " + existingData.getFile();
+
+            vehicleServiceMediaRepository.deleteByMediaId(mediaId);
 
             mediaRepository.deleteById(mediaId);
 

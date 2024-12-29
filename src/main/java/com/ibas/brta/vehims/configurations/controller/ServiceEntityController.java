@@ -120,6 +120,17 @@ public class ServiceEntityController {
         return ResponseEntity.ok(ApiResponse.success("Fetched list", responseData));
     }
 
+    // @GetMapping("/v1/admin/configurations/service/services-for-document")
+    // public ResponseEntity<?> getServiceListForDocument() {
+    // List<String> parentServiceCodes = new ArrayList<>();
+    // parentServiceCodes.add("motor_vehicle_related");
+    // parentServiceCodes.add("driving_related");
+    // List<?> responseData =
+    // serviceEntityService.getChildServicesByParentServiceCode(parentServiceCode);
+
+    // return ResponseEntity.ok(ApiResponse.success("Fetched list", responseData));
+    // }
+
     @GetMapping("/v1/admin/configurations/service/all-active-child-services-with-additional/{parentServiceCode}")
     public ResponseEntity<?> getChildServicesWithAdditionalByParentServiceCode(@PathVariable String parentServiceCode) {
         List<?> responseData = serviceEntityService

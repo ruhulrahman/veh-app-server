@@ -110,7 +110,7 @@ public class DrivingLicenseController {
         DLServiceMediaRequest request = new DLServiceMediaRequest();
         request.setServiceRequestNo(serviceRequestNo);
         request.setDocumentTypeId(documentTypeId);
-        if ("null".equalsIgnoreCase(mediaId)) {
+        if ("null".equalsIgnoreCase(mediaId) || "undefined".equalsIgnoreCase(mediaId)) {
             mediaId = null;
         } else {
             request.setMediaId(Long.parseLong(mediaId));

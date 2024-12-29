@@ -89,4 +89,9 @@ public class DocumentTypeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/v1/admin/configurations/document-type/active-list")
+    public ResponseEntity<?> getActiveList() {
+        return ResponseEntity.ok(documentTypeService.getActiveList());
+    }
+
 }
