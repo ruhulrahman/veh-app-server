@@ -19,31 +19,31 @@ public class VServiceRequestController {
     VServiceRequestService vServiceRequestService;
 
     @PostMapping("/v1/vservice-request/update-inpection-by-authority")
-    public ResponseEntity<?> updateInpectionByAuthority(@RequestBody VServiceRequestCreateRequest request){
+    public ResponseEntity<?> updateInpectionByAuthority(@RequestBody VServiceRequestCreateRequest request) {
         VServiceRequestResponse vServiceRequestResponse = vServiceRequestService.updateInpectionByAuthority(request);
         return ResponseEntity.ok(vServiceRequestResponse);
     }
 
     @PostMapping("/v1/vservice-request/update-inpection-by-inspector")
-    public ResponseEntity<?> updateInpectionByInspector(@RequestBody VServiceRequestCreateRequest request){
+    public ResponseEntity<?> updateInpectionByInspector(@RequestBody VServiceRequestCreateRequest request) {
         vServiceRequestService.updateInpectionByInspector(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/vservice-request/update-revenue-by-authority")
-    public ResponseEntity<?> updateRevenueByAuthority(@RequestBody VServiceRequestCreateRequest request){
+    public ResponseEntity<?> updateRevenueByAuthority(@RequestBody VServiceRequestCreateRequest request) {
         VServiceRequestResponse vServiceRequestResponse = vServiceRequestService.updateRevenueByAuthority(request);
         return ResponseEntity.ok(vServiceRequestResponse);
     }
 
     @PostMapping("/v1/vservice-request/update-revenue-by-revenue-checker")
-    public ResponseEntity<?> updateRevenueByRevenueChecker(@RequestBody VServiceRequestCreateRequest request){
+    public ResponseEntity<?> updateRevenueByRevenueChecker(@RequestBody VServiceRequestCreateRequest request) {
         vServiceRequestService.updateRevenueByRevenueChecker(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/v1/vservice-request/update-approval-by-authority")
-    public ResponseEntity<?> updateApprovalByAuthority(@RequestBody VServiceRequestCreateRequest request){
+    public ResponseEntity<?> updateApprovalByAuthority(@RequestBody VServiceRequestCreateRequest request) {
         VServiceRequestResponse vServiceRequestResponse = vServiceRequestService.updateApprovalByAuthority(request);
         return ResponseEntity.ok(vServiceRequestResponse);
     }

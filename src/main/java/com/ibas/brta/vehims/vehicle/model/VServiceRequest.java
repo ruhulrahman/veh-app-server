@@ -95,4 +95,13 @@ public class VServiceRequest extends DateAudit {
     @Column(name = "application_status_id")
     private Long applicationStatusId;
 
+    @Column(name = "is_paid")
+    private Boolean isPaid = false;
+
+    @Column(name = "is_paid_for_inspection")
+    private Boolean isPaidForInspection = false;
+
+    @Column(name = "is_paid_for_final_submission")
+    private Boolean isPaidForFinalSubmission = false;
+
 }

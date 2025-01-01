@@ -36,4 +36,7 @@ public class TransactionInfo extends AbstractPersistable<Long> implements Serial
 
     @Column(name = "service_id", nullable = true)
     Long serviceId;
+
+    @Column(name = "service_type", nullable = true)
+    String serviceType;
 }

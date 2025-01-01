@@ -8,12 +8,14 @@ import java.util.Optional;
 
 import com.ibas.brta.vehims.configurations.model.ServiceDocumentMap;
 import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.model.VehicleType;
 import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
 import com.ibas.brta.vehims.configurations.payload.response.FileResponse;
 import com.ibas.brta.vehims.configurations.payload.response.ServiceDocumentMapResponse;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
 import com.ibas.brta.vehims.configurations.repository.ServiceDocumentMapRepository;
 import com.ibas.brta.vehims.configurations.repository.StatusRepository;
+import com.ibas.brta.vehims.configurations.repository.VehicleTypeRepository;
 import com.ibas.brta.vehims.configurations.service.CountryService;
 import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
 import com.ibas.brta.vehims.projection.StatusProjection;
@@ -26,6 +28,7 @@ import com.ibas.brta.vehims.common.model.Media;
 import com.ibas.brta.vehims.userManagement.model.UserNidInfo;
 import com.ibas.brta.vehims.vehicle.model.VServiceMedia;
 import com.ibas.brta.vehims.vehicle.model.VServiceRequest;
+import com.ibas.brta.vehims.vehicle.model.VehicleFitness;
 import com.ibas.brta.vehims.vehicle.model.VehicleInfo;
 import com.ibas.brta.vehims.vehicle.model.VehicleOwner;
 import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest;
@@ -37,6 +40,7 @@ import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleOwnerResponse;
 import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
+import com.ibas.brta.vehims.vehicle.repository.VehicleFitnessRepository;
 import com.ibas.brta.vehims.common.repository.AddressRepository;
 import com.ibas.brta.vehims.common.repository.MediaRepository;
 import com.ibas.brta.vehims.common.service.AddressService;
@@ -63,6 +67,9 @@ public class VServiceRequestService {
 
     @Autowired
     VehicleInfoRepository vehicleInfoRepository;
+
+    @Autowired
+    VehicleTypeRepository vehicleTypeRepository;
 
     @Autowired
     UserNidInfoRepository userNidInfoRepository;
@@ -96,6 +103,9 @@ public class VServiceRequestService {
 
     @Autowired
     MediaRepository mediaRepository;
+
+    @Autowired
+    VehicleFitnessRepository vehicleFitnessRepository;
 
     // Create or Insert operation
     public VServiceRequestResponse createData(VServiceRequestCreateRequest request) {
@@ -334,6 +344,9 @@ public class VServiceRequestService {
             if (status.getStatusCode().equals("vehicle_app_final_approved")
                     || status.getStatusCode().equals("vehicle_app_primary_approved")) {
                 requestObject.setApprovalDate(LocalDateTime.now());
+
+                createNewVehicleFitness(existingData.get());
+
             }
             if (status.getStatusCode().equals("vehicle_app_final_rejected")
                     || status.getStatusCode().equals("vehicle_app_primary_rejected")) {
@@ -350,6 +363,28 @@ public class VServiceRequestService {
         }
     }
 
+    public void createNewVehicleFitness(VServiceRequest serviceRequest) {
+
+        Optional<VehicleInfo> vehicleInfo = vehicleInfoRepository.findById(serviceRequest.getVehicleInfoId());
+
+        if (vehicleInfo.isPresent()) {
+            Optional<VehicleType> vehicleType = vehicleTypeRepository.findById(vehicleInfo.get().getVehicleTypeId());
+            if (vehicleType.isPresent()) {
+                if (!vehicleType.get().getNameEn().equals("MOTOR CYCLE")) {
+
+                    VehicleFitness vehicleFitness = new VehicleFitness();
+
+                    vehicleFitness.setServiceRequestId(serviceRequest.getServiceId());
+                    vehicleFitness.setVehicleInfoId(serviceRequest.getVehicleInfoId());
+                    vehicleFitness.setFitnessValidStartDate(LocalDateTime.now());
+                    vehicleFitness.setFitnessValidEndDate(LocalDateTime.now().plusYears(5));
+
+                    vehicleFitnessRepository.save(vehicleFitness);
+                }
+            }
+        }
+    }
+
     public List<ServiceDocumentMapResponse> getServiceDocumentsByServiceRequestId(Long serviceRequestId) {
 
         Optional<VServiceRequest> serviceRequest = serviceRequestRepository
@@ -360,12 +395,9 @@ public class VServiceRequestService {
         }
 
         Long serviceId = serviceRequest.get().getServiceId();
-        // log.info("serviceId ============== {}", serviceId);
 
         List<ServiceDocumentMap> existingData = serviceDocumentMapRepository
                 .findByServiceIdOrderByPriorityAsc(serviceId);
-
-        // log.info("existingData ============== {}", existingData);
 
         List<ServiceDocumentMapResponse> responseData = new ArrayList<>();
 
@@ -391,10 +423,7 @@ public class VServiceRequestService {
 
                 for (VServiceMedia vServiceMedia : vServiceMedias) {
 
-                    log.info("mediaId ============== {}", vServiceMedia.getMediaId());
-
                     Optional<Media> existingMedia = mediaRepository.findById(vServiceMedia.getMediaId());
-                    log.info("existingMedia ============== {}", existingMedia);
                     if (existingMedia.isPresent()) {
                         Media media = existingMedia.get();
                         FileResponse fileResponse = new FileResponse();

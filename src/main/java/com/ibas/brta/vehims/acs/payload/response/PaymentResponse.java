@@ -23,4 +23,5 @@ public class PaymentResponse {
     String serviceRequestNo;
     Long serviceId;
     String serviceCode;
+    String serviceType;
 }

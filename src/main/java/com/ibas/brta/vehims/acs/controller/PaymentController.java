@@ -148,6 +148,7 @@ public class PaymentController {
             _transactionInfo.setBearerToken(response.getBearertoken());
             _transactionInfo.setTransactionId(response.getTransaction_id());
             _transactionInfo.setServiceRequestNo(paymentInitiateRequest.getServiceRequestNo());
+            _transactionInfo.setServiceType(paymentInitiateRequest.getServiceType());
             ServiceEntity serviceEntity = serviceRepository.findByServiceCode(paymentInitiateRequest.getServiceCode());
 
             if (serviceEntity != null) {
@@ -393,100 +394,17 @@ public class PaymentController {
 
         if (transactionInfo.isPresent()) {
 
-            Optional<ServiceEntity> serviceEntity = serviceRepository.findById(transactionInfo.get().getServiceId());
-
-            if (serviceEntity.isPresent()) {
-                paymentResponse.setServiceRequestNo(transactionInfo.get().getServiceRequestNo());
-                paymentResponse.setServiceId(transactionInfo.get().getServiceId());
-                paymentResponse.setServiceCode(serviceEntity.get().getServiceCode());
-
-                if (serviceEntity.get().getServiceCode().equals("before_driving_skills_test_fees")
-                        || serviceEntity.get().getServiceCode().equals("after_driving_skills_test_fees")) {
-
-                    DLServiceRequest dlServiceRequest = dlServiceRequestRepository
-                            .findByServiceRequestNo(transactionInfo.get().getServiceRequestNo());
-
-                    if (dlServiceRequest != null) {
-                        if (serviceEntity.get().getServiceCode().equals("before_driving_skills_test_fees")) {
-
-                            StatusProjection statusPending = commonRepository
-                                    .getStatusByStatusCodeOrId("dl_app_pending");
-                            dlServiceRequest.setApplicationStatusId(statusPending.getId());
-                            dlServiceRequest.setApplicationDate(LocalDateTime.now());
-                            dlServiceRequest.setIsLearnerFeePaid(true);
-
-                            LearnerLicenseResponse existLearner = learnerLicenseService
-                                    .getDataByServiceRequestId(dlServiceRequest.getId());
-
-                            if (existLearner != null) {
-
-                                LearnerLicenseRequest learnerLicenseRequest = new LearnerLicenseRequest();
-                                BeanUtils.copyProperties(existLearner, learnerLicenseRequest);
-
-                                learnerLicenseRequest.setDlServiceRequestId(dlServiceRequest.getId());
-                                learnerLicenseRequest.setLearnerNumber(Utils.generateLearnerNumber());
-                                learnerLicenseRequest.setIssueDate(LocalDateTime.now());
-                                learnerLicenseRequest.setExamDate(LocalDateTime.now().plusMonths(3));
-                                learnerLicenseRequest.setExpireDate(LocalDateTime.now().plusMonths(6));
-
-                                LearnerLicense learnerLicense = learnerLicenseRepository
-                                        .findByDlServiceRequestId(dlServiceRequest.getId());
-
-                                Integer totalLearner = learnerLicenseRepository.countByExamDateAndExamVenueId(
-                                        learnerLicenseRequest.getExamDate(),
-                                        learnerLicense.getExamVenueId());
-
-                                if (totalLearner <= 600) {
-
-                                    LearnerLicenseResponse learnerLicenseResponse = learnerLicenseService
-                                            .getDataByExamDateAndVenue(
-                                                    learnerLicenseRequest.getExamDate(),
-                                                    learnerLicense.getExamVenueId());
-
-                                    if (learnerLicenseResponse != null) {
-                                        learnerLicenseRequest.setRollNo(learnerLicenseResponse.getRollNo() + 1);
-                                    } else {
-                                        learnerLicenseRequest.setRollNo(1);
-                                    }
-                                } else {
-
-                                    learnerLicenseRequest.setExamDate(learnerLicenseRequest.getExamDate().plusDays(1));
-                                    learnerLicenseRequest
-                                            .setExpireDate(learnerLicenseRequest.getExpireDate().plusDays(1));
-
-                                    LearnerLicenseResponse learnerLicenseResponse = learnerLicenseService
-                                            .getDataByExamDateAndVenue(
-                                                    learnerLicenseRequest.getExamDate(),
-                                                    learnerLicense.getExamVenueId());
-
-                                    if (learnerLicenseResponse != null) {
-                                        learnerLicenseRequest.setRollNo(learnerLicenseResponse.getRollNo() + 1);
-                                    } else {
-                                        learnerLicenseRequest.setRollNo(1);
-                                    }
-                                }
-                                learnerLicenseRequest.setIsPaid(true);
-
-                                learnerLicenseService.updateData(existLearner.getId(), learnerLicenseRequest);
-
-                            }
-
-                            // learnerLicenseService.storeOrUpdateLearnerData(learnerLicenseRequest);
-                        }
-
-                        if (serviceEntity.get().getServiceCode().equals("after_driving_skills_test_fees")) {
-
-                            StatusProjection statusPending = commonRepository
-                                    .getStatusByStatusCodeOrId("dl_app_final_submitted");
-                            dlServiceRequest.setApplicationStatusId(statusPending.getId());
-                            dlServiceRequest.setIsLicenseFeePaid(true);
-                        }
-
-                        dlServiceRequestRepository.save(dlServiceRequest);
-                    }
-                }
+            if (transactionInfo.get().getServiceType().equals("dl")) {
+                transactionInfoService.paymentUpdateForDrivingLicense(transactionInfo.get());
+            } else if (transactionInfo.get().getServiceType().equals("vehicle")) {
+                transactionInfoService.paymentUpdateForVehicle(transactionInfo.get());
             }
+
         }
+
+        // paymentResponse.setServiceRequestNo(transactionInfo.get().getServiceRequestNo());
+        // paymentResponse.setServiceId(transactionInfo.get().getServiceId());
+        // paymentResponse.setServiceCode(serviceEntity.get().getServiceCode());
 
         return new ResponseEntity<PaymentResponse>(paymentResponse, HttpStatus.OK);
 
@@ -514,7 +432,7 @@ public class PaymentController {
 
             String jString = requestGson.toJson(paymentRequest);
 
-             logger.error("Sending json-->" + jString);
+            logger.error("Sending json-->" + jString);
 
             RequestBody body = RequestBody.create(jString, mediaType);
 

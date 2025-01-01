@@ -38,4 +38,5 @@ public class PaymentInitiateRequest {
     String serviceRequestNo;
     String serviceCode;
     Long serviceId;
+    String serviceType;
 }
