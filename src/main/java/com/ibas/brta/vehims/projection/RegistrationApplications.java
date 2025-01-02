@@ -38,6 +38,8 @@ public interface RegistrationApplications {
 
     String getApplicationStatusName();
 
+    String getApplicationStatusColor();
+
     String getApplicationStatusCode();
 
     Long getUserId();
@@ -45,19 +47,32 @@ public interface RegistrationApplications {
     String getNid();
 
     String getMobile();
-    
+
     LocalDateTime getForwardDateForInspection();
+
     Long getInspectorId();
+
     Long getInspectionStatusId();
+
     String getInspectionRemarks();
+
     LocalDateTime getInspectionDate();
+
     LocalDateTime getForwardDateForRevenue();
+
     Long getRevenueCheckerId();
+
     Long getRevenueStatusId();
+
     String getRevenueRemarks();
+
     LocalDateTime getRevenueCheckDate();
+
     Long getApprovalId();
+
     String getApprovalRemarks();
+
     LocalDateTime getApprovalDate();
+
     LocalDateTime getRejectionDate();
 }

@@ -34,8 +34,9 @@ public interface RegistrationApplicationRepository extends JpaRepository<Vehicle
                         "    sr.applicant_id AS applicantId, " +
                         "    sr.application_date AS applicationDate, " +
                         "    sr.application_status_id AS applicationStatusId," +
-                        "    cs.name_en applicationStatusName, " +
-                        "    cs.status_code applicationStatusCode, " +
+                        "    cs.name_en AS  applicationStatusName, " +
+                        "    cs.color_name AS applicationStatusColor, " +
+                        "    cs.status_code AS applicationStatusCode, " +
                         "    u.user_id AS userId, " +
                         "    ni.nid_number AS nid, " +
                         "    u.mobile AS mobile, " +

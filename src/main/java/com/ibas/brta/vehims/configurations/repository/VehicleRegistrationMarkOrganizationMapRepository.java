@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMark;
 import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMarkOrganizationMap;
 
 import jakarta.transaction.Transactional;
@@ -39,8 +40,22 @@ public interface VehicleRegistrationMarkOrganizationMapRepository
 
         // List<Long> findVehicleClassIdsByVehicleTypeId(Long vehicleTypeId);
 
-        @Query("SELECT vc.orgId FROM VehicleRegistrationMarkOrganizationMap vc WHERE vc.vehicleRegistrationMarkId = :vehicleRegistrationMarkId")
+        @Query("SELECT vrmo.orgId FROM VehicleRegistrationMarkOrganizationMap vrmo WHERE vrmo.vehicleRegistrationMarkId = :vehicleRegistrationMarkId")
         List<Long> findOrgIdsByVehicleRegistrationMarkId(
                         @Param("vehicleRegistrationMarkId") Long vehicleRegistrationMarkId);
+
+        // @Query("SELECT VehicleRegistrationMark FROM
+        // VehicleRegistrationMarkOrganizationMap vrmo JOIN
+        // VehicleRegistrationMarkOrganizationMap vrmo ON vrmo.vehicleRegistrationMarkId
+        // = vrm.id WHERE vrmo.orgId = :orgId")
+        // VehicleRegistrationMark getVehicleRegistrationMarkByOrgId(
+        // @Param("orgId") Long orgId);
+
+        @Query("SELECT vrm FROM VehicleRegistrationMark vrm " +
+                        "JOIN VehicleRegistrationMarkOrganizationMap vrmo " +
+                        "ON vrmo.vehicleRegistrationMarkId = vrm.id " +
+                        "WHERE vrmo.orgId = :orgId")
+        VehicleRegistrationMark getVehicleRegistrationMarkByOrgId(
+                        @Param("orgId") Long orgId);
 
 }

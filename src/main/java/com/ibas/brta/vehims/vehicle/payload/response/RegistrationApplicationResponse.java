@@ -30,6 +30,13 @@ public class RegistrationApplicationResponse {
     Instant applicationDate;
     Long applicationStatusId;
     String applicationStatusName;
+    String applicationStatusColor;
+    String applicationStatusCode;
+    // String vehicleOwnerName;
+    // String vehicleOwnerNid;
+    // String vehicleOwnerMobile;
+    // String vehicleOwnerEmail;
+    // String vehicleOwnerAddress;
 
     // ******** For Service Request
     LocalDateTime forwardDateForInspection;
@@ -46,7 +53,5 @@ public class RegistrationApplicationResponse {
     String approvalRemarks;
     LocalDateTime approvalDate;
     LocalDateTime rejectionDate;
-
-    String applicationStatusCode;
 
 }

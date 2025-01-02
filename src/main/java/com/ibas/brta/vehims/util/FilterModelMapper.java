@@ -21,6 +21,7 @@ public class FilterModelMapper {
         response.setApplicantId(applications.getApplicantId());
         response.setApplicationStatusId(applications.getApplicationStatusId());
         response.setApplicationStatusName(applications.getApplicationStatusName());
+        response.setApplicationStatusColor(applications.getApplicationStatusColor());
         response.setApplicationStatusCode(applications.getApplicationStatusCode());
         response.setApplicationDate(applications.getApplicationDate());
 

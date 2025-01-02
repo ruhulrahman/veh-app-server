@@ -6,15 +6,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.ibas.brta.vehims.configurations.model.Organization;
 import com.ibas.brta.vehims.configurations.model.ServiceDocumentMap;
 import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.model.VehicleClass;
+import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMark;
+import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMarkOrganizationMap;
 import com.ibas.brta.vehims.configurations.model.VehicleType;
 import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
 import com.ibas.brta.vehims.configurations.payload.response.FileResponse;
 import com.ibas.brta.vehims.configurations.payload.response.ServiceDocumentMapResponse;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
+import com.ibas.brta.vehims.configurations.repository.OrganizationRepository;
 import com.ibas.brta.vehims.configurations.repository.ServiceDocumentMapRepository;
 import com.ibas.brta.vehims.configurations.repository.StatusRepository;
+import com.ibas.brta.vehims.configurations.repository.VehicleClassRepository;
+import com.ibas.brta.vehims.configurations.repository.VehicleRegistrationMarkOrganizationMapRepository;
 import com.ibas.brta.vehims.configurations.repository.VehicleTypeRepository;
 import com.ibas.brta.vehims.configurations.service.CountryService;
 import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
@@ -31,6 +38,7 @@ import com.ibas.brta.vehims.vehicle.model.VServiceRequest;
 import com.ibas.brta.vehims.vehicle.model.VehicleFitness;
 import com.ibas.brta.vehims.vehicle.model.VehicleInfo;
 import com.ibas.brta.vehims.vehicle.model.VehicleOwner;
+import com.ibas.brta.vehims.vehicle.model.VehicleRegistration;
 import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.common.payload.response.MediaResponse;
@@ -48,8 +56,10 @@ import com.ibas.brta.vehims.common.service.MediaService;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleOwnerRepository;
+import com.ibas.brta.vehims.vehicle.repository.VehicleRegistrationRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import com.ibas.brta.vehims.util.Utility;
 
@@ -106,6 +116,18 @@ public class VServiceRequestService {
 
     @Autowired
     VehicleFitnessRepository vehicleFitnessRepository;
+
+    @Autowired
+    VehicleRegistrationRepository vehicleRegistrationRepository;
+
+    @Autowired
+    VehicleClassRepository vehicleClassRepository;
+
+    @Autowired
+    OrganizationRepository organizationRepository;
+
+    @Autowired
+    VehicleRegistrationMarkOrganizationMapRepository vehicleRegistrationMarkOrganizationMapRepository;
 
     // Create or Insert operation
     public VServiceRequestResponse createData(VServiceRequestCreateRequest request) {
@@ -328,6 +350,7 @@ public class VServiceRequestService {
         }
     }
 
+    @Transactional
     public VServiceRequestResponse updateApprovalByAuthority(VServiceRequestCreateRequest request) {
 
         Optional<VServiceRequest> existingData = serviceRequestRepository
@@ -345,6 +368,7 @@ public class VServiceRequestService {
                     || status.getStatusCode().equals("vehicle_app_primary_approved")) {
                 requestObject.setApprovalDate(LocalDateTime.now());
 
+                generateNewVehicleRegistrationNumber(existingData.get());
                 createNewVehicleFitness(existingData.get());
 
             }
@@ -363,6 +387,118 @@ public class VServiceRequestService {
         }
     }
 
+    @Transactional
+    public void generateNewVehicleRegistrationNumber(VServiceRequest serviceRequest) {
+
+        Optional<VehicleInfo> vehicleInfo = vehicleInfoRepository.findById(serviceRequest.getVehicleInfoId());
+
+        if (vehicleInfo.isPresent()) {
+
+            VehicleInfo vehicleInfoObject = vehicleInfo.get();
+
+            Optional<VehicleClass> vehicleClassObect = vehicleClassRepository
+                    .findById(vehicleInfoObject.getVehicleClassId());
+
+            VehicleClass vehicleClass = vehicleClassObect.get();
+
+            VehicleRegistration vehicleRegistrationRequest = new VehicleRegistration();
+
+            vehicleRegistrationRequest.setServiceRequestId(serviceRequest.getServiceId());
+            vehicleRegistrationRequest.setVehicleInfoId(serviceRequest.getVehicleInfoId());
+            vehicleRegistrationRequest.setVehicleOwnerId(serviceRequest.getApplicantId());
+            vehicleRegistrationRequest.setRegOfficeId(serviceRequest.getOrgId());
+            vehicleRegistrationRequest.setVehicleTypeId(vehicleInfoObject.getVehicleTypeId());
+            vehicleRegistrationRequest.setVehicleClassId(vehicleInfoObject.getVehicleClassId());
+            Optional<VehicleRegistration> existVehicleReg = vehicleRegistrationRepository
+                    .findByRegOfficeIdAndVehicleClassId(serviceRequest.getOrgId(), vehicleClass.getId());
+
+            if (existVehicleReg.isPresent()) {
+                vehicleRegistrationRequest
+                        .setClassNumber(generateNewVehicleClassNumber(existVehicleReg.get(), vehicleClass));
+                vehicleRegistrationRequest
+                        .setVehicleNumber(generateNewVehicleNumber(existVehicleReg.get(), vehicleClass));
+
+            } else {
+                vehicleRegistrationRequest.setClassNumber(String.valueOf(vehicleClass.getStartNumber()));
+                vehicleRegistrationRequest.setVehicleNumber(String.valueOf(0001));
+            }
+
+            String fullRegNumber = generateNewVehicleFullRegNumber(serviceRequest, vehicleRegistrationRequest,
+                    vehicleClass);
+
+            if (fullRegNumber != null) {
+                vehicleRegistrationRequest.setFullRegNumber(fullRegNumber);
+            } else {
+                throw new EntityNotFoundException("Vehicle Registration Mark not found");
+            }
+
+            vehicleRegistrationRepository.save(vehicleRegistrationRequest);
+
+            Optional<VehicleType> vehicleType = vehicleTypeRepository.findById(vehicleInfo.get().getVehicleTypeId());
+            if (vehicleType.isPresent()) {
+                if (!vehicleType.get().getNameEn().equals("MOTOR CYCLE")) {
+
+                    VehicleFitness vehicleFitness = new VehicleFitness();
+
+                    vehicleFitness.setServiceRequestId(serviceRequest.getServiceId());
+                    vehicleFitness.setVehicleInfoId(serviceRequest.getVehicleInfoId());
+                    vehicleFitness.setFitnessValidStartDate(LocalDateTime.now());
+                    vehicleFitness.setFitnessValidEndDate(LocalDateTime.now().plusYears(5));
+
+                    vehicleFitnessRepository.save(vehicleFitness);
+                }
+            }
+        }
+    }
+
+    public String generateNewVehicleClassNumber(VehicleRegistration vehicleRegistration, VehicleClass vehicleClass) {
+
+        if (Integer.parseInt(vehicleRegistration.getVehicleNumber()) < 9999) {
+            return String.valueOf(vehicleRegistration.getClassNumber());
+        } else {
+            String classNumber = vehicleRegistration.getClassNumber();
+            int newClassNumber = Integer.parseInt(classNumber) + 1;
+
+            if (newClassNumber > vehicleClass.getEndNumber()) {
+                throw new EntityNotFoundException("Vehicle Class Number is full");
+            }
+
+            return String.valueOf(newClassNumber);
+        }
+    }
+
+    public String generateNewVehicleNumber(VehicleRegistration vehicleRegistration, VehicleClass vehicleClass) {
+
+        if (Integer.parseInt(vehicleRegistration.getVehicleNumber()) < 9999) {
+            String vehicleNumber = vehicleRegistration.getVehicleNumber();
+            int newVehicleNumber = Integer.parseInt(vehicleNumber) + 1;
+
+            return String.valueOf(newVehicleNumber);
+        } else {
+            throw new EntityNotFoundException("Vehicle Number is full");
+        }
+    }
+
+    public String generateNewVehicleFullRegNumber(VServiceRequest serviceRequest,
+            VehicleRegistration vehicleRegistration, VehicleClass vehicleClass) {
+
+        VehicleRegistrationMark vehicleRegistrationMark = vehicleRegistrationMarkOrganizationMapRepository
+                .getVehicleRegistrationMarkByOrgId(serviceRequest.getOrgId());
+
+        if (vehicleRegistrationMark != null) {
+
+            String orgName = vehicleRegistrationMark.getNameEn();
+            String classNumber = vehicleRegistration.getClassNumber();
+            String vehicleNumber = vehicleRegistration.getVehicleNumber();
+
+            return orgName + "-" + vehicleClass.getSymbolEn() + "-" + classNumber + "-" + vehicleNumber;
+
+        } else {
+            return "";
+        }
+    }
+
+    @Transactional
     public void createNewVehicleFitness(VServiceRequest serviceRequest) {
 
         Optional<VehicleInfo> vehicleInfo = vehicleInfoRepository.findById(serviceRequest.getVehicleInfoId());
