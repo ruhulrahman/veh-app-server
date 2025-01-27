@@ -28,7 +28,7 @@ public class UserDetailResponse {
 
     private String motherNameBn;
 
-    private Integer genderId;
+    private Long genderId;
 
     private Long presentAddressId;
 

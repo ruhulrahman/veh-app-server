@@ -1,8 +1,11 @@
 package com.ibas.brta.vehims.userManagement.model;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.security.core.Authentication;
@@ -104,6 +107,18 @@ public class SUser extends DateAudit {
 
         @Column(name = "is_active", nullable = false)
         private Boolean isActive;
+
+        @Column(name = "logged_in_org_id")
+        private Long loggedInOrgId;
+
+        @Column(name = "logged_in_role_id")
+        private Long loggedInRoleId;
+
+        @Column(name = "last_logged_in_time")
+        private Instant lastLoggedInTime;
+
+        @Column(name = "last_logged_out_time")
+        private Instant lastLoggedOutTime;
 
         public SUser(String nameEn, String nameBn, String username, String email, String mobile,
                         Long userTypeId,

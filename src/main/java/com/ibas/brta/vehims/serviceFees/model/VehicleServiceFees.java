@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.serviceFees.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.ibas.brta.vehims.common.model.audit.RecordAudit;
 import com.ibas.brta.vehims.configurations.model.ServiceEntity;
@@ -79,4 +80,14 @@ public class VehicleServiceFees extends RecordAudit {
 
     @Column(name = "effective_end_date")
     private LocalDateTime effectiveEndDate;
+
+    @Column(name = "is_applicable_for_multiple_vehicle_owner", nullable = false)
+    private Boolean isApplicableForMultipleVehicleOwner = false;
+
+    @Column(name = "fee_for_multiple_vehicle", nullable = false)
+    private Integer feeForMultipleVehicle = 0;
+
+    @Column(name = "is_electric_vehicle", nullable = false)
+    private Boolean isElectricVehicle = false;
+
 }

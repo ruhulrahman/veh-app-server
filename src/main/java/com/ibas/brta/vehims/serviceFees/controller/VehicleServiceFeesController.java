@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ibas.brta.vehims.serviceFees.payload.response.VehicleSpecificServiceFeesResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -74,6 +75,13 @@ public class VehicleServiceFeesController {
                 return ResponseEntity.noContent().build();
         }
 
+
+        @PostMapping("/v1/admin/configurations/vehicle-related-service-fees/generate-vehicle-service-fees-rules")
+        public ResponseEntity<?> generateVehicleServiceRules() {
+                vehicleServiceFeesService.generateVehicleServiceRules();
+                return ResponseEntity.noContent().build();
+        }
+
         // @GetMapping("/v1/admin/configurations/vehicle-related-service-fees/list")
         // public ResponseEntity<?> findListWithPaginationBySearch(
         // @RequestParam(required = false) Long serviceId,
@@ -114,15 +122,41 @@ public class VehicleServiceFeesController {
 
                 List<VehicleServiceFeesResponse> response;
 
-                if (serviceRequestId != null) {
-                        response = vehicleServiceFeesService.getServiceWithFeesByServiceRequestId(serviceRequestId,
-                                        serviceCode);
-                } else {
-                        response = vehicleServiceFeesService.getServiceWithFeesByParentServiceCode(serviceCode);
-                }
+//                if (serviceRequestId != null) {
+////                        response = vehicleServiceFeesService.getServiceWithFeesByServiceRequestId(serviceRequestId,
+////                                        serviceCode);
+//                        response = vehicleServiceFeesService.getServiceWithFeesByServiceRequestIdAndServiceCode(serviceRequestId,
+//                                        serviceCode);
+//                } else {
+//                        response = vehicleServiceFeesService.getServiceWithFeesByParentServiceCode(serviceCode);
+//                }
+
+                response = vehicleServiceFeesService.getServiceWithFeesByParentServiceCode(serviceCode);
 
                 ServiceEconomicCodeResponse serviceEconomicCode = vehicleServiceFeesService
                                 .getServiceEconomicCodeByServiceCode(serviceCode);
+
+                Map<String, Object> object = new HashMap<>();
+                object.put("list", response);
+                object.put("serviceEconomicCode", serviceEconomicCode);
+                return ResponseEntity.ok(object);
+        }
+
+        // Get a single item by ID
+        @GetMapping("/v1/admin/configurations/vehicle-related-specific-service-fees")
+        public ResponseEntity<?> getSpecificServiceWithFees(
+                @RequestParam(required = false) String serviceCode,
+                @RequestParam(required = false) Long serviceRequestId) {
+
+                List<VehicleSpecificServiceFeesResponse> response = List.of();
+
+                if (serviceRequestId != null) {
+                        response = vehicleServiceFeesService.getServiceWithFeesByServiceRequestIdAndServiceCode(serviceRequestId,
+                                serviceCode);
+                }
+
+                ServiceEconomicCodeResponse serviceEconomicCode = vehicleServiceFeesService
+                        .getServiceEconomicCodeByServiceCode(serviceCode);
 
                 Map<String, Object> object = new HashMap<>();
                 object.put("list", response);

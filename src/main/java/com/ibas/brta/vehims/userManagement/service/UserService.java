@@ -12,6 +12,7 @@ import com.ibas.brta.vehims.configurations.service.StatusService;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
+import com.ibas.brta.vehims.userManagement.dao.UserDao;
 import com.ibas.brta.vehims.userManagement.model.UserTinInfo;
 import com.ibas.brta.vehims.userManagement.payload.response.UserTinInfoResponse;
 import com.ibas.brta.vehims.userManagement.repository.UserTinInfoRepository;
@@ -100,6 +101,9 @@ public class UserService {
 
     @Autowired
     MediaService mediaService;
+
+    @Autowired
+    UserDao userDao;
 
     // Create Applicant user account
     public UserFullResponse createApplicantUserData(ApplicantUserRequest request) {
@@ -253,19 +257,22 @@ public class UserService {
             response.setDesignationNameBn(designationResponse.getNameBn());
         }
 
-        List<UserOfficeRole> userOfficeRoles = userOfficeRoleRepository.findByUserId(id);
+        List<UserOfficeRoleResponse> userOfficeRoleResponses = userDao.getUserOfficeRoles(id);
+        response.setUserOfficeRoles(userOfficeRoleResponses);
 
-        if (!userOfficeRoles.isEmpty()) {
-            List<UserOfficeRoleResponse> userOfficeRoleResponses = userOfficeRoles.stream().map(userOfficeRole -> {
-                UserOfficeRoleResponse officeRoleResponse = new UserOfficeRoleResponse();
-                BeanUtils.copyProperties(userOfficeRole, officeRoleResponse);
-                return officeRoleResponse;
-            }).collect(Collectors.toList());
-
-            response.setUserOfficeRoles(userOfficeRoleResponses);
-        } else {
-            response.setUserOfficeRoles(Collections.emptyList());
-        }
+//        List<UserOfficeRole> userOfficeRoles = userOfficeRoleRepository.findByUserId(id);
+//
+//        if (!userOfficeRoles.isEmpty()) {
+//            List<UserOfficeRoleResponse> userOfficeRoleResponses = userOfficeRoles.stream().map(userOfficeRole -> {
+//                UserOfficeRoleResponse officeRoleResponse = new UserOfficeRoleResponse();
+//                BeanUtils.copyProperties(userOfficeRole, officeRoleResponse);
+//                return officeRoleResponse;
+//            }).collect(Collectors.toList());
+//
+//            response.setUserOfficeRoles(userOfficeRoleResponses);
+//        } else {
+//            response.setUserOfficeRoles(Collections.emptyList());
+//        }
 
         return response;
     }

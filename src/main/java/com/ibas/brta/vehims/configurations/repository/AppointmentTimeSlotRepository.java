@@ -23,4 +23,12 @@ public interface AppointmentTimeSlotRepository extends JpaRepository<Appointment
             @Param("slotNameEn") String slotNameEn,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
+
+    boolean existsBySlotNameEn(String slotNameEn);
+
+    boolean existsBySlotNameBn(String slotNameBn);
+
+    boolean existsBySlotNameEnAndIdNot(String slotNameEn, Long id);
+
+    boolean existsBySlotNameBnAndIdNot(String slotNameBn, Long id);
 }

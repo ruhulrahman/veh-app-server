@@ -18,4 +18,6 @@ public class UserResponse {
     private String status;
     private String rolename;
     private String fullname;
+    private Long loggedInOrgId;
+    private Long loggedInRoleId;
 }

@@ -2,7 +2,11 @@ package com.ibas.brta.vehims.util;
 
 import com.ibas.brta.vehims.exception.BadRequestException;
 import com.ibas.brta.vehims.security.UserPrincipal;
+import com.ibas.brta.vehims.userManagement.model.SUser;
+import com.ibas.brta.vehims.userManagement.model.User;
 import com.ibas.brta.vehims.userManagement.payload.response.UserFullResponse;
+import com.ibas.brta.vehims.userManagement.repository.SUserRepository;
+import com.ibas.brta.vehims.userManagement.repository.UserRepository;
 import com.ibas.brta.vehims.userManagement.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,24 +14,34 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.postgresql.util.PGobject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Utils {
 
     @Autowired
     private static UserService userService;
 
     private static final long MIN_FILE_SIZE = 1024; // Minimum file size in bytes
+
+    @Autowired
+    static UserRepository userRepository;
+
+    private static SUserRepository sUserRepository;
+
+    // Constructor injection
+    // Constructor injection
+    @Autowired
+    public Utils(SUserRepository sUserRepository) {
+        Utils.sUserRepository = sUserRepository;  // Set the static field
+    }
 
     public static Date getDateFromString(String date, String format) {
         try {
@@ -153,6 +167,19 @@ public class Utils {
         return null;
     }
 
+    public static Long getLoggedInOrgId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+
+            Optional<SUser> user = sUserRepository.findById(userPrincipal.getId());
+            if (user.isPresent()) {
+                return user.get().getLoggedInOrgId();
+            }
+        }
+        return null;
+    }
+
     public static UserFullResponse getLoggedinUser() {
         UserFullResponse response = userService.getDataById(getLoggedinUserId());
         return response;
@@ -199,6 +226,33 @@ public class Utils {
     public static String getFileUrl(HttpServletRequest request, String fileName) {
         return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
                 + "/api/files/" + fileName;
+    }
+
+    public static boolean notNullOrEmpty(Integer value) {
+        if (value == null || value == 0) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public static boolean notNullOrEmpty(Long value) {
+        if (value == null || value == 0) {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    public static boolean notNullOrEmpty(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return false;
+        }
+
+        return true;
+
     }
 
 }

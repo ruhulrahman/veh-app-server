@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.serviceFees.payload.request;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,10 @@ public class VehicleServiceFeesRequest {
     private LocalDateTime effectiveStartDate;
     private LocalDateTime effectiveEndDate;
     private Boolean isActive;
+
+    private Boolean isApplicableForMultipleVehicleOwner;
+    private Integer feeForMultipleVehicle;
+    private Boolean isElectricVehicle;
 
     @NotNull
     private List<Long> vehicleTypeIds;

@@ -19,6 +19,8 @@ import com.ibas.brta.vehims.configurations.payload.request.FuelTypeDTO;
 import com.ibas.brta.vehims.configurations.payload.response.FuelTypeResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.FuelTypeRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
+
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
@@ -27,18 +29,40 @@ public class FuelTypeService {
     private FuelTypeRepository fuelTypeRepository;
 
     // Create or Insert operation
-    public FuelType createData(FuelTypeDTO fuelTypeDTO) {
+    public FuelType createData(FuelTypeDTO request) {
+
+        if (fuelTypeRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Fuel Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         FuelType fuelType = new FuelType();
-        BeanUtils.copyProperties(fuelTypeDTO, fuelType);
+        BeanUtils.copyProperties(request, fuelType);
         return fuelTypeRepository.save(fuelType);
     }
 
     // Update operation
-    public FuelType updateData(Long id, FuelTypeDTO fuelTypeDTO) {
+    public FuelType updateData(Long id, FuelTypeDTO request) {
+
+        if (fuelTypeRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Fuel Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         Optional<FuelType> existingData = fuelTypeRepository.findById(id);
         if (existingData.isPresent()) {
             FuelType fuelType = existingData.get();
-            BeanUtils.copyProperties(fuelTypeDTO, fuelType); // Exclude ID
+            BeanUtils.copyProperties(request, fuelType); // Exclude ID
             return fuelTypeRepository.save(fuelType);
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);

@@ -20,6 +20,7 @@ import com.ibas.brta.vehims.configurations.payload.request.BloodGroupDTO;
 import com.ibas.brta.vehims.configurations.payload.response.BloodGroupResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.BloodGroupRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,18 +30,39 @@ public class BloodGroupService {
     private BloodGroupRepository bloodGroupRepository;
 
     // Create or Insert operation
-    public BloodGroup createData(BloodGroupDTO bloodGroupDTO) {
+    public BloodGroup createData(BloodGroupDTO request) {
+
+        if (bloodGroupRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Blood Group with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
         BloodGroup bloodGroup = new BloodGroup();
-        BeanUtils.copyProperties(bloodGroupDTO, bloodGroup);
+        BeanUtils.copyProperties(request, bloodGroup);
         return bloodGroupRepository.save(bloodGroup);
     }
 
     // Update operation
-    public BloodGroup updateData(Long id, BloodGroupDTO bloodGroupDTO) {
+    public BloodGroup updateData(Long id, BloodGroupDTO request) {
+
+        if (bloodGroupRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Blood Group with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         Optional<BloodGroup> existingData = bloodGroupRepository.findById(id);
         if (existingData.isPresent()) {
             BloodGroup bloodGroup = existingData.get();
-            BeanUtils.copyProperties(bloodGroupDTO, bloodGroup);
+            BeanUtils.copyProperties(request, bloodGroup);
             return bloodGroupRepository.save(bloodGroup);
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);

@@ -27,4 +27,12 @@ public interface VehicleClassRepository extends JpaRepository<VehicleClass, Long
             @Param("vehicleTypeId") Long vehicleTypeId,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

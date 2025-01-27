@@ -583,6 +583,8 @@ public class PaymentController {
 
             String credential = Credentials.basic(acsUsername, acsPassword);
 
+            log.info("credential ======= {}", credential);
+
             // logger.error("URL:-->" + acsBaseUrl + "token");
 
             okhttp3.Request request = new okhttp3.Request.Builder()
@@ -601,6 +603,8 @@ public class PaymentController {
             // logger.error("Response from auth:-->" + jString);
 
             loginResponse = gson.fromJson(jString, LoginResponse.class);
+            log.info("jString ======= {}", jString);
+            log.info("loginResponse ======= {}", loginResponse);
             // logger.error("Response from auth:-->" + loginResponse.getAccess_token());
 
         } catch (IOException ioException) {

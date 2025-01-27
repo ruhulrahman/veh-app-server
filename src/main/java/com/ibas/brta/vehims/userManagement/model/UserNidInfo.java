@@ -58,7 +58,7 @@ public class UserNidInfo extends DateAudit {
     private String addressBn;
 
     @Column(name = "gender_id", nullable = false)
-    private Integer genderId;
+    private Long genderId;
 
     @Column(name = "mobile", nullable = false, length = 20)
     private String mobile;

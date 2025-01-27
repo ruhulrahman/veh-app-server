@@ -3,6 +3,7 @@ package com.ibas.brta.vehims.common.service;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
+import com.ibas.brta.vehims.common.payload.response.MediaResult;
 import com.ibas.brta.vehims.configurations.service.StatusService;
 import com.ibas.brta.vehims.drivingLicense.repository.DLServiceMediaRepository;
 import com.ibas.brta.vehims.util.Utils;
@@ -181,6 +182,43 @@ public class MediaService {
         } catch (IOException e) {
             e.printStackTrace();
             return ResponseEntity.internalServerError().body("Error retrieving file");
+        }
+    }
+
+
+
+    public MediaResult getMediaByIdWithType(Long id) {
+        // Fetch file information
+        MediaResponse getDataById = getDataById(id);
+        if (getDataById == null || getDataById.getFile() == null) {
+            return new MediaResult(null, "File information not found");
+        }
+
+        // Build the path to the file
+        Path filePath = Paths.get(uploadDirectory).resolve(getDataById.getFile()).normalize();
+
+        // Check if the file exists
+        if (!Files.exists(filePath)) {
+            return new MediaResult(null, "File not found");
+        }
+
+        try {
+            // Get file type
+            String mimeType = Files.probeContentType(filePath);
+
+            if (mimeType != null && mimeType.startsWith("image")) {
+                // Read the file and return as Base64 string
+                byte[] fileBytes = Files.readAllBytes(filePath);
+                String base64String = java.util.Base64.getEncoder().encodeToString(fileBytes);
+
+                return new MediaResult(base64String);
+            } else {
+                // Return null for unsupported file types
+                return new MediaResult(null, "Unsupported file type");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new MediaResult(null, "Error processing file");
         }
     }
 

@@ -66,6 +66,7 @@ public interface RegistrationApplicationRepository extends JpaRepository<Vehicle
                         "    LEFT JOIN c_statuses cs on sr.application_status_id = cs.status_id" +
                         "    LEFT JOIN c_vehicle_classes cvc on vi.vehicle_class_id=cvc.vehicle_class_id" +
                         "            WHERE" +
+                        "    (case when :orgId is null then true else sr.org_id = :orgId end) AND" +
                         "    (case when :userId is null then true else sr.applicant_id = :userId end) AND" +
                         "    (case when :serviceRequestNo is null or :serviceRequestNo = '' then true else sr.service_request_no = LOWER(:serviceRequestNo) end) AND"
                         +
@@ -82,6 +83,6 @@ public interface RegistrationApplicationRepository extends JpaRepository<Vehicle
                         "", nativeQuery = true)
         Page<RegistrationApplications> searchVehRegApplications(String serviceRequestNo, String chassisNumber,
                         String engineNumber, String nid, String mobile,
-                        Date applicationDate, Long userId, Pageable pageable);
+                        Date applicationDate, Long orgId, Long userId, Pageable pageable);
 
 }

@@ -24,4 +24,12 @@ public interface VehicleMakerRepository extends JpaRepository<VehicleMaker, Long
             @Param("countryId") Long countryId,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

@@ -4,6 +4,7 @@ import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class VServiceRequestResponse {
@@ -35,4 +36,5 @@ public class VServiceRequestResponse {
     private Long applicationStatusId;
     private VehicleOwnerResponse vehicleOwner;
     private AddressResponse addressInfo;
+    List<VehicleJointOwnerResponse> vehicleJointOwners;
 }

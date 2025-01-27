@@ -241,6 +241,39 @@ public class CommonController {
                 return ResponseEntity.ok(customArray);
         }
 
+        @GetMapping("/v1/admin/common/get-division-list")
+        public ResponseEntity<?> getDivisionList() {
+                List<CommonProjection> locationList = commonRepository
+                                .getActiveLocationsByLocationTypeId(5L);
+
+                Map<String, Object> customArray = new HashMap<>();
+                customArray.put("locationList", locationList);
+
+                return ResponseEntity.ok(customArray);
+        }
+
+        @GetMapping("/v1/admin/common/get-district-list/{parentLocationId}")
+        public ResponseEntity<?> getDistrictList(@PathVariable Long parentLocationId) {
+                List<CommonProjection> locationList = commonRepository
+                                .getActiveLocationsByParentLocationIdAndLocationTypeId(parentLocationId, 1L);
+
+                Map<String, Object> customArray = new HashMap<>();
+                customArray.put("locationList", locationList);
+
+                return ResponseEntity.ok(customArray);
+        }
+
+        @GetMapping("/v1/admin/common/get-thana-list/{parentLocationId}")
+        public ResponseEntity<?> getThanaList(@PathVariable Long parentLocationId) {
+                List<CommonProjection> locationList = commonRepository
+                                .getActiveLocationsByParentLocationIdAndLocationTypeId(parentLocationId, 12L);
+
+                Map<String, Object> customArray = new HashMap<>();
+                customArray.put("locationList", locationList);
+
+                return ResponseEntity.ok(customArray);
+        }
+
         @GetMapping("/v1/admin/common/get-locations-by-parent-location-type-code/{parentLocationTypeCodeOrId}")
         public ResponseEntity<?> getLocationsByParentLocationTypeCodeId(
                         @PathVariable String parentLocationTypeCodeOrId) {

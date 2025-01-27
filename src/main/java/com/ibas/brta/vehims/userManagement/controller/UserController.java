@@ -1,19 +1,17 @@
 package com.ibas.brta.vehims.userManagement.controller;
 
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
+import com.ibas.brta.vehims.userManagement.dao.UserDao;
+import com.ibas.brta.vehims.userManagement.model.SUser;
 import com.ibas.brta.vehims.userManagement.model.User;
-import com.ibas.brta.vehims.userManagement.payload.response.UserIdentityAvailability;
-import com.ibas.brta.vehims.userManagement.payload.response.UserProfile;
-import com.ibas.brta.vehims.userManagement.payload.response.UserProfileResponse;
-import com.ibas.brta.vehims.userManagement.payload.response.UserSummary;
+import com.ibas.brta.vehims.userManagement.payload.response.*;
 import com.ibas.brta.vehims.userManagement.payload.request.ChangePasswordRequest;
 import com.ibas.brta.vehims.userManagement.payload.request.SUserRequest;
 import com.ibas.brta.vehims.userManagement.payload.request.SUserUpdateRequest;
 import com.ibas.brta.vehims.userManagement.payload.request.UserProfileRequest;
 import com.ibas.brta.vehims.common.payload.response.ApiResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
-import com.ibas.brta.vehims.userManagement.payload.response.UserFullResponse;
-import com.ibas.brta.vehims.userManagement.payload.response.UserOfficeRoleResponse;
+import com.ibas.brta.vehims.userManagement.repository.SUserRepository;
 import com.ibas.brta.vehims.userManagement.repository.UserRepository;
 import com.ibas.brta.vehims.security.CurrentUser;
 import com.ibas.brta.vehims.security.UserPrincipal;
@@ -34,12 +32,16 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -86,6 +88,9 @@ public class UserController {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    SUserRepository sUserRepository;
 
     @GetMapping("/user/me")
     @PreAuthorize("hasRole('USER')")
@@ -195,16 +200,75 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+
+    @PostMapping("/v1/auth/set-logged-in-user-office-role")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> setLoggedInUserOfficeRole(@CurrentUser UserPrincipal currentUser, @RequestBody UserOfficeRoleResponse request) throws InvocationTargetException, IllegalAccessException {
+
+
+        Optional<SUser> user = sUserRepository.findById(currentUser.getId());
+
+        UserResponse userResponse = new UserResponse();
+
+        if (user.isPresent()) {
+            SUser sUser = user.get();
+            if (request.getOrgId() != null && request.getRoleId() != null) {
+
+                sUser.setLoggedInOrgId(request.getOrgId());
+                sUser.setLoggedInRoleId(request.getRoleId());
+
+                SUser userSaved = sUserRepository.save(sUser);
+                BeanUtils.copyProperties(userSaved, userResponse);
+            } else {
+                BeanUtils.copyProperties(sUser, userResponse);
+            }
+        }
+
+        return ResponseEntity.ok(userResponse);
+    }
+
+    @PostMapping("/v1/auth/unset-logged-in-user-office-role")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<?> unsetLoggedInUserOfficeRole(@CurrentUser UserPrincipal currentUser) throws InvocationTargetException, IllegalAccessException {
+
+
+        Optional<SUser> user = sUserRepository.findById(currentUser.getId());
+
+
+
+        UserResponse userResponse = new UserResponse();
+
+        if (user.isPresent()) {
+            SUser sUser = user.get();
+            sUser.setLastLoggedOutTime(Instant.now());
+            sUserRepository.save(sUser);
+
+            if (sUser.getLoggedInOrgId() != null && sUser.getLoggedInRoleId() != null) {
+
+                sUser.setLoggedInOrgId(null);
+                sUser.setLoggedInRoleId(null);
+                SUser userSaved = sUserRepository.save(sUser);
+                BeanUtils.copyProperties(userSaved, userResponse);
+            } else {
+                BeanUtils.copyProperties(user.get(), userResponse);
+            }
+        }
+
+        return ResponseEntity.ok(userResponse);
+    }
+
     @GetMapping("/v1/auth/get-auth-user")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getSystemAdminRolePermission(@CurrentUser UserPrincipal currentUser) {
 
+        Optional<SUser> user = sUserRepository.findById(currentUser.getId());
         UserFullResponse userResponse = userService.getDataById(currentUser.getId());
 
-        List<Integer> roleIds = commonService.getRoleIdsByUserId(currentUser.getId());
+        List<Long> roleIds = commonService.getRoleIdsByUserId(currentUser.getId());
 
         if (roleIds != null) {
-            List<Integer> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
+//            List<Integer> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
+            List<Long> permissionIds = commonService.getPermissionIdsByRoleId(user.get().getLoggedInRoleId());
             if (permissionIds != null) {
                 List<String> permissionCodes = commonService.getPermissionCodeByPermissionIds(permissionIds);
                 userResponse.setPermissionCodes(permissionCodes);

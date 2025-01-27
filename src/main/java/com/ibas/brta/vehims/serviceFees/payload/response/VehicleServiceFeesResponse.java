@@ -36,7 +36,11 @@ public class VehicleServiceFeesResponse {
     private Integer kwMax;
     private Boolean isAirCondition;
     private Boolean isHire;
+
+    private Boolean isApplicableForMultipleVehicleOwner;
+    private Integer feeForMultipleVehicle;
+    private Boolean isElectricVehicle;
+
     private List<Long> vehicleTypeIds;
     private List<VehicleType> vehicleTypes;
-
 }

@@ -30,4 +30,12 @@ public interface VehicleTypeRepository extends JpaRepository<VehicleType, Long> 
 
     @Query("SELECT s FROM VehicleType s WHERE id IN (:ids) AND s.isActive = true ORDER BY s.nameEn ASC")
     List<VehicleType> findByIdsIsActiveTrueOrderByNameEnAsc(@Param("ids") List<Long> ids);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

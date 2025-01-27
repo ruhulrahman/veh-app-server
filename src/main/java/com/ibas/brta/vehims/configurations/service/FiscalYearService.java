@@ -19,6 +19,7 @@ import com.ibas.brta.vehims.configurations.payload.request.FiscalYearRequest;
 import com.ibas.brta.vehims.configurations.payload.response.FiscalYearResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.FiscalYearRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,16 @@ public class FiscalYearService {
     // Create or Insert operation
     public FiscalYearResponse createData(FiscalYearRequest request) {
 
+        if (fiscalYearRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Fiscal Year with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         FiscalYear requestObject = new FiscalYear();
         BeanUtils.copyProperties(request, requestObject);
         FiscalYear savedData = fiscalYearRepository.save(requestObject);
@@ -44,6 +55,16 @@ public class FiscalYearService {
 
     // Update operation
     public FiscalYearResponse updateData(Long id, FiscalYearRequest request) {
+
+        if (fiscalYearRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Fiscal Year with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Optional<FiscalYear> existingData = fiscalYearRepository.findById(id);
 

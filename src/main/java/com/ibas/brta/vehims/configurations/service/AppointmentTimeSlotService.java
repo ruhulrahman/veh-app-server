@@ -33,6 +33,11 @@ public class AppointmentTimeSlotService {
     // Create or Insert operation
     public AppointmentTimeSlotResponse createData(AppointmentTimeSlotRequest request) {
 
+        if (appointmentTimeSlotRepository.existsBySlotNameEn(request.getSlotNameEn())) {
+            throw new IllegalArgumentException(
+                    "Appointment Time Slot with name " + request.getSlotNameEn() + " already exists.");
+        }
+
         AppointmentTimeSlot requestObject = new AppointmentTimeSlot();
         BeanUtils.copyProperties(request, requestObject);
         AppointmentTimeSlot savedData = appointmentTimeSlotRepository.save(requestObject);
@@ -44,6 +49,11 @@ public class AppointmentTimeSlotService {
 
     // Update operation
     public AppointmentTimeSlotResponse updateData(Long id, AppointmentTimeSlotRequest request) {
+
+        if (appointmentTimeSlotRepository.existsBySlotNameEnAndIdNot(request.getSlotNameEn(), id)) {
+            throw new IllegalArgumentException(
+                    "Appointment Time Slot with name " + request.getSlotNameEn() + " already exists.");
+        }
 
         Optional<AppointmentTimeSlot> existingData = appointmentTimeSlotRepository.findById(id);
 

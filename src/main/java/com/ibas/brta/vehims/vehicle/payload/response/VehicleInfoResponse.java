@@ -13,7 +13,7 @@ import lombok.*;
 
 public class VehicleInfoResponse {
     private Long id;
-    private String chassisNumber;
+        private String chassisNumber;
     private String engineNumber;
     private LocalDateTime fitnessIssueDate;
     private LocalDateTime fitnessExpireDate;

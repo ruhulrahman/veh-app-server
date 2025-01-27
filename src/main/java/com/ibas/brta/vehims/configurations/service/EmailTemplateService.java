@@ -1,7 +1,9 @@
 package com.ibas.brta.vehims.configurations.service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -18,6 +20,7 @@ import com.ibas.brta.vehims.configurations.payload.response.EmailTemplateRespons
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.payload.response.ServiceEntityResponse;
 import com.ibas.brta.vehims.configurations.repository.EmailTemplateRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;

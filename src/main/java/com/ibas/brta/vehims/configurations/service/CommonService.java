@@ -80,19 +80,19 @@ public class CommonService {
         return customArray;
     }
 
-    public List<Integer> getRoleIdsByUserId(Long userId) {
+    public List<Long> getRoleIdsByUserId(Long userId) {
         return commonRepository.getRoleIdsByUserId(userId);
     }
 
-    public List<Integer> getPermissionIdsByRoleIds(List<Integer> roleIds) {
+    public List<Long> getPermissionIdsByRoleIds(List<Long> roleIds) {
         return commonRepository.getPermissionIdsByRoleIds(roleIds);
     }
 
-    public List<Integer> getPermissionIdsByRoleId(Integer roleId) {
+    public List<Long> getPermissionIdsByRoleId(Long roleId) {
         return commonRepository.getPermissionIdsByRoleId(roleId);
     }
 
-    public List<String> getPermissionCodeByPermissionIds(List<Integer> permissionIds) {
+    public List<String> getPermissionCodeByPermissionIds(List<Long> permissionIds) {
         return commonRepository.getPermissionCodeByPermissionIds(permissionIds);
     }
 

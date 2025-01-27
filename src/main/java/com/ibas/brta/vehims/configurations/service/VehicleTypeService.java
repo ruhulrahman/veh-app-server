@@ -21,6 +21,7 @@ import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.payload.response.VehicleTypeResponse;
 import com.ibas.brta.vehims.configurations.repository.VehicleTypeClassMapRepository;
 import com.ibas.brta.vehims.configurations.repository.VehicleTypeRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -36,16 +37,27 @@ public class VehicleTypeService {
     // Create or Insert operation
     @Transactional
     public VehicleType createData(VehicleTypeRequest request) {
+
+        if (vehicleTypeRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         VehicleType vehicleType = new VehicleType();
         BeanUtils.copyProperties(request, vehicleType);
         VehicleType savedData = vehicleTypeRepository.save(vehicleType);
 
-        vehicleTypeClassMapRepository.deleteByVehicleTypeId(vehicleType.getId());
+        vehicleTypeClassMapRepository.deleteByVehicleTypeId(savedData.getId());
 
         for (Long vehicleClassId : request.getVehicleClassIds()) {
             VehicleTypeClassMap vehicleTypeClassMap = new VehicleTypeClassMap();
             vehicleTypeClassMap.setVehicleClassId(vehicleClassId);
-            vehicleTypeClassMap.setVehicleTypeId(vehicleType.getId());
+            vehicleTypeClassMap.setVehicleTypeId(savedData.getId());
             vehicleTypeClassMapRepository.save(vehicleTypeClassMap);
         }
 
@@ -55,6 +67,17 @@ public class VehicleTypeService {
     // Update operation
     @Transactional
     public VehicleType updateData(Long id, VehicleTypeRequest request) {
+
+        if (vehicleTypeRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         Optional<VehicleType> existingData = vehicleTypeRepository.findById(id);
         if (existingData.isPresent()) {
             VehicleType vehicleType = existingData.get();
@@ -78,6 +101,7 @@ public class VehicleTypeService {
     }
 
     // Delete operation
+    @Transactional
     public void deleteDataById(Long id) {
         if (vehicleTypeRepository.existsById(id)) {
             vehicleTypeClassMapRepository.deleteByVehicleTypeId(id);

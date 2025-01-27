@@ -1,10 +1,14 @@
 package com.ibas.brta.vehims.userManagement.controller;
 
 import java.net.URI;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.ibas.brta.vehims.userManagement.dao.UserDao;
+import com.ibas.brta.vehims.userManagement.model.SUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +84,9 @@ public class AuthController {
         @Autowired
         UserService userService;
 
+        @Autowired
+        UserDao userDao;
+
         @PostMapping("/v1/login")
         @CrossOrigin(origins = "*")
         public ResponseEntity<?> authenticateUserV1(@Valid @RequestBody LoginRequest loginRequest) {
@@ -99,6 +106,14 @@ public class AuthController {
                         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
                         UserFullResponse userResponse = userService.getDataById(userPrincipal.getId());
                         customArray.put("userInfo", userResponse);
+
+                    Optional<User> loggedInUser = userRepository.findById(userPrincipal.getId());
+                    if (loggedInUser.isPresent()) {
+                        User user = loggedInUser.get();
+                        user.setLastLoggedInTime(Instant.now());
+                        user.setLastLoggedOutTime(null);
+                        userRepository.save(user);
+                    }
                 }
 
                 customArray.put("tokenInfo", new AuthenticationResponse(jwt));

@@ -20,7 +20,7 @@ public class UserDetailRequest {
     private String fatherOrHusbandNameBn;
     private String motherNameEn;
     private String motherNameBn;
-    private Integer genderId;
+    private Long genderId;
     private Long presentAddressId;
     private Long permanentAddressId;
     private String passportNumber;

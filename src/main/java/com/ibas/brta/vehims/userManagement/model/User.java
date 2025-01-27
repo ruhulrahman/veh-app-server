@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Objects;
@@ -99,6 +100,18 @@ public class User extends DateAudit {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive;
+
+    @Column(name = "logged_in_org_id")
+    private Long loggedInOrgId;
+
+    @Column(name = "logged_in_role_id")
+    private Long loggedInRoleId;
+
+    @Column(name = "last_logged_in_time")
+    private Instant lastLoggedInTime;
+
+    @Column(name = "last_logged_out_time")
+    private Instant lastLoggedOutTime;
 
     // public Long getId() {
     // return userId;

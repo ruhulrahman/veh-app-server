@@ -20,6 +20,7 @@ import com.ibas.brta.vehims.configurations.payload.response.VehicleMakerResponse
 import com.ibas.brta.vehims.configurations.payload.response.CountryResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.VehicleMakerRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,16 @@ public class VehicleMakerService {
     // Create or Insert operation
     public VehicleMakerResponse createData(VehicleMakerRequest request) {
 
+        if (vehicleMakerRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Maker with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         VehicleMaker requestObject = new VehicleMaker();
         BeanUtils.copyProperties(request, requestObject);
         VehicleMaker savedData = vehicleMakerRepository.save(requestObject);
@@ -48,6 +59,16 @@ public class VehicleMakerService {
 
     // Update operation
     public VehicleMakerResponse updateData(Long id, VehicleMakerRequest request) {
+
+        if (vehicleMakerRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Maker with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Optional<VehicleMaker> existingData = vehicleMakerRepository.findById(id);
 

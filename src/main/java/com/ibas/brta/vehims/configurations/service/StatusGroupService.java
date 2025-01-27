@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.ibas.brta.vehims.exception.FieldValidationException;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IStatusGroup;
 import com.ibas.brta.vehims.configurations.model.StatusGroup;
@@ -80,12 +81,34 @@ public class StatusGroupService implements IStatusGroup {
     }
 
     @Override
-    public StatusGroup createStatusGroup(StatusGroup statusGroup) {
-        return statusGroupRepository.save(statusGroup);
+    public StatusGroup createStatusGroup(StatusGroup request) {
+
+        if (statusGroupRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Status Group with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
+        return statusGroupRepository.save(request);
     }
 
     @Override
     public StatusGroup updateStatusGroup(StatusGroup statusGroup) {
+
+        if (statusGroupRepository.existsByNameEnAndIdNot(statusGroup.getNameEn(), statusGroup.getId())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Status Group with name " + statusGroup.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         StatusGroup existingData = statusGroupRepository.findById(statusGroup.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("StatusGroup", "id", statusGroup.getId()));
         // copy fields to the existing entity and save

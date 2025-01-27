@@ -21,6 +21,10 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
 
     boolean existsByNameBn(String nameBn);
 
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
+
     boolean existsByServiceCode(String serviceCode);
 
     List<ServiceEntity> findAllByOrderByNameEnAsc();
@@ -37,6 +41,9 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
 
     @Query(value = "SELECT * FROM c_services WHERE :childServiceId = ANY(childServiceIds);", nativeQuery = true)
     List<ServiceEntity> getServicesByChildServiceId(@Param("childServiceId") Long childServiceId);
+
+    @Query(value = "SELECT * FROM c_services WHERE service_id IN (:serviceIds) ORDER BY priority ASC", nativeQuery = true)
+    List<ServiceEntity> getServicesByServiceIds(@Param("serviceIds") List<Long> serviceIds);
 
     // Query to get childServiceIds based on serviceCode
     @Query("SELECT UNNEST(s.childServiceIds) FROM ServiceEntity s WHERE s.serviceCode = :serviceCode")

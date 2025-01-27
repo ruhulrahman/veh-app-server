@@ -24,4 +24,12 @@ public interface VehicleBrandRepository extends JpaRepository<VehicleBrand, Long
             @Param("makerId") Long makerId,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

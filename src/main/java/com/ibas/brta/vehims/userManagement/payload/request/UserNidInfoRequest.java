@@ -48,7 +48,7 @@ public class UserNidInfoRequest {
     private String addressBn;
 
     @NotNull(message = "Gender ID is required")
-    private Integer genderId;
+    private Long genderId;
 
     @NotNull(message = "Mobile number is required")
     @Size(max = 20, message = "Mobile number cannot exceed 20 characters")

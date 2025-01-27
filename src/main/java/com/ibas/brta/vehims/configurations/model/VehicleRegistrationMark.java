@@ -15,7 +15,7 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = false)
 
 @Inheritance(strategy = InheritanceType.JOINED)
-@AttributeOverride(name = "id", column = @Column(name = "vechile_registration_mark_id"))
+@AttributeOverride(name = "id", column = @Column(name = "vehicle_registration_mark_id"))
 
 public class VehicleRegistrationMark extends RecordAudit {
 

@@ -16,10 +16,12 @@ import org.springframework.stereotype.Service;
 
 import com.ibas.brta.vehims.iservice.ICountry;
 import com.ibas.brta.vehims.configurations.model.Country;
-import com.ibas.brta.vehims.configurations.payload.request.CountryDTO;
+import com.ibas.brta.vehims.configurations.payload.request.CountryRequest;
 import com.ibas.brta.vehims.configurations.payload.response.CountryResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.CountryRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
+import com.ibas.brta.vehims.exception.ValidationExceptionHandler;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -46,18 +48,38 @@ public class CountryService implements ICountry {
     }
 
     // Create or Insert operation
-    public Country createData(CountryDTO countryDTO) {
+    public Country createData(CountryRequest request) {
+        if (countryRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Country with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
         Country country = new Country();
-        BeanUtils.copyProperties(countryDTO, country);
+        BeanUtils.copyProperties(request, country);
         return countryRepository.save(country);
     }
 
     // Update operation
-    public Country updateData(Long id, CountryDTO countryDTO) {
+    public Country updateData(Long id, CountryRequest request) {
+
+        if (countryRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Country with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         Optional<Country> existingData = countryRepository.findById(id);
         if (existingData.isPresent()) {
             Country country = existingData.get();
-            BeanUtils.copyProperties(countryDTO, country); // Exclude ID
+            BeanUtils.copyProperties(request, country); // Exclude ID
             return countryRepository.save(country);
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);

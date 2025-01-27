@@ -6,26 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.ibas.brta.vehims.configurations.model.Organization;
-import com.ibas.brta.vehims.configurations.model.ServiceDocumentMap;
-import com.ibas.brta.vehims.configurations.model.Status;
-import com.ibas.brta.vehims.configurations.model.VehicleClass;
-import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMark;
-import com.ibas.brta.vehims.configurations.model.VehicleRegistrationMarkOrganizationMap;
-import com.ibas.brta.vehims.configurations.model.VehicleType;
-import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
-import com.ibas.brta.vehims.configurations.payload.response.FileResponse;
-import com.ibas.brta.vehims.configurations.payload.response.ServiceDocumentMapResponse;
-import com.ibas.brta.vehims.configurations.repository.CommonRepository;
-import com.ibas.brta.vehims.configurations.repository.OrganizationRepository;
-import com.ibas.brta.vehims.configurations.repository.ServiceDocumentMapRepository;
-import com.ibas.brta.vehims.configurations.repository.StatusRepository;
-import com.ibas.brta.vehims.configurations.repository.VehicleClassRepository;
-import com.ibas.brta.vehims.configurations.repository.VehicleRegistrationMarkOrganizationMapRepository;
-import com.ibas.brta.vehims.configurations.repository.VehicleTypeRepository;
+import com.ibas.brta.vehims.common.payload.response.MediaResult;
+import com.ibas.brta.vehims.configurations.model.*;
+import com.ibas.brta.vehims.configurations.payload.response.*;
+import com.ibas.brta.vehims.configurations.repository.*;
 import com.ibas.brta.vehims.configurations.service.CountryService;
 import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
 import com.ibas.brta.vehims.projection.StatusProjection;
+import com.ibas.brta.vehims.userManagement.model.UserDetail;
+import com.ibas.brta.vehims.userManagement.repository.UserDetailRepository;
+import com.ibas.brta.vehims.vehicle.payload.response.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +33,6 @@ import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.common.payload.response.MediaResponse;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VehicleOwnerResponse;
 import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
 import com.ibas.brta.vehims.vehicle.repository.VehicleFitnessRepository;
@@ -83,6 +70,9 @@ public class VServiceRequestService {
 
     @Autowired
     UserNidInfoRepository userNidInfoRepository;
+
+    @Autowired
+    UserDetailRepository userDetailRepository;
 
     @Autowired
     private CommonRepository commonRepository;
@@ -128,6 +118,15 @@ public class VServiceRequestService {
 
     @Autowired
     VehicleRegistrationMarkOrganizationMapRepository vehicleRegistrationMarkOrganizationMapRepository;
+
+    @Autowired
+    VehicleJointOwnerService vehicleJointOwnerService;
+
+    @Autowired
+    FuelTypeRepository fuelTypeRepository;
+
+    @Autowired
+    VehicleColorRepository vehicleColorRepository;
 
     // Create or Insert operation
     public VServiceRequestResponse createData(VServiceRequestCreateRequest request) {
@@ -207,6 +206,8 @@ public class VServiceRequestService {
         VServiceRequestResponse response = new VServiceRequestResponse();
         BeanUtils.copyProperties(existingData, response);
 
+        // log.info("existingData ====================== {}", existingData);
+
         if (existingData.getVehicleInfoId() != null) {
             VehicleInfo vehicleInfo = vehicleInfoRepository.findById(existingData.getVehicleInfoId())
                     .orElseThrow(() -> new EntityNotFoundException(
@@ -234,7 +235,9 @@ public class VServiceRequestService {
 
         if (existingData.getApplicantId() != null) {
             VehicleOwner vehicleOwner = vehicleOwnerRepository
-                    .findByVehicleInfoIdAndServiceRequestId(existingData.getId(), existingData.getVehicleInfoId());
+                    .findByVehicleInfoIdAndServiceRequestId(existingData.getVehicleInfoId(), existingData.getId());
+
+            // log.info("Vehicle Owner================== {}" + vehicleOwner);
 
             if (vehicleOwner != null) {
 
@@ -252,6 +255,249 @@ public class VServiceRequestService {
                         response.setAddressInfo(addressResponse);
                     }
                 }
+            }
+        }
+
+        if (existingData.getVehicleInfoId() != null) {
+            List<VehicleJointOwnerResponse> vehicleJointOwners = vehicleJointOwnerService
+                    .getJointOwnersByVehicleInfoIdAndServiceRequestId(existingData.getVehicleInfoId(),
+                            existingData.getId());
+
+            response.setVehicleJointOwners(vehicleJointOwners);
+        }
+
+        return response;
+    }
+
+    public DigitalRegistrationCertficateResponse getDigitalRegistrationCertificateDetailsReqeustById(Long id) {
+
+        VServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        DigitalRegistrationCertficateResponse response = new DigitalRegistrationCertficateResponse();
+        BeanUtils.copyProperties(serviceRequest, response);
+
+        if (serviceRequest.getApplicantId() != null) {
+            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
+            if (userDetail != null) {
+                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+
+                if (mediaResult != null) {
+                    response.setOwnerPhotoInfo(mediaResult);
+                }
+            }
+        }
+
+        if (serviceRequest.getOrgId() != null) {
+            Optional<Organization> organization = organizationRepository.findById(serviceRequest.getOrgId());
+            if (organization.isPresent()) {
+                OrganizationResponse organizationResponse = new OrganizationResponse();
+                BeanUtils.copyProperties(organization.get(), organizationResponse);
+                response.setIssuingAuthority(organizationResponse);
+            }
+        }
+
+        Optional<VehicleRegistration> vehicleRegistration = vehicleRegistrationRepository.findByServiceRequestId(serviceRequest.getId());
+
+        if (vehicleRegistration.isPresent()) {
+            VehicleRegistrationResponse vehicleRegistrationResponse = new VehicleRegistrationResponse();
+            BeanUtils.copyProperties(vehicleRegistration.get(), vehicleRegistrationResponse);
+            response.setVehicleRegistration(vehicleRegistrationResponse);
+
+            if (vehicleRegistrationResponse.getVehicleOwnerId() != null) {
+//            if (serviceRequest.getApplicantId() != null) {
+
+                log.info("VvehicleRegistrationResponse.getVehicleOwnerId()================== {}", vehicleRegistrationResponse.getVehicleOwnerId());
+                log.info("VvehicleRegistrationResponse.getVehicleOwnerId()================== {}", serviceRequest.getId());
+                VehicleOwner vehicleOwner = vehicleOwnerRepository.findByVehicleInfoIdAndServiceRequestId(vehicleRegistrationResponse.getVehicleOwnerId(), serviceRequest.getId());
+//                VehicleOwner vehicleOwner = vehicleOwnerRepository.findByVehicleInfoIdAndServiceRequestId(serviceRequest.getApplicantId(), serviceRequest.getId());
+                log.info("vehicleOwner================== {}", vehicleOwner);
+
+                if (vehicleOwner != null) {
+
+                    VehicleOwnerResponse vehicleOwnerResponse = new VehicleOwnerResponse();
+
+                    BeanUtils.copyProperties(vehicleOwner, vehicleOwnerResponse);
+
+
+                    if (vehicleOwner.getOwnerTypeId() != null) {
+
+                        Optional<Status> ownerType = statusRepository.findById(vehicleOwner.getOwnerTypeId());
+
+                        if (ownerType.isPresent()) {
+                            StatusResponse statusResponse = new StatusResponse();
+                            BeanUtils.copyProperties(ownerType.get(), statusResponse);
+                            vehicleOwnerResponse.setOwnerType(statusResponse);
+                        }
+                    }
+
+                    response.setVehicleOwner(vehicleOwnerResponse);
+
+                    if (vehicleOwner.getAddressId() != null) {
+
+                        AddressResponse addressResponse = addressService.getDataById(vehicleOwner.getAddressId());
+
+                        if (addressResponse != null) {
+                            response.setAddressInfo(addressResponse);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (serviceRequest.getVehicleInfoId() != null) {
+            VehicleInfoFullResponse vehicleInfoResponse = getFullVehicleInfoDataByVehicleInfoId(serviceRequest.getVehicleInfoId());
+            response.setVehicleInfo(vehicleInfoResponse);
+        }
+
+        return response;
+    }
+    public FitnessCertficateResponse getFitnessCertificateDetailsReqeustById(Long id) {
+
+        VServiceRequest serviceRequest = serviceRequestRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        FitnessCertficateResponse response = new FitnessCertficateResponse();
+        BeanUtils.copyProperties(serviceRequest, response);
+
+        if (serviceRequest.getApplicantId() != null) {
+            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
+            if (userDetail != null) {
+                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+
+                if (mediaResult != null) {
+                    response.setOwnerPhotoInfo(mediaResult);
+                }
+            }
+        }
+
+        if (serviceRequest.getOrgId() != null) {
+            Optional<Organization> organization = organizationRepository.findById(serviceRequest.getOrgId());
+            if (organization.isPresent()) {
+                OrganizationResponse organizationResponse = new OrganizationResponse();
+                BeanUtils.copyProperties(organization.get(), organizationResponse);
+                response.setIssuingAuthority(organizationResponse);
+            }
+        }
+
+        Optional<VehicleRegistration> vehicleRegistration = vehicleRegistrationRepository.findByServiceRequestId(serviceRequest.getId());
+
+        if (vehicleRegistration.isPresent()) {
+            VehicleRegistrationResponse vehicleRegistrationResponse = new VehicleRegistrationResponse();
+            BeanUtils.copyProperties(vehicleRegistration.get(), vehicleRegistrationResponse);
+            response.setVehicleRegistration(vehicleRegistrationResponse);
+
+            if (vehicleRegistrationResponse.getVehicleOwnerId() != null) {
+
+                VehicleOwner vehicleOwner = vehicleOwnerRepository.findByVehicleInfoIdAndServiceRequestId(vehicleRegistrationResponse.getVehicleOwnerId(), serviceRequest.getId());
+
+                if (vehicleOwner != null) {
+
+                    VehicleOwnerResponse vehicleOwnerResponse = new VehicleOwnerResponse();
+
+                    BeanUtils.copyProperties(vehicleOwner, vehicleOwnerResponse);
+
+
+                    if (vehicleOwner.getOwnerTypeId() != null) {
+
+                        Optional<Status> ownerType = statusRepository.findById(vehicleOwner.getOwnerTypeId());
+
+                        if (ownerType.isPresent()) {
+                            StatusResponse statusResponse = new StatusResponse();
+                            BeanUtils.copyProperties(ownerType.get(), statusResponse);
+                            vehicleOwnerResponse.setOwnerType(statusResponse);
+                        }
+                    }
+
+                    response.setVehicleOwner(vehicleOwnerResponse);
+
+                    if (vehicleOwner.getAddressId() != null) {
+
+                        AddressResponse addressResponse = addressService.getDataById(vehicleOwner.getAddressId());
+
+                        if (addressResponse != null) {
+                            response.setAddressInfo(addressResponse);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (serviceRequest.getVehicleInfoId() != null) {
+            VehicleInfoFullResponse vehicleInfoResponse = getFullVehicleInfoDataByVehicleInfoId(serviceRequest.getVehicleInfoId());
+            response.setVehicleInfo(vehicleInfoResponse);
+        }
+
+        if (serviceRequest.getVehicleInfoId() != null) {
+            Optional<VehicleFitness> vehicleFitness = vehicleFitnessRepository.findByVehicleInfoId(serviceRequest.getVehicleInfoId());
+            if (vehicleFitness.isPresent()) {
+                response.setFitnessValidStartDate(vehicleFitness.get().getFitnessValidStartDate());
+                response.setFitnessValidEndDate(vehicleFitness.get().getFitnessValidEndDate());
+            }
+        }
+
+        return response;
+    }
+
+    public VehicleOwnerResponse getVehicleOwnerDetailsReqeustById(Long id) {
+
+        Optional<VehicleOwner> response = vehicleOwnerRepository.findById(id);
+
+        if (response.isEmpty()) {
+            return null;
+        }
+
+        VehicleOwnerResponse vehicleOwnerResponse = new VehicleOwnerResponse();
+        BeanUtils.copyProperties(response.get(), vehicleOwnerResponse);
+
+        return vehicleOwnerResponse;
+    }
+
+    public VehicleInfoFullResponse getFullVehicleInfoDataByVehicleInfoId(Long vehicleInfoId) {
+
+        Optional<VehicleInfo> vehicleInfo = vehicleInfoRepository.findById(vehicleInfoId);
+
+        if (vehicleInfo.isEmpty()) {
+            return null;
+        }
+
+        VehicleInfoFullResponse response = new VehicleInfoFullResponse();
+
+        BeanUtils.copyProperties(vehicleInfo.get(), response);
+
+        if (response.getVehicleClassId() != null) {
+            Optional<VehicleClass> vehicleClass = vehicleClassRepository.findById(response.getVehicleClassId());
+            if (vehicleClass.isPresent()) {
+                VehicleClassResponse vehicleClassResponse = new VehicleClassResponse();
+                BeanUtils.copyProperties(vehicleClass.get(), vehicleClassResponse);
+                response.setVehicleClass(vehicleClassResponse);
+            }
+        }
+
+        if (response.getVehicleTypeId() != null) {
+            Optional<VehicleType> vehicleType = vehicleTypeRepository.findById(response.getVehicleTypeId());
+            if (vehicleType.isPresent()) {
+                VehicleTypeResponse vehicleTypeResponse = new VehicleTypeResponse();
+                BeanUtils.copyProperties(vehicleType.get(), vehicleTypeResponse);
+                response.setVehicleType(vehicleTypeResponse);
+            }
+        }
+
+        if (response.getFuelId() != null) {
+            Optional<FuelType> vehicleType = fuelTypeRepository.findById(response.getFuelId());
+            if (vehicleType.isPresent()) {
+                FuelTypeResponse fuelTypeResponse = new FuelTypeResponse();
+                BeanUtils.copyProperties(vehicleType.get(), fuelTypeResponse);
+                response.setFuelType(fuelTypeResponse);
+            }
+        }
+
+        if (response.getBodyColorId() != null) {
+            Optional<VehicleColor> vehicleColor = vehicleColorRepository.findById(response.getBodyColorId());
+            if (vehicleColor.isPresent()) {
+                VehicleColorResponse vehicleColorResponse = new VehicleColorResponse();
+                BeanUtils.copyProperties(vehicleColor.get(), vehicleColorResponse);
+                response.setVehicleColor(vehicleColorResponse);
             }
         }
 

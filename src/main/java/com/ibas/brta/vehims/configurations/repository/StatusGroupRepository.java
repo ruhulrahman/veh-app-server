@@ -42,4 +42,12 @@ public interface StatusGroupRepository extends JpaRepository<StatusGroup, Long> 
 
         @Query("SELECT sg FROM StatusGroup sg WHERE sg.isActive = true ORDER BY sg.nameEn ASC")
         List<StatusGroup> getActiveStatusGroups();
+
+        boolean existsByNameEn(String nameEn);
+
+        boolean existsByNameBn(String nameBn);
+
+        boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+        boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

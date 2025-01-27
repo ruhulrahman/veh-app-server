@@ -59,6 +59,10 @@ public interface CommonRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE parent_location_id = :parentLocationId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getActiveLocationsByParentLocationId(@Param("parentLocationId") Long parentLocationId);
 
+        @Query(value = "SELECT location_id as id, name_en as nameEn, name_bn as nameBn FROM c_locations WHERE parent_location_id = :parentLocationId AND location_type_id = :locationTypeId AND is_active = true ORDER BY name_en ASC", nativeQuery = true)
+        List<CommonProjection> getActiveLocationsByParentLocationIdAndLocationTypeId(
+                        @Param("parentLocationId") Long parentLocationId, @Param("locationTypeId") Long locationTypeId);
+
         @Query(value = "SELECT org.org_id as id, org.name_en as nameEn, org.name_bn as nameBn " // Added space after
                                                                                                 // nameBn
                         + "FROM c_organizations org "
@@ -73,16 +77,16 @@ public interface CommonRepository extends JpaRepository<User, Long> {
         CommonProjection getExamVenueByThanaId(@Param("thanaId") Long thanaId);
 
         @Query(value = "SELECT role_id FROM s_user_organization_roles WHERE user_id = :userId", nativeQuery = true)
-        List<Integer> getRoleIdsByUserId(@Param("userId") Long userId);
+        List<Long> getRoleIdsByUserId(@Param("userId") Long userId);
 
         @Query(value = "SELECT permission_id FROM u_role_permissions WHERE role_id IN (:roleIds)", nativeQuery = true)
-        List<Integer> getPermissionIdsByRoleIds(@Param("roleIds") List<Integer> roleIds);
+        List<Long> getPermissionIdsByRoleIds(@Param("roleIds") List<Long> roleIds);
 
         @Query(value = "SELECT permission_id FROM u_role_permissions WHERE role_id = :roleIds", nativeQuery = true)
-        List<Integer> getPermissionIdsByRoleId(@Param("roleIds") Integer roleIds);
+        List<Long> getPermissionIdsByRoleId(@Param("roleIds") Long roleIds);
 
         @Query(value = "SELECT permission_code FROM u_permissions WHERE permission_id IN (:permissionIds)", nativeQuery = true)
-        List<String> getPermissionCodeByPermissionIds(@Param("permissionIds") List<Integer> permissionIds);
+        List<String> getPermissionCodeByPermissionIds(@Param("permissionIds") List<Long> permissionIds);
 
         @Query(value = "SELECT suor.user_id AS userId, " +
                         "suor.org_id AS orgId, " +

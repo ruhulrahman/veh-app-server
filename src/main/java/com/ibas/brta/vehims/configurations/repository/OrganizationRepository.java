@@ -55,4 +55,12 @@ public interface OrganizationRepository extends JpaRepository<Organization, Long
                         @Param("districtId") Long districtId,
                         @Param("isActive") Boolean isActive,
                         Pageable pageable);
+
+        boolean existsByNameEn(String nameEn);
+
+        boolean existsByNameBn(String nameBn);
+
+        boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+        boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

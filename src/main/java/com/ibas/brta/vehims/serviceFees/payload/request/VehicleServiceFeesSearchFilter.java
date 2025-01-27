@@ -20,6 +20,8 @@ public class VehicleServiceFeesSearchFilter {
     private Integer kwMax;
     private Boolean isAirCondition;
     private Boolean isHire;
+    private Boolean isElectricVehicle;
+    private Boolean isApplicableForMultipleVehicleOwner;
     private Boolean isYearlyFee;
     private Integer mainFee;
     private Integer lateFee;

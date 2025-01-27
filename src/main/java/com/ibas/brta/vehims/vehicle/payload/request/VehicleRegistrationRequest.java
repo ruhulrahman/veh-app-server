@@ -28,6 +28,8 @@ public class VehicleRegistrationRequest {
     @NotNull(message = "Vehicle Class ID is required")
     private Long vehicleClassId;
 
+    private Long vehicleRegistrationMarkId;
+
     @NotNull(message = "Class Number is required")
     private String classNumber;
 

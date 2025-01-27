@@ -30,6 +30,8 @@ public class UserFullResponse {
     private Long designationId;
     private Boolean isProfileCompleted;
     private Boolean isActive;
+    private Long loggedInOrgId;
+    private Long loggedInRoleId;
     private String userTypeNameEn;
     private String userTypeNameBn;
     private String userTypeCode;

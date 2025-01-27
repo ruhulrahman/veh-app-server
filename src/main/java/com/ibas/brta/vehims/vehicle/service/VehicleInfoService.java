@@ -15,6 +15,7 @@ import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.drivingLicense.repository.DLServiceMediaRepository;
 
+import com.ibas.brta.vehims.vehicle.payload.request.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,12 +29,6 @@ import com.ibas.brta.vehims.vehicle.model.VehicleInfo;
 import com.ibas.brta.vehims.vehicle.model.VehicleOwner;
 import com.ibas.brta.vehims.configurations.payload.request.AddressRequest;
 import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
-import com.ibas.brta.vehims.vehicle.payload.request.VServiceMediaRequest;
-import com.ibas.brta.vehims.vehicle.payload.request.VServiceRequestCreateRequest;
-import com.ibas.brta.vehims.vehicle.payload.request.VehicleOwnerRequest;
-import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage1Request;
-import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage2Request;
-import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage3Request;
 import com.ibas.brta.vehims.common.model.Media;
 import com.ibas.brta.vehims.common.payload.request.MediaRequest;
 import com.ibas.brta.vehims.common.payload.response.AddressResponse;
@@ -46,6 +41,7 @@ import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.vehicle.payload.response.VehicleOwnerResponse;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import com.ibas.brta.vehims.configurations.repository.CommonRepository;
+import com.ibas.brta.vehims.userManagement.model.UserNidInfo;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceMediaRepository;
 import com.ibas.brta.vehims.vehicle.repository.VServiceRequestRepository;
@@ -99,6 +95,9 @@ public class VehicleInfoService {
 
     @Autowired
     DocumentTypeService documentTypeService;
+
+    @Autowired
+    VehicleJointOwnerService vehicleJointOwnerService;
 
     // Create or Insert operation
     @Transactional
@@ -201,35 +200,67 @@ public class VehicleInfoService {
                     .orElseThrow(() -> new EntityNotFoundException(
                             "Data not found with id: " + request.getServiceRequestId()));
 
+            serviceRequest.setOrgId(request.getOrgId());
+            serviceRequestRepository.save(serviceRequest);
             AddressRequest addressRequest = new AddressRequest();
             BeanUtils.copyProperties(request.getAddressInfo(), addressRequest);
             addressRequest.setUserId(serviceRequest.getApplicantId());
             // addressRequest.setLocationId(7L); // FIXME
             AddressResponse address;
-            AddressResponse addressExist = addressService.getDataById(addressRequest.getId());
-            if (addressExist != null) {
-                address = addressService.updateData(addressExist.getId(), addressRequest);
+
+            if (addressRequest.getId() != null) {
+                address = addressService.updateData(addressRequest.getId(), addressRequest);
             } else {
                 address = addressService.createData(addressRequest);
             }
+
+            // AddressResponse addressExist =
+            // addressService.getDataById(addressRequest.getId());
+            // if (addressExist != null) {
+            // address = addressService.updateData(addressExist.getId(), addressRequest);
+            // } else {
+            // address = addressService.createData(addressRequest);
+            // }
 
             VehicleOwnerRequest vehicleOwnerRequest = new VehicleOwnerRequest();
             BeanUtils.copyProperties(request.getVehicleOwner(), vehicleOwnerRequest);
             vehicleOwnerRequest.setServiceRequestId(serviceRequest.getId());
             vehicleOwnerRequest.setVehicleInfoId(serviceRequest.getVehicleInfoId());
-            // vehicleOwnerRequest.setGenderId(1L);// FIXME
             vehicleOwnerRequest.setAddressId(address.getId());
+            vehicleOwnerRequest.setIsPrimaryOwner(true);
+
+            UserNidInfo userNidInfo = userNidInfoRepository.findByUserId(serviceRequest.getApplicantId());
+            if (userNidInfo != null) {
+                vehicleOwnerRequest.setGenderId(userNidInfo.getGenderId());
+            }
+
+            Long vehicleOwnerId;
+            Boolean isJointOwner = vehicleOwnerRequest.getIsJointOwner();
 
             VehicleOwner vehicleOwnerExistingData = vehicleOwnerRepository
-                    .findByVehicleInfoIdAndServiceRequestId(serviceRequest.getId(), serviceRequest.getVehicleInfoId());
+                    .findByVehicleInfoIdAndServiceRequestId(serviceRequest.getVehicleInfoId(), serviceRequest.getId());
             if (vehicleOwnerExistingData != null) {
                 VehicleOwner vehicleOwner = new VehicleOwner();
                 BeanUtils.copyProperties(vehicleOwnerExistingData, vehicleOwner); // Exclude ID
+                BeanUtils.copyProperties(vehicleOwnerRequest, vehicleOwner); // Exclude ID
 
                 VehicleOwner updatedData = vehicleOwnerRepository.save(vehicleOwner);
+                vehicleOwnerId = updatedData.getId();
 
             } else {
                 VehicleOwnerResponse vehicleOwnerResponse = vehicleOwnerService.createData(vehicleOwnerRequest);
+                vehicleOwnerId = vehicleOwnerResponse.getId();
+            }
+
+            vehicleJointOwnerService.deleteByVehicleOwnerId(vehicleOwnerId);
+
+            if (vehicleOwnerRequest.getIsJointOwner()) {
+                for (VehicleJointOwnerRequest vehicleJointOwnerRequest : request.getVehicleJointOwners()) {
+                    vehicleJointOwnerRequest.setServiceRequestId(serviceRequest.getId());
+                    vehicleJointOwnerRequest.setVehicleInfoId(serviceRequest.getVehicleInfoId());
+                    vehicleJointOwnerRequest.setVehicleOwnerId(vehicleOwnerId);
+                    vehicleJointOwnerService.createData(vehicleJointOwnerRequest);
+                }
             }
 
             VehicleInfoResponse response = new VehicleInfoResponse();

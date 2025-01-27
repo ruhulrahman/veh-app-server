@@ -39,8 +39,10 @@ public class RegistrationApplicationService implements IRegistrationApplication 
         // Retrieve
         Pageable pageable = PageRequest.of(page, size);
 
+        Long orgId = Utils.getLoggedInOrgId();
+
         Page<RegistrationApplications> records = applicationRepository.searchVehRegApplications(serviceRequestNo,
-                chassisNumber, engineNumber, nid, mobile, applicationDate, userId, pageable);
+                chassisNumber, engineNumber, nid, mobile, applicationDate, orgId, userId, pageable);
 
         if (records.getNumberOfElements() == 0) {
             return new PagedResponse<>(Collections.emptyList(), records.getNumber(),

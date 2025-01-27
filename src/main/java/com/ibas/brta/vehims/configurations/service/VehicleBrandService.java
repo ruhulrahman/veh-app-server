@@ -20,6 +20,7 @@ import com.ibas.brta.vehims.configurations.payload.response.VehicleBrandResponse
 import com.ibas.brta.vehims.configurations.payload.response.VehicleMakerResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.VehicleBrandRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,16 @@ public class VehicleBrandService {
     // Create or Insert operation
     public VehicleBrandResponse createData(VehicleBrandRequest request) {
 
+        if (vehicleBrandRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Brand with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         VehicleBrand requestObject = new VehicleBrand();
         BeanUtils.copyProperties(request, requestObject);
         VehicleBrand savedData = vehicleBrandRepository.save(requestObject);
@@ -48,6 +59,16 @@ public class VehicleBrandService {
 
     // Update operation
     public VehicleBrandResponse updateData(Long id, VehicleBrandRequest request) {
+
+        if (vehicleBrandRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Brand with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Optional<VehicleBrand> existingData = vehicleBrandRepository.findById(id);
 

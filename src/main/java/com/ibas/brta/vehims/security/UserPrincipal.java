@@ -38,6 +38,10 @@ public class UserPrincipal implements UserDetails {
     @JsonIgnore
     private final String password;
 
+    private Long loggedInOrgId;
+
+    private Long loggedInRoleId;
+
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipal(Long id, String nameEn, String nameBn, String username, String email, String password,

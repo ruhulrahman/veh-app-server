@@ -1,7 +1,9 @@
 package com.ibas.brta.vehims.configurations.service;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -21,6 +23,7 @@ import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.ExamCenterRepository;
 import com.ibas.brta.vehims.configurations.repository.LocationRepository;
 import com.ibas.brta.vehims.configurations.repository.OrganizationRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +53,11 @@ public class ExamCenterService {
 
         ExamCenterResponse response = new ExamCenterResponse();
         BeanUtils.copyProperties(savedData, response);
+
+        organizationRepository.findById(response.getOrgId()).ifPresent(organization -> {
+            response.setOrgNameEn(organization.getNameEn());
+            response.setOrgNameBn(organization.getNameBn());
+        });
         return response;
     }
 
@@ -66,6 +74,12 @@ public class ExamCenterService {
 
             ExamCenterResponse response = new ExamCenterResponse();
             BeanUtils.copyProperties(updatedData, response);
+
+            organizationRepository.findById(response.getOrgId()).ifPresent(organization -> {
+                response.setOrgNameEn(organization.getNameEn());
+                response.setOrgNameBn(organization.getNameBn());
+            });
+
             return response;
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);

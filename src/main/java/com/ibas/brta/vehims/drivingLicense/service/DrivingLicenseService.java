@@ -134,9 +134,13 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
         // Retrieve
         Pageable pageable = PageRequest.of(page, size);
 
+        Long orgId = Utils.getLoggedInOrgId();
+
+        log.info("orgId================== {}", orgId);
+
         Page<DrivingLicenseApplicationDto> records = drivingLicenseRepository.searchDrivingLicenseApplications(
                 serviceRequestNo,
-                nid, learnerNo, mobile, applicationDate, userId, pageable);
+                nid, learnerNo, mobile, applicationDate, orgId, userId, pageable);
 
         Long count = 1L;
         for (DrivingLicenseApplicationDto record : records.getContent()) {
@@ -162,7 +166,7 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
 
         Page<DrivingLicenseApplicationDto> records = drivingLicenseRepository.searchDrivingLicenseApplications(
                 serviceRequestNo,
-                nid, learnerNo, mobile, applicationDate, userId, pageable);
+                nid, learnerNo, mobile, applicationDate, null, userId, pageable);
 
         Long count = 1L;
         for (DrivingLicenseApplicationDto record : records.getContent()) {

@@ -49,6 +49,10 @@ public class VehicleRegistration extends DateAudit {
     @Column(name = "vehicle_class_id", nullable = false)
     private Long vehicleClassId;
 
+    @NotNull(message = "Vehicle Registration Mark ID is required")
+    @Column(name = "vehicle_registration_mark_id", nullable = false)
+    private Long vehicleRegistrationMarkId;
+
     @NotNull(message = "Class Number is required")
     @Column(name = "class_number", nullable = false)
     private String classNumber;

@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.configurations.service;
 
 import com.ibas.brta.vehims.exception.BadRequestException;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 import com.ibas.brta.vehims.exception.ResourceNotFoundException;
 import com.ibas.brta.vehims.iservice.IDesignation;
 import com.ibas.brta.vehims.configurations.model.Designation;
@@ -151,13 +152,32 @@ public class DesignationService implements IDesignation {
 
     @Transactional
     @Override
-    public Designation saveDesignation(Designation designation) {
-        return designationRepository.save(designation);
+    public Designation saveDesignation(Designation request) {
+        if (designationRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Designation with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+        return designationRepository.save(request);
     }
 
     @Transactional
     @Override
     public Designation updateDesignation(Designation designation) {
+
+        if (designationRepository.existsByNameEnAndIdNot(designation.getNameEn(), designation.getId())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Designation with name " + designation.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Designation existingDesignation = designationRepository.findById(designation.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Designation", "id", designation.getId()));

@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.vehicle.controller;
 
+import com.ibas.brta.vehims.vehicle.payload.response.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,13 +12,10 @@ import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage1Request;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage2Request;
 import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegPage3Request;
 import com.ibas.brta.vehims.common.payload.response.ApiResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VehicleInfoResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.payload.response.ServiceDocumentMapResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VServiceMediaResponse;
-import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
 import com.ibas.brta.vehims.vehicle.service.VServiceRequestService;
 import com.ibas.brta.vehims.vehicle.service.VehicleInfoService;
 import com.ibas.brta.vehims.util.AppConstants;
@@ -152,6 +150,21 @@ public class VehicleInfoController {
         public ResponseEntity<?> getVerhicleServiceReqeustById(@PathVariable Long serviceRequestId) {
                 VServiceRequestResponse response = serviceRequestService
                                 .getServiceRequestWithDetailsById(serviceRequestId);
+                return ResponseEntity.ok(response);
+        }
+        // Get a single item by ID
+        @GetMapping("/v1/applicant/vehicle/get-digital-registration-details/{serviceRequestId}")
+        public ResponseEntity<?> getDigitalRegistrationCertificateDetailsReqeustById(@PathVariable Long serviceRequestId) {
+                DigitalRegistrationCertficateResponse response = serviceRequestService
+                                .getDigitalRegistrationCertificateDetailsReqeustById(serviceRequestId);
+                return ResponseEntity.ok(response);
+        }
+
+        // Get a single item by ID
+        @GetMapping("/v1/applicant/vehicle/get-fitness-certificate-details/{serviceRequestId}")
+        public ResponseEntity<?> getFitnessCertificateDetailsReqeustById(@PathVariable Long serviceRequestId) {
+                FitnessCertficateResponse response = serviceRequestService
+                        .getFitnessCertificateDetailsReqeustById(serviceRequestId);
                 return ResponseEntity.ok(response);
         }
 

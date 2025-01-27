@@ -30,4 +30,12 @@ public interface VehicleRegistrationMarkRepository extends JpaRepository<Vehicle
 
     @Query("SELECT s FROM VehicleRegistrationMark s WHERE id IN (:ids) AND s.isActive = true ORDER BY s.nameEn ASC")
     List<VehicleRegistrationMark> findByIdsIsActiveTrueOrderByNameEnAsc(@Param("ids") List<Long> ids);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

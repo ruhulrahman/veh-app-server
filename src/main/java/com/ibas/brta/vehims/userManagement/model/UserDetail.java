@@ -47,7 +47,7 @@ public class UserDetail extends RecordAudit {
     private String motherNameBn;
 
     @Column(name = "gender_id")
-    private Integer genderId;
+    private Long genderId;
 
     @Column(name = "present_address_id")
     private Long presentAddressId;

@@ -107,11 +107,11 @@ public class OtpController {
                 userNidInfoRequest.setAddressBn(request.getPresentAddress());
                 if (request.getGender() != null) {
                     if (request.getGender().equals("male")) {
-                        userNidInfoRequest.setGenderId(1);
+                        userNidInfoRequest.setGenderId(1L);
                     } else if (request.getGender().equals("female")) {
-                        userNidInfoRequest.setGenderId(2);
+                        userNidInfoRequest.setGenderId(2L);
                     } else {
-                        userNidInfoRequest.setGenderId(4);
+                        userNidInfoRequest.setGenderId(4L);
                     }
                 }
 

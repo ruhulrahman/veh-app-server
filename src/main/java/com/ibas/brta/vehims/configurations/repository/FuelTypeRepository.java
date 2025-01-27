@@ -25,4 +25,12 @@ public interface FuelTypeRepository extends JpaRepository<FuelType, Long> {
             @Param("nameEn") String nameEn,
             @Param("isActive") Boolean isActive,
             Pageable pageable);
+
+    boolean existsByNameEn(String nameEn);
+
+    boolean existsByNameBn(String nameBn);
+
+    boolean existsByNameEnAndIdNot(String nameEn, Long id);
+
+    boolean existsByNameBnAndIdNot(String nameBn, Long id);
 }

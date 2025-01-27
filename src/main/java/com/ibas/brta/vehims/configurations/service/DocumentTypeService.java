@@ -19,6 +19,7 @@ import com.ibas.brta.vehims.configurations.payload.request.DocumentTypeRequest;
 import com.ibas.brta.vehims.configurations.payload.response.DocumentTypeResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.DocumentTypeRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -29,6 +30,16 @@ public class DocumentTypeService {
 
     // Create or Insert operation
     public DocumentTypeResponse createData(DocumentTypeRequest request) {
+
+        if (documentTypeRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Document Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         DocumentType requestObject = new DocumentType();
         BeanUtils.copyProperties(request, requestObject);
@@ -41,6 +52,16 @@ public class DocumentTypeService {
 
     // Update operation
     public DocumentTypeResponse updateData(Long id, DocumentTypeRequest request) {
+
+        if (documentTypeRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Document Type with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Optional<DocumentType> existingData = documentTypeRepository.findById(id);
 

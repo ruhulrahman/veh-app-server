@@ -4,6 +4,8 @@ import com.ibas.brta.vehims.configurations.payload.request.AddressRequest;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +14,7 @@ public class VehicleRegPage3Request {
     private Long id;
 
     private VehicleOwnerRequest vehicleOwner;
+    private List<VehicleJointOwnerRequest> vehicleJointOwners;
 
     private AddressRequest addressInfo;
 

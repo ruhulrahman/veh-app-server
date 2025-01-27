@@ -33,6 +33,11 @@ public interface StatusRepository extends JpaRepository<Status, Long> {
 
     List<Status> findAllByOrderByNameEnAsc();
 
+    List<Status> findByIdIn(List<Long> ids);
+
+    @Query("SELECT statusCode FROM Status WHERE id IN :ids ORDER BY priority ASC, createdAt DESC")
+    List<String> getStatusCodesByIds(List<Long> ids);
+
     List<Status> findByIsActiveTrueOrderByNameEnAsc();
 
     List<Status> findByIsActiveTrueOrderByCreatedAtDescPriorityAsc();

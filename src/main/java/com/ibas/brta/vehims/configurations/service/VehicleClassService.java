@@ -21,6 +21,7 @@ import com.ibas.brta.vehims.configurations.payload.response.VehicleTypeResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.repository.VehicleClassRepository;
 import com.ibas.brta.vehims.configurations.repository.VehicleTypeClassMapRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,16 @@ public class VehicleClassService {
     // Create or Insert operation
     public VehicleClassResponse createData(VehicleClassRequest request) {
 
+        if (vehicleClassRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Class with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         VehicleClass requestObject = new VehicleClass();
         BeanUtils.copyProperties(request, requestObject);
         VehicleClass savedData = vehicleClassRepository.save(requestObject);
@@ -52,6 +63,16 @@ public class VehicleClassService {
 
     // Update operation
     public VehicleClassResponse updateData(Long id, VehicleClassRequest request) {
+
+        if (vehicleClassRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Class with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
 
         Optional<VehicleClass> existingData = vehicleClassRepository.findById(id);
 

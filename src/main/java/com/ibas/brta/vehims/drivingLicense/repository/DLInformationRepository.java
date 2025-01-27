@@ -38,6 +38,7 @@ public interface DLInformationRepository extends JpaRepository<DLInformation, Lo
                         " LEFT join Status cs2 on cs2.id=info.licenseTypeId" +
                         " LEFT join Organization org on org.id=sr.orgId" +
                         " WHERE " +
+                        "    (case when :orgId is null then true else sr.orgId = :orgId end) AND" +
                         "    (case when :userId is null then true else sr.applicantId = :userId end) AND" +
                         "    (case when :serviceRequestNo is null or :serviceRequestNo = '' then true else sr.serviceRequestNo = LOWER(:serviceRequestNo) end) AND"
                         +
@@ -49,7 +50,7 @@ public interface DLInformationRepository extends JpaRepository<DLInformation, Lo
                         "    (case when :applicationDate is null then true else cast(sr.applicationDate as date) = :applicationDate end)")
         Page<DrivingLicenseApplicationDto> searchDrivingLicenseApplications(String serviceRequestNo, String nid,
                         String learnerNo, String mobile,
-                        Date applicationDate, Long userId, Pageable pageable);
+                        Date applicationDate, Long orgId, Long userId, Pageable pageable);
 
         @Transactional
         @Modifying

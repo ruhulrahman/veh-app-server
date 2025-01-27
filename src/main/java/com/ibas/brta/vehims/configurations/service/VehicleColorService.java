@@ -19,6 +19,7 @@ import com.ibas.brta.vehims.configurations.payload.request.VehicleColorDTO;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.configurations.payload.response.VehicleColorResponse;
 import com.ibas.brta.vehims.configurations.repository.VehicleColorRepository;
+import com.ibas.brta.vehims.exception.FieldValidationException;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -28,18 +29,40 @@ public class VehicleColorService {
     private VehicleColorRepository vehicleColorRepository;
 
     // Create or Insert operation
-    public VehicleColor createData(VehicleColorDTO vehicleColorDTO) {
+    public VehicleColor createData(VehicleColorDTO request) {
+
+        if (vehicleColorRepository.existsByNameEn(request.getNameEn())) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Color with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         VehicleColor vehicleColor = new VehicleColor();
-        BeanUtils.copyProperties(vehicleColorDTO, vehicleColor);
+        BeanUtils.copyProperties(request, vehicleColor);
         return vehicleColorRepository.save(vehicleColor);
     }
 
     // Update operation
-    public VehicleColor updateData(Long id, VehicleColorDTO vehicleColorDTO) {
+    public VehicleColor updateData(Long id, VehicleColorDTO request) {
+
+        if (vehicleColorRepository.existsByNameEnAndIdNot(request.getNameEn(), id)) {
+            Map<String, String> errors = new HashMap<>();
+
+            errors.put("nameEn", "Vehicle Color with name " + request.getNameEn() + " already exists.");
+
+            if (!errors.isEmpty()) {
+                throw new FieldValidationException(errors);
+            }
+        }
+
         Optional<VehicleColor> existingData = vehicleColorRepository.findById(id);
         if (existingData.isPresent()) {
             VehicleColor vehicleColor = existingData.get();
-            BeanUtils.copyProperties(vehicleColorDTO, vehicleColor); // Exclude ID
+            BeanUtils.copyProperties(request, vehicleColor); // Exclude ID
             return vehicleColorRepository.save(vehicleColor);
         } else {
             throw new EntityNotFoundException("Data not found with id: " + id);

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.ibas.brta.vehims.configurations.model.Country;
-import com.ibas.brta.vehims.configurations.payload.request.CountryDTO;
+import com.ibas.brta.vehims.configurations.payload.request.CountryRequest;
 import com.ibas.brta.vehims.common.payload.response.ApiResponse;
 import com.ibas.brta.vehims.configurations.payload.response.CountryResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
@@ -34,7 +34,7 @@ public class CountryController {
     CountryService countryService;
 
     @PostMapping("/v1/admin/configurations/country/create")
-    public ResponseEntity<?> createCountryV1(@Valid @RequestBody CountryDTO countryDTO) {
+    public ResponseEntity<?> createCountryV1(@Valid @RequestBody CountryRequest countryDTO) {
         Country saveData = countryService.createData(countryDTO);
 
         URI location = ServletUriComponentsBuilder
@@ -49,7 +49,7 @@ public class CountryController {
     @PutMapping("/v1/admin/configurations/country/update/{id}")
     public ResponseEntity<?> updateData(
             @Valid @PathVariable Long id,
-            @RequestBody CountryDTO countryDTO) {
+            @RequestBody CountryRequest countryDTO) {
 
         Country updatedData = countryService.updateData(id, countryDTO);
 

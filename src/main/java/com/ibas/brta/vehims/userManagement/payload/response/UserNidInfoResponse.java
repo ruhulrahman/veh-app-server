@@ -20,7 +20,7 @@ public class UserNidInfoResponse {
     private String motherNameBn;
     private String addressEn;
     private String addressBn;
-    private Integer genderId;
+    private Long genderId;
     private String mobile;
     private String photo;
     private String presentAddress;
