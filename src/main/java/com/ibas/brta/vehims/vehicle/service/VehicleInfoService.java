@@ -235,7 +235,7 @@ public class VehicleInfoService {
             }
 
             Long vehicleOwnerId;
-            Boolean isJointOwner = vehicleOwnerRequest.getIsJointOwner();
+//            Boolean isJointOwner = vehicleOwnerRequest.getIsJointOwner();
 
             VehicleOwner vehicleOwnerExistingData = vehicleOwnerRepository
                     .findByVehicleInfoIdAndServiceRequestId(serviceRequest.getVehicleInfoId(), serviceRequest.getId());
@@ -243,6 +243,8 @@ public class VehicleInfoService {
                 VehicleOwner vehicleOwner = new VehicleOwner();
                 BeanUtils.copyProperties(vehicleOwnerExistingData, vehicleOwner); // Exclude ID
                 BeanUtils.copyProperties(vehicleOwnerRequest, vehicleOwner); // Exclude ID
+
+                log.info("vehicleOwner==================== " + vehicleOwner);
 
                 VehicleOwner updatedData = vehicleOwnerRepository.save(vehicleOwner);
                 vehicleOwnerId = updatedData.getId();

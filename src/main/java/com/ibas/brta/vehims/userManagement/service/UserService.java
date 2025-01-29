@@ -1,10 +1,6 @@
 package com.ibas.brta.vehims.userManagement.service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.ibas.brta.vehims.configurations.service.DesignationService;
@@ -277,6 +273,35 @@ public class UserService {
         return response;
     }
 
+
+    // Find a single record by ID
+    public UserFullResponse getAuthUserProfile() {
+
+        User existingData = userRepository.findById(Objects.requireNonNull(Utils.getLoggedinUserId()))
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + Utils.getLoggedinUserId()));
+
+        UserFullResponse response = new UserFullResponse();
+        BeanUtils.copyProperties(existingData, response);
+
+        if (existingData.getUserTypeId() != null) {
+            StatusResponse statusResponse = statusService.getDataById(existingData.getUserTypeId());
+            response.setUserTypeNameEn(statusResponse.getNameEn());
+            response.setUserTypeNameBn(statusResponse.getNameBn());
+            response.setUserTypeCode(statusResponse.getStatusCode());
+        }
+
+        if (existingData.getDesignationId() != null) {
+            DesignationResponse designationResponse = designationService.getDataById(existingData.getDesignationId());
+            response.setDesignationNameEn(designationResponse.getNameEn());
+            response.setDesignationNameBn(designationResponse.getNameBn());
+        }
+
+        List<UserOfficeRoleResponse> userOfficeRoleResponses = userDao.getUserOfficeRoles(existingData.getId());
+        response.setUserOfficeRoles(userOfficeRoleResponses);
+
+        return response;
+    }
+
     public void changeUserPassword(Long id, @Valid ChangePasswordRequest request) {
         userRepository.findById(id).ifPresent(user -> {
 
@@ -419,41 +444,79 @@ public class UserService {
 
     public ResponseEntity<?> uploadUserPhoto(MultipartFile attachment, Long userId) {
 
+        log.info("userId ========== {}", userId);
         UserDetail userDetail = userDetailRepository.findByUserId(userId);
 
-        if (userDetail != null) {
+        Optional<User> user = userRepository.findById(userId);
 
-            MediaRequest mediaRequest = new MediaRequest();
-
-            mediaRequest.setAttachmentFile(attachment);
-
-            MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
-
-            if (userDetail.getPhotoMediaId() != null) {
-                mediaService.deleteMediaById(userDetail.getPhotoMediaId());
-            }
-
-            userDetail.setPhotoMediaId(mediaResponse.getId());
-
-            userDetailRepository.save(userDetail);
-
-            return ResponseEntity.ok(userDetail);
-        } else {
+        if (user.isEmpty()) {
             throw new EntityNotFoundException("User Detail Not Found");
         }
+
+        MediaRequest mediaRequest = new MediaRequest();
+
+        mediaRequest.setAttachmentFile(attachment);
+
+        MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
+
+        if (user.get().getPhotoMediaId() != null) {
+            mediaService.deleteMediaById(user.get().getPhotoMediaId());
+        }
+
+        user.get().setPhotoMediaId(mediaResponse.getId());
+
+        User updatedUser = userRepository.save(user.get());
+
+        return ResponseEntity.ok(updatedUser);
+
+//        log.info("userDetail ========== {}", userDetail);
+
+//        if (userDetail != null) {
+//
+//            MediaRequest mediaRequest = new MediaRequest();
+//
+//            mediaRequest.setAttachmentFile(attachment);
+//
+//            MediaResponse mediaResponse = mediaService.uploadMedia(mediaRequest);
+//
+//            if (userDetail.getPhotoMediaId() != null) {
+//                mediaService.deleteMediaById(userDetail.getPhotoMediaId());
+//            }
+//
+//            userDetail.setPhotoMediaId(mediaResponse.getId());
+//
+//            userDetailRepository.save(userDetail);
+//
+//            return ResponseEntity.ok(userDetail);
+//        } else {
+//            throw new EntityNotFoundException("User Detail Not Found");
+//        }
     }
 
     public ResponseEntity<?> getUserPhoto(Long userId) {
 
-        UserDetail userDetail = userDetailRepository.findByUserId(userId);
+//        UserDetail userDetail = userDetailRepository.findByUserId(userId);
 
-        if (userDetail != null) {
+        Optional<User> user = userRepository.findById(userId);
 
-            return mediaService.getMediaById(userDetail.getPhotoMediaId());
-
-        } else {
-            throw new EntityNotFoundException("User Detail Not Found");
+        if (user.isEmpty() || user.get().getPhotoMediaId() == null) {
+            return null;
         }
+
+        return mediaService.getMediaById(user.get().getPhotoMediaId());
+
+//        if (userDetail != null) {
+//
+//            if (userDetail.getPhotoMediaId() == null) {
+//                return null;
+//            }
+//
+//            return mediaService.getMediaById(userDetail.getPhotoMediaId());
+//
+//        } else {
+//            return null;
+////            throw new EntityNotFoundException("User Detail Not Found");
+//        }
     }
 
 }

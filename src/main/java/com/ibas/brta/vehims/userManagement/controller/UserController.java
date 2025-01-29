@@ -191,6 +191,13 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    // Get Auth User Profile
+    @GetMapping("/v1/admin/user-management/user/get-auth-user-profile")
+    public ResponseEntity<?> getAuthUserProfile() {
+        UserFullResponse response = userService.getAuthUserProfile();
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/v1/auth/get-auth-user-by-id")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> getAuthUser(@CurrentUser UserPrincipal currentUser) {
@@ -267,11 +274,19 @@ public class UserController {
         List<Long> roleIds = commonService.getRoleIdsByUserId(currentUser.getId());
 
         if (roleIds != null) {
-//            List<Integer> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
-            List<Long> permissionIds = commonService.getPermissionIdsByRoleId(user.get().getLoggedInRoleId());
-            if (permissionIds != null) {
-                List<String> permissionCodes = commonService.getPermissionCodeByPermissionIds(permissionIds);
-                userResponse.setPermissionCodes(permissionCodes);
+//            List<Long> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
+            if (user.get().getLoggedInRoleId() != null) {
+                List<Long> permissionIds = commonService.getPermissionIdsByRoleId(user.get().getLoggedInRoleId());
+                if (permissionIds != null) {
+                    List<String> permissionCodes = commonService.getPermissionCodeByPermissionIds(permissionIds);
+                    userResponse.setPermissionCodes(permissionCodes);
+                }
+            } else {
+                List<Long> permissionIds = commonService.getPermissionIdsByRoleIds(roleIds);
+                if (permissionIds!= null) {
+                    List<String> permissionCodes = commonService.getPermissionCodeByPermissionIds(permissionIds);
+                    userResponse.setPermissionCodes(permissionCodes);
+                }
             }
         }
 
@@ -345,12 +360,18 @@ public class UserController {
         if (attachment.isEmpty()) {
             throw new RuntimeException("File is empty.");
         }
-
-        String fileExtension = StringUtils.getFilenameExtension(attachment.getOriginalFilename());
-        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension)) {
+        if (!Utils.isFileTypeImage(attachment)) {
             return ResponseEntity
-                    .badRequest().body("Invalid file type. Only JPG, PNG, and PDF are allowed.");
+                    .badRequest().body("Invalid file type. Only JPG, PNG are allowed.");
         }
+
+        log.info("currentUser.getId() =============== {}", currentUser.getId());
+
+//        String fileExtension = StringUtils.getFilenameExtension(attachment.getOriginalFilename());
+//        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension)) {
+//            return ResponseEntity
+//                    .badRequest().body("Invalid file type. Only JPG, PNG, and PDF are allowed.");
+//        }
 
         return userService.uploadUserPhoto(attachment, currentUser.getId());
     }

@@ -50,5 +50,7 @@ public class SUserRequest {
     @NotNull(message = "Active status cannot be null")
     private Boolean isActive;
 
+    private Long photoMediaId;
+
     private List<UserOfficeRoleRequest> userOfficeRoles;
 }

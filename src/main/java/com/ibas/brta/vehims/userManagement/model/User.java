@@ -113,6 +113,9 @@ public class User extends DateAudit {
     @Column(name = "last_logged_out_time")
     private Instant lastLoggedOutTime;
 
+    @Column(name = "photo_media_id")
+    private Long photoMediaId;
+
     // public Long getId() {
     // return userId;
     // }

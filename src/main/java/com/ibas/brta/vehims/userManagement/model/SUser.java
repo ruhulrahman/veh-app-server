@@ -120,6 +120,9 @@ public class SUser extends DateAudit {
         @Column(name = "last_logged_out_time")
         private Instant lastLoggedOutTime;
 
+        @Column(name = "photo_media_id")
+        private Long photoMediaId;
+
         public SUser(String nameEn, String nameBn, String username, String email, String mobile,
                         Long userTypeId,
                         Long designationId, Boolean isActive) {

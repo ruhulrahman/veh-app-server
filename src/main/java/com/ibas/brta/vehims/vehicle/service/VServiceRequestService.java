@@ -13,8 +13,10 @@ import com.ibas.brta.vehims.configurations.repository.*;
 import com.ibas.brta.vehims.configurations.service.CountryService;
 import com.ibas.brta.vehims.configurations.service.DocumentTypeService;
 import com.ibas.brta.vehims.projection.StatusProjection;
+import com.ibas.brta.vehims.userManagement.model.User;
 import com.ibas.brta.vehims.userManagement.model.UserDetail;
 import com.ibas.brta.vehims.userManagement.repository.UserDetailRepository;
+import com.ibas.brta.vehims.userManagement.repository.UserRepository;
 import com.ibas.brta.vehims.vehicle.payload.response.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +75,9 @@ public class VServiceRequestService {
 
     @Autowired
     UserDetailRepository userDetailRepository;
+
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
     private CommonRepository commonRepository;
@@ -278,9 +283,10 @@ public class VServiceRequestService {
         BeanUtils.copyProperties(serviceRequest, response);
 
         if (serviceRequest.getApplicantId() != null) {
-            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
-            if (userDetail != null) {
-                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+//            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
+            Optional<User> user = userRepository.findById(serviceRequest.getApplicantId());
+            if (user.isPresent() && user.get().getPhotoMediaId() != null) {
+                MediaResult mediaResult = mediaService.getMediaByIdWithType(user.get().getPhotoMediaId());
 
                 if (mediaResult != null) {
                     response.setOwnerPhotoInfo(mediaResult);
@@ -361,14 +367,24 @@ public class VServiceRequestService {
         BeanUtils.copyProperties(serviceRequest, response);
 
         if (serviceRequest.getApplicantId() != null) {
-            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
-            if (userDetail != null) {
-                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+//            UserDetail userDetail = userDetailRepository.findByUserId(serviceRequest.getApplicantId());
+
+            Optional<User> user = userRepository.findById(serviceRequest.getApplicantId());
+            if (user.isPresent() && user.get().getPhotoMediaId() != null) {
+                MediaResult mediaResult = mediaService.getMediaByIdWithType(user.get().getPhotoMediaId());
 
                 if (mediaResult != null) {
                     response.setOwnerPhotoInfo(mediaResult);
                 }
             }
+
+//            if (userDetail != null) {
+//                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+//
+//                if (mediaResult != null) {
+//                    response.setOwnerPhotoInfo(mediaResult);
+//                }
+//            }
         }
 
         if (serviceRequest.getOrgId() != null) {

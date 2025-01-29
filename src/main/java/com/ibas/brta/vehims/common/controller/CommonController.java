@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ibas.brta.vehims.configurations.model.GovernmentOffice;
+import com.ibas.brta.vehims.configurations.repository.GovernmentOfficeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -84,6 +86,9 @@ public class CommonController {
         @Autowired
         CommonRepository commonRepository;
 
+        @Autowired
+        GovernmentOfficeRepository governmentOfficeRepository;
+
         @GetMapping("/v1/admin/common/dropdown-list")
         public ResponseEntity<?> getCommonDropdownList() {
                 List<?> designationList = designationService.getActiveList();
@@ -107,6 +112,8 @@ public class CommonController {
                 List<?> organizationList = commonService.getActiveOrganizations();
                 List<?> revenueCheckStatusList = commonService.findByStatusesByGroupCode("revenue_check_statuses");
                 List<?> inspectionStatusList = commonService.findByStatusesByGroupCode("inspection_statuses");
+                List<?> acquisitionProcessList = commonService.findByStatusesByGroupCode("acquisition_processes");
+                List<?> usedByList = commonService.findByStatusesByGroupCode("used_by");
                 List<?> vehicleApplicationCheckStatusList = commonService
                                 .findByStatusesByGroupCode("vehicle_application_statuses");
                 List<?> drivingTestNameList = commonService
@@ -139,6 +146,8 @@ public class CommonController {
                 customArray.put("userList", userList);
                 customArray.put("revenueCheckStatusList", revenueCheckStatusList);
                 customArray.put("inspectionStatusList", inspectionStatusList);
+                customArray.put("acquisitionProcessList", acquisitionProcessList);
+                customArray.put("usedByList", usedByList);
                 customArray.put("vehicleApplicationCheckStatusList", vehicleApplicationCheckStatusList);
                 customArray.put("drivingTestNameList", drivingTestNameList);
 
@@ -229,6 +238,18 @@ public class CommonController {
 
                 return ResponseEntity.ok(customArray);
         }
+
+        @GetMapping("/v1/admin/common/get-government-office-by-parent-code/{parentCode}")
+        public ResponseEntity<?> getGovernmentOfficeByParentCode(@PathVariable String parentCode) {
+                List<GovernmentOffice> governmentOffices = governmentOfficeRepository
+                        .findByParentCode(parentCode);
+
+                Map<String, Object> customArray = new HashMap<>();
+                customArray.put("governmentOffices", governmentOffices);
+
+                return ResponseEntity.ok(customArray);
+        }
+
 
         @GetMapping("/v1/admin/common/get-locations-by-parent-location-id/{parentLocationId}")
         public ResponseEntity<?> getLocationsByParentId(@PathVariable Long parentLocationId) {

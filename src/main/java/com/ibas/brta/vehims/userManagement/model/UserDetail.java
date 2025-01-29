@@ -64,8 +64,8 @@ public class UserDetail extends RecordAudit {
     // @Column(name = "photo")
     // private String photo;
 
-    @Column(name = "photo_media_id")
-    private Long photoMediaId;
+    @Column(name = "photo")
+    private String photo;
 
     @Column(name = "blood_group_id")
     private Long bloodGroupId;

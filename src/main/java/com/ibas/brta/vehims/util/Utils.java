@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class Utils {
@@ -215,6 +216,32 @@ public class Utils {
         // Allowed MIME types
         List<String> allowedTypes = Arrays.asList("image/jpeg", "image/png", "application/pdf");
         return allowedTypes.contains(contentType);
+    }
+
+    public static boolean isFileTypeImage(MultipartFile attachment) {
+        // Get the file's MIME type
+        String mimeType = attachment.getContentType();
+
+        // Validate the MIME type against allowed types
+        return mimeType != null &&
+                (mimeType.equals("image/jpeg") || mimeType.equals("image/png"));
+    }
+
+    public static boolean isValidFileType(MultipartFile attachment) {
+        // Get the file's MIME type
+        String mimeType = attachment.getContentType();
+
+        // Validate the MIME type against allowed types
+        return mimeType != null &&
+                (mimeType.equals("image/jpeg") || mimeType.equals("image/png") || mimeType.equals("application/pdf"));
+    }
+
+    public static boolean isFileTypePdf(MultipartFile attachment) {
+        // Get the file's MIME type
+        String mimeType = attachment.getContentType();
+
+        // Validate the MIME type against allowed types
+        return mimeType != null && mimeType.equals("application/pdf");
     }
 
     public static boolean isAllowedFileExtension(String fileName) {

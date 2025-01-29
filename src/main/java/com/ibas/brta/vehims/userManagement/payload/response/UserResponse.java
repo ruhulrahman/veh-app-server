@@ -20,4 +20,5 @@ public class UserResponse {
     private String fullname;
     private Long loggedInOrgId;
     private Long loggedInRoleId;
+    private Long photoMediaId;
 }
