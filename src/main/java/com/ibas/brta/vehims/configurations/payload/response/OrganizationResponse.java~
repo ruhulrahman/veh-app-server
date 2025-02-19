@@ -26,6 +26,7 @@ public class OrganizationResponse {
     private Boolean isActive;
 
 
+
     private Long divisionId;
     private String divisionNameEn;
     private String divisionNameBn;

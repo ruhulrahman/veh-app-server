@@ -238,10 +238,7 @@ public class UserController {
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> unsetLoggedInUserOfficeRole(@CurrentUser UserPrincipal currentUser) throws InvocationTargetException, IllegalAccessException {
 
-
         Optional<SUser> user = sUserRepository.findById(currentUser.getId());
-
-
 
         UserResponse userResponse = new UserResponse();
 
@@ -385,6 +382,11 @@ public class UserController {
     @GetMapping("v1/admin/user-management/user/get-nid-info")
     public ResponseEntity<?> getUserNidInfo(@CurrentUser UserPrincipal currentUser) {
         return ResponseEntity.ok(userService.getUserNidInfo(currentUser.getId()));
+    }
+
+    @GetMapping("v1/admin/user-management/user/get-organization-users")
+    public ResponseEntity<?> getOrganizationUsers(@CurrentUser UserPrincipal currentUser) {
+        return ResponseEntity.ok(userService.getOrganizationUsers());
     }
 
     @GetMapping("v1/admin/user-management/user/get-profile-info")

@@ -65,8 +65,11 @@ public class VehicleRegistration extends DateAudit {
     @Column(name = "full_reg_number", nullable = false)
     private String fullRegNumber;
 
-    @NotNull(message = "Status ID is required")
-    @Column(name = "status_id", nullable = false)
+    @Column(name = "registration_certificate_number", nullable = false)
+    private String registrationCertificateNumber;
+
+//    @NotNull(message = "Status ID is required")
+    @Column(name = "status_id")
     private Long statusId;
 
 }

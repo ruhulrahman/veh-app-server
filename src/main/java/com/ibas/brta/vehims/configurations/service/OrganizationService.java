@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.ibas.brta.vehims.configurations.model.Location;
+import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.repository.LocationRepository;
+import com.ibas.brta.vehims.configurations.repository.StatusRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,6 +41,12 @@ public class OrganizationService {
 
     @Autowired
     LocationService locationService;
+
+    @Autowired
+    LocationRepository locationRepository;
+
+    @Autowired
+    StatusRepository statusRepository;
 
     // Create or Insert operation
     public OrganizationResponse createData(OrganizationRequest request) {
@@ -80,17 +90,21 @@ public class OrganizationService {
 
     // List all records
     public PagedResponse<OrganizationResponse> findAllBySearch(
-            String nameEn, Long officeTypeId, Long divisionId, Long districtId, Boolean isActive,
+            String nameEn, Long officeTypeId, Long divisionId, Long districtId, Long thanaId, Boolean isActive,
             int page,
             int size) {
 
         Pageable pageable = PageRequest.of(page, size);
+        log.info("divisionId -> "+ divisionId);
+        log.info("districtId -> "+ districtId);
+        log.info("thanaId -> "+ thanaId);
         // Retrieve all records from the database
         Page<Organization> records = organizationRepository.findListWithPaginationBySearchWithNativeQuery(
                 nameEn,
                 officeTypeId,
                 divisionId,
                 districtId,
+                thanaId,
                 isActive,
                 pageable);
 
@@ -111,40 +125,115 @@ public class OrganizationService {
                 response.setOfficeTypeNameBn(statusResponse.getNameBn());
             }
 
-            LocationResponse locationResponse = locationService.getDataById(response.getLocationId());
-            if (locationResponse != null) {
-                if (locationResponse.getParentId() != null) {
+            if (record.getLocationId() != null) {
 
-                    String locationEn = locationResponse.getNameEn();
-                    String locationBn = locationResponse.getNameBn();
+                LocationResponse thanaResponse = getLocationById(record.getLocationId());
+//                response.setLocation(thanaResponse);
 
-                    LocationResponse district = locationService.getDataById(locationResponse.getParentId());
-                    if (district != null) {
-                        if (district.getParentId() != null) {
+                response.setLocationEn(thanaResponse.getNameEn());
+                response.setLocationBn(thanaResponse.getNameBn());
 
-                            locationEn = locationResponse.getNameEn() + district.getNameEn();
-                            locationBn = locationResponse.getNameBn() + district.getNameBn();
+                LocationResponse districtResponse = getLocationById(thanaResponse.getParentId());
+                if (districtResponse != null) {
+                    response.setDistrictId(districtResponse.getId());
+                    response.setDistrictNameEn(districtResponse.getNameEn());
+                    response.setDistrictNameBn(districtResponse.getNameBn());
 
-                            LocationResponse division = locationService.getDataById(district.getParentId());
-                            if (division != null) {
-                                locationEn = locationResponse.getNameEn() + district.getNameEn() + ", "
-                                        + division.getNameEn();
-                                locationBn = locationResponse.getNameBn() + district.getNameBn() + ", "
-                                        + division.getNameBn();
-                            }
-                        }
+                    LocationResponse divisionResponse = getLocationById(districtResponse.getParentId());
+                    if (divisionResponse != null) {
+                        response.setDivisionId(divisionResponse.getId());
+                        response.setDivisionNameEn(divisionResponse.getNameEn());
+                        response.setDivisionNameBn(divisionResponse.getNameBn());
+
+                        response.setFullAddressEn(
+                                response.getAddressEn() + ", "
+                                        + thanaResponse.getNameEn() + "-" + response.getPostCode() + ", " + districtResponse.getNameEn() + ", "
+                                        + divisionResponse.getNameEn());
+
+                        response.setFullAddressBn(
+                                response.getAddressBn() + ", "
+                                        + thanaResponse.getNameBn() + "-" + response.getPostCode() + ", " + districtResponse.getNameBn() + ", "
+                                        + divisionResponse.getNameBn());
                     }
-
-                    response.setLocationEn(locationEn);
-                    response.setLocationEn(locationBn);
                 }
+
             }
+
+//            LocationResponse locationResponse = locationService.getDataById(response.getLocationId());
+//            if (locationResponse != null) {
+//                if (locationResponse.getParentId() != null) {
+//
+//                    String locationEn = locationResponse.getNameEn();
+//                    String locationBn = locationResponse.getNameBn();
+//
+//                    LocationResponse district = locationService.getDataById(locationResponse.getParentId());
+//                    if (district != null) {
+//                        if (district.getParentId() != null) {
+//
+//                            locationEn = locationResponse.getNameEn() + district.getNameEn();
+//                            locationBn = locationResponse.getNameBn() + district.getNameBn();
+//
+//                            LocationResponse division = locationService.getDataById(district.getParentId());
+//                            if (division != null) {
+//                                locationEn = locationResponse.getNameEn() + ", " + district.getNameEn() + ", "
+//                                        + division.getNameEn();
+//                                locationBn = locationResponse.getNameBn() + ", " + district.getNameBn() + ", "
+//                                        + division.getNameBn();
+//                            }
+//                        }
+//                    }
+//
+//                    response.setLocationEn(locationEn);
+//                    response.setLocationEn(locationBn);
+//                }
+//            }
 
             return response;
         }).getContent();
 
         return new PagedResponse<>(responseData, records.getNumber(),
                 records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
+    }
+
+    public LocationResponse getLocationById(Long id) {
+
+        Location existingData = locationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        LocationResponse response = new LocationResponse();
+        BeanUtils.copyProperties(existingData, response);
+
+        StatusResponse statusResponse = getStatusById(existingData.getLocationTypeId());
+
+        if (statusResponse != null) {
+            response.setLocationTypeNameEn(statusResponse.getNameEn());
+            response.setLocationTypeNameBn(statusResponse.getNameBn());
+        }
+
+        if (existingData.getParentId() != null) {
+
+            Optional<Location> location = locationRepository.findById(existingData.getParentId());
+
+            if (location != null) {
+                LocationResponse locationResponse = new LocationResponse();
+                BeanUtils.copyProperties(location.get(), locationResponse);
+                response.setParentLocation(locationResponse);
+            }
+        }
+
+        return response;
+    }
+
+    public StatusResponse getStatusById(Long id) {
+        Optional<Status> existingData = statusRepository.findById(id);
+
+        if (!existingData.isPresent()) {
+            return null;
+        }
+
+        StatusResponse response = new StatusResponse();
+        BeanUtils.copyProperties(existingData, response);
+        return response;
     }
 
     // Find a single record by ID

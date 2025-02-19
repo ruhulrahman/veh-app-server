@@ -20,6 +20,7 @@ public interface DrivingRelatedServiceFeesRepository extends JpaRepository<Drivi
       SELECT new com.ibas.brta.vehims.serviceFees.payload.response.DrivingRelatedServiceFeesResponse(
           s.id,
           s.serviceId,
+          cs.serviceCode,
           cs.nameEn,
           cs.nameBn,
           s.isYearlyFee,
@@ -48,6 +49,7 @@ public interface DrivingRelatedServiceFeesRepository extends JpaRepository<Drivi
           SELECT new com.ibas.brta.vehims.serviceFees.payload.response.DrivingRelatedServiceFeesResponse(
               s.id,
               s.serviceId,
+              cs.serviceCode,
               cs.nameEn,
               cs.nameBn,
               s.isYearlyFee,

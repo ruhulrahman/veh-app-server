@@ -4,13 +4,12 @@ import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.common.payload.response.MediaResult;
 import com.ibas.brta.vehims.configurations.payload.response.OrganizationResponse;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
-import com.ibas.brta.vehims.userManagement.payload.response.UserResponse;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-public class FitnessCertficateResponse {
+public class TaxTokenCertficateResponse {
     private Long id;
     private String serviceRequestNo;
     private Long vehicleInfoId;
@@ -44,11 +43,12 @@ public class FitnessCertficateResponse {
     private MediaResult ownerPhotoInfo;
     private OrganizationResponse issuingAuthority;
 
-    private LocalDateTime fitnessValidStartDate;
-    private LocalDateTime fitnessValidEndDate;
-    private String fitnessCertificateNumber;
-    private String inspectorNameEn;
-    private String inspectorNameBn;
-    private String inspectorDesignationEn;
-    private String inspectorDesignationBn;
+    private LocalDateTime validStartDate;
+    private LocalDateTime validEndDate;
+    private String taxTokenCertificateNumber;
+
+    private String challanNo;
+    private String paymentId;
+    private String paidAmount;
+//    private LocalDateTime challanDate;
 }

@@ -1,6 +1,7 @@
 package com.ibas.brta.vehims.vehicle.controller;
 
 import com.ibas.brta.vehims.vehicle.payload.response.*;
+import org.hibernate.annotations.Cache;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -165,6 +166,14 @@ public class VehicleInfoController {
         public ResponseEntity<?> getFitnessCertificateDetailsReqeustById(@PathVariable Long serviceRequestId) {
                 FitnessCertficateResponse response = serviceRequestService
                         .getFitnessCertificateDetailsReqeustById(serviceRequestId);
+                return ResponseEntity.ok(response);
+        }
+
+        // Get a single item by ID
+        @GetMapping("/v1/applicant/vehicle/get-tax-token-certificate-details/{serviceRequestId}")
+        public ResponseEntity<?> getTaxTokenCertificateDetailsReqeustById(@PathVariable Long serviceRequestId) {
+                TaxTokenCertficateResponse response = serviceRequestService
+                        .getTaxTokenCertificateDetailsReqeustById(serviceRequestId);
                 return ResponseEntity.ok(response);
         }
 

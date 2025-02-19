@@ -21,6 +21,7 @@ public class VehicleRegistrationResponse {
     private String classNumber;
     private String vehicleNumber;
     private String fullRegNumber;
+    private String registrationCertificateNumber;
     private Long statusId;
     private Instant createdAt;
 

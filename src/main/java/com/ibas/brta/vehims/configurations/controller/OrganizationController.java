@@ -71,6 +71,7 @@ public class OrganizationController {
             @RequestParam(required = false) Long officeTypeId,
             @RequestParam(required = false) Long divisionId,
             @RequestParam(required = false) Long districtId,
+            @RequestParam(required = false) Long thanaId,
             @RequestParam(required = false) Boolean isActive,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
             @RequestParam(defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size) {
@@ -80,6 +81,7 @@ public class OrganizationController {
                 officeTypeId,
                 divisionId,
                 districtId,
+                thanaId,
                 isActive,
                 page,
                 size);

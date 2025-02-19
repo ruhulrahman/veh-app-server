@@ -3,11 +3,13 @@ package com.ibas.brta.vehims.userManagement.service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ibas.brta.vehims.configurations.repository.CommonRepository;
 import com.ibas.brta.vehims.configurations.service.DesignationService;
 import com.ibas.brta.vehims.configurations.service.StatusService;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
+import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.userManagement.dao.UserDao;
 import com.ibas.brta.vehims.userManagement.model.UserTinInfo;
 import com.ibas.brta.vehims.userManagement.payload.response.UserTinInfoResponse;
@@ -100,6 +102,9 @@ public class UserService {
 
     @Autowired
     UserDao userDao;
+
+    @Autowired
+    CommonRepository commonRepository;
 
     // Create Applicant user account
     public UserFullResponse createApplicantUserData(ApplicantUserRequest request) {
@@ -345,6 +350,10 @@ public class UserService {
             BeanUtils.copyProperties(dbEntity, obj);
         }
         return obj;
+    }
+
+    public List<CommonProjection> getOrganizationUsers() {
+        return commonRepository.getOrganizationUsersByUserIdAndOrgId(Utils.getLoggedinUserId(), Utils.getLoggedInOrgId());
     }
 
     public UserProfileResponse getUserProfileInfo(Long id) {

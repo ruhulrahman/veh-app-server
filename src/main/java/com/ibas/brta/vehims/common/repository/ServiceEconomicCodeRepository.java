@@ -5,10 +5,12 @@ import org.springframework.stereotype.Repository;
 
 import com.ibas.brta.vehims.common.model.ServiceEconomicCode;
 
+import java.util.Optional;
+
 @Repository
 public interface ServiceEconomicCodeRepository extends JpaRepository<ServiceEconomicCode, Long> {
 
-    ServiceEconomicCode findByEconomicCode(String economicCode);
+    Optional<ServiceEconomicCode> findByEconomicCode(String economicCode);
 
-    ServiceEconomicCode findByEconomicDescriptionEn(String economicDescriptionEn);
+    Optional<ServiceEconomicCode> findByEconomicDescriptionEn(String economicDescriptionEn);
 }

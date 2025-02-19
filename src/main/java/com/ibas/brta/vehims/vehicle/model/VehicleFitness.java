@@ -38,4 +38,7 @@ public class VehicleFitness extends RecordAudit {
     @Column(name = "fitness_valid_end_date")
     private LocalDateTime fitnessValidEndDate;
 
+    @Column(name = "fitness_certificate_number")
+    private String fitnessCertificateNumber;
+
 }

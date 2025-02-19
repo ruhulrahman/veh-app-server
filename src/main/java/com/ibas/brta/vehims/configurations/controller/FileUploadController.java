@@ -41,10 +41,12 @@ import org.springframework.beans.factory.annotation.Value;
 @RequestMapping("/api/files")
 public class FileUploadController {
 
-    private final String UPLOAD_DIR = "uploads/";
+//    private final String uploadDirectory = "uploads/";
+//    private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+//    @Value("${file.upload-dir}")
+    @Value("${upload.directory}")
+    private String uploadDirectory;
 
     @Value("${file.max-size}")
     private long maxFileSize;
@@ -68,7 +70,7 @@ public class FileUploadController {
             }
 
             // Save the file
-            Path uploadPath = Paths.get(uploadDir);
+            Path uploadPath = Paths.get(uploadDirectory);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
@@ -135,7 +137,7 @@ public class FileUploadController {
     @GetMapping("/view/{fileName}")
     public ResponseEntity<Resource> viewFile(@PathVariable String fileName) {
         try {
-            Path filePath = Paths.get(UPLOAD_DIR + fileName).normalize();
+            Path filePath = Paths.get(uploadDirectory + fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
@@ -155,7 +157,7 @@ public class FileUploadController {
     @GetMapping("/view-sample/{fileName}")
     public ResponseEntity<Resource> viewSampleFile(@PathVariable String fileName) {
         try {
-            Path filePath = Paths.get(UPLOAD_DIR + "sampleFiles/" + fileName).normalize();
+            Path filePath = Paths.get(uploadDirectory + "/sampleFiles/" + fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {
@@ -171,8 +173,6 @@ public class FileUploadController {
             return ResponseEntity.internalServerError().build();
         }
     }
-
-    private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
 
     @GetMapping("/get-file-by-name/{fileName}")
     public ResponseEntity<?> getFileByName(@PathVariable String fileName) {
@@ -238,7 +238,7 @@ public class FileUploadController {
     @GetMapping("/full-url/{filename}")
     public ResponseEntity<Resource> getFileFullUrl(@PathVariable String filename) {
         try {
-            Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
+            Path filePath = Paths.get(uploadDirectory).resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (!resource.exists()) {
@@ -265,7 +265,7 @@ public class FileUploadController {
     @GetMapping("/get-full-url/{fileName}")
     public ResponseEntity<Resource> getFile(@PathVariable String fileName) {
         try {
-            Path filePath = Paths.get(uploadDir).resolve(fileName).normalize();
+            Path filePath = Paths.get(uploadDirectory).resolve(fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists() || resource.isReadable()) {
@@ -285,7 +285,7 @@ public class FileUploadController {
     @GetMapping("/download2/{fileName}")
     public ResponseEntity<Resource> downloadFile2(@PathVariable String fileName) {
         try {
-            Path filePath = Paths.get(UPLOAD_DIR + fileName).normalize();
+            Path filePath = Paths.get(uploadDirectory + fileName).normalize();
             Resource resource = new UrlResource(filePath.toUri());
 
             if (resource.exists()) {

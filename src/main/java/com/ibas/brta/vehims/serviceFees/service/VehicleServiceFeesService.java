@@ -364,6 +364,8 @@ public class VehicleServiceFeesService {
             response.setServiceNameEn(item.getNameEn());
             response.setServiceNameBn(item.getNameBn());
 
+            ServiceEconomicCodeResponse serviceEconomicCode = getServiceEconomicCodeByServiceCode(item.getServiceCode());
+            response.setServiceEconomicCode(serviceEconomicCode);
             VehicleServiceFees vServiceFees;
 
 //            if (vehicleInfo.get().getIsElectrictVehicle()) {
@@ -471,6 +473,18 @@ public class VehicleServiceFeesService {
 
         Optional<ServiceEconomicCode> serviceEconomicCode = serviceEconomicCodeRepository
                 .findById(service.getServiceEconomicCodeId());
+
+        if (serviceEconomicCode.isPresent()) {
+            ServiceEconomicCodeResponse response = new ServiceEconomicCodeResponse();
+            BeanUtils.copyProperties(serviceEconomicCode.get(), response);
+            return response;
+        }
+        return null;
+    }
+
+    public ServiceEconomicCodeResponse getServiceEconomicCodeByEconomicCode(String economicCode) {
+        Optional<ServiceEconomicCode> serviceEconomicCode = serviceEconomicCodeRepository
+                .findByEconomicCode(economicCode);
 
         if (serviceEconomicCode.isPresent()) {
             ServiceEconomicCodeResponse response = new ServiceEconomicCodeResponse();

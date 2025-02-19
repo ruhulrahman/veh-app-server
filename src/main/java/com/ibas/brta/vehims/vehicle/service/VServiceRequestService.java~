@@ -482,6 +482,13 @@ public class VServiceRequestService {
                     response.setPaidAmount(paymentInfo.get().getPaidAmount());
                 }
             }
+//            if (userDetail != null) {
+//                MediaResult mediaResult = mediaService.getMediaByIdWithType(userDetail.getPhotoMediaId());
+//
+//                if (mediaResult != null) {
+//                    response.setOwnerPhotoInfo(mediaResult);
+//                }
+//            }
         }
 
         if (serviceRequest.getOrgId() != null) {

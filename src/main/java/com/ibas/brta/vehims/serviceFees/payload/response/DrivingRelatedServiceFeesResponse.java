@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.serviceFees.payload.response;
 
+import com.ibas.brta.vehims.common.payload.response.ServiceEconomicCodeResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 public class DrivingRelatedServiceFeesResponse {
     private Long id;
     private Long serviceId;
+    private String serviceCode;
     private String serviceNameEn;
     private String serviceNameBn;
     private Boolean isYearlyFee;

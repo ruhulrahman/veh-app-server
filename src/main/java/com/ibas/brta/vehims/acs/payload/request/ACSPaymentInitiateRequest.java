@@ -1,8 +1,6 @@
 package com.ibas.brta.vehims.acs.payload.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import jakarta.persistence.Column;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Data
 @NoArgsConstructor
-public class PaymentInitiateRequest {
+public class ACSPaymentInitiateRequest {
     @JsonProperty("paymentid")
     String paymentid;
 
@@ -52,12 +50,6 @@ public class PaymentInitiateRequest {
 
     @JsonProperty("mobile")
     String mobile;
-
     @JsonProperty("AddlEconomic")
     AddlEconomic[] AddlEconomic;
-
-    String serviceRequestNo;
-    String serviceCode;
-    Long serviceId;
-    String serviceType;
 }

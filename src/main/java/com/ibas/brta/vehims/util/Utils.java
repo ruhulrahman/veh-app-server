@@ -13,8 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.postgresql.util.PGobject;
@@ -26,6 +28,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class Utils {
+
+    // AtomicLong ensures thread safety and uniqueness
+    private static final AtomicLong counter = new AtomicLong(System.currentTimeMillis() % 10000000);
+
+    // Unique middle part using timestamp-based counter
+    static long middlePart = counter.incrementAndGet();
+
+    // Last part as the last two digits of the current year
+    static int lastPart = Year.now().getValue() % 100;
 
     @Autowired
     private static UserService userService;
@@ -142,6 +153,30 @@ public class Utils {
 
         // Return the formatted date-time as the service request number
         return formattedDateTime;
+    }
+
+    public static String generateRegistrationCertificateNumber() {
+        // Fixed first part
+        String firstPart = "1";
+
+        // Format the certificate number
+        return firstPart + "-" + middlePart + "/" + lastPart;
+    }
+
+    public static String generateFitnessCertificateNumber() {
+        // Fixed first part
+        String firstPart = "2";
+
+        // Format the certificate number
+        return firstPart + "-" + middlePart + "/" + lastPart;
+    }
+
+    public static String generateTaxTokenNumber() {
+        // Fixed first part
+        String firstPart = "3";
+
+        // Format the certificate number
+        return firstPart + "-" + middlePart + "/" + lastPart;
     }
 
     public static String generateUniqueFileName(String originalFileName) {

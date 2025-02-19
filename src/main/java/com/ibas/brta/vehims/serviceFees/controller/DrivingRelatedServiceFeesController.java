@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ibas.brta.vehims.serviceFees.payload.response.DrivingRelatedSpecificServiceFeesResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -106,10 +107,12 @@ public class DrivingRelatedServiceFeesController {
         }
 
         // Get a single item by ID
-        @GetMapping("/v1/admin/configurations/driving-related-service-fees-with-parent-service-code/{serviceCode}")
-        public ResponseEntity<?> getServiceWithFeesByParentServiceCode(@PathVariable String serviceCode) {
-                List<DrivingRelatedServiceFeesResponse> response = drivingRelatedServiceFeesService
-                                .getServiceWithFeesByParentServiceCode(serviceCode);
+        @GetMapping("/v1/admin/configurations/driving-related-service-fees-with-parent-service-code")
+        public ResponseEntity<?> getServiceWithFeesByParentServiceCode(
+                @RequestParam(required = true) String serviceCode,
+                @RequestParam(required = true) Long serviceRequestId) {
+                List<DrivingRelatedSpecificServiceFeesResponse> response = drivingRelatedServiceFeesService
+                                .getServiceWithFeesByParentServiceCode(serviceCode, serviceRequestId);
 
                 ServiceEconomicCodeResponse serviceEconomicCode = drivingRelatedServiceFeesService
                                 .getServiceEconomicCodeByServiceCode(serviceCode);

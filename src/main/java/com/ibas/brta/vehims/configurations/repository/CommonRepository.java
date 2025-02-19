@@ -125,4 +125,18 @@ public interface CommonRepository extends JpaRepository<User, Long> {
         @Query(value = "SELECT user_id as id, name_en as nameEn, name_bn as nameBn FROM s_users WHERE is_active = true ORDER BY name_en ASC", nativeQuery = true)
         List<CommonProjection> getUsers();
 
+        @Query(value = "SELECT DISTINCT u.user_id as id, u.name_en as nameEn, u.name_bn as nameBn " +
+                "FROM s_users u " +
+                "LEFT JOIN s_user_organization_roles uor ON uor.user_id = u.user_id " +  // Fixed alias issue
+                "LEFT JOIN u_roles role ON role.role_id = uor.role_id " +  // Fixed alias issue
+                "WHERE u.user_id != :authId " +
+                "AND uor.org_id = :orgId " +
+                "AND role.role_code = 'inspector_role' " +
+                "AND u.is_active = true " +
+                "ORDER BY u.name_en ASC",  // Use alias for consistency
+                nativeQuery = true)
+        List<CommonProjection> getOrganizationUsersByUserIdAndOrgId(@Param("authId") Long authId, @Param("orgId") Long orgId);
+
+
+
 }

@@ -162,13 +162,13 @@ public class VehicleJointOwnerService {
 
                         response.setFullAddressEn(
                                 response.getHoldingHouseVillage() + ", " + response.getRoadBlockSectorColony() + ", "
-                                        + thanaResponse.getNameEn() + ", " + districtResponse.getNameEn() + ", "
-                                        + divisionResponse.getNameEn() + "-" + response.getPostCode());
+                                        + thanaResponse.getNameEn() + "-" + response.getPostCode() + ", " + districtResponse.getNameEn() + ", "
+                                        + divisionResponse.getNameEn());
 
                         response.setFullAddressBn(
                                 response.getHoldingHouseVillage() + ", " + response.getRoadBlockSectorColony() + ", "
-                                        + thanaResponse.getNameBn() + ", " + districtResponse.getNameBn() + ", "
-                                        + divisionResponse.getNameBn() + "-" + response.getPostCode());
+                                        + thanaResponse.getNameBn() + "-" + response.getPostCode() + ", " + districtResponse.getNameBn() + ", "
+                                        + divisionResponse.getNameBn());
                     }
                 }
 

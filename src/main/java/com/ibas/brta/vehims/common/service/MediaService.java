@@ -11,6 +11,7 @@ import com.ibas.brta.vehims.util.Utils;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.MediaType;
@@ -57,7 +58,14 @@ public class MediaService {
     VServiceMediaRepository vehicleServiceMediaRepository;
 
     private final String UPLOAD_DIR = "uploads/";
-    private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
+//    private final String uploadDirectory = System.getProperty("user.dir") + "/uploads";
+//    private final String uploadDirectory = "/opt/tomcat/webapps/uploads";
+
+//    @Value("${file.upload_dir}")
+//    private String uploadDirectory;
+
+    @Value("${upload.directory}")
+    private String uploadDirectory;
 
     // Create or Insert operation
     public MediaResponse createData(MediaRequest request) {
@@ -84,9 +92,18 @@ public class MediaService {
         String uniqueFileName = Utils.generateUniqueFileName(originalFileName);
 
         // Define file path
-        String filePath = System.getProperty("user.dir") + "/uploads" + File.separator + uniqueFileName;
+//        String filePath = System.getProperty("user.dir") + "/uploads" + File.separator + uniqueFileName;
+        // Define upload directory and file path
+        String uploadDir = System.getProperty("user.dir") + "/uploads";
+        String filePath = uploadDirectory + File.separator + uniqueFileName;
 
         try {
+
+            // Ensure the upload directory exists
+            File directory = new File(uploadDirectory);
+            if (!directory.exists()) {
+                directory.mkdirs(); // Create directory if it does not exist
+            }
             // Create and save the file
             FileOutputStream fout = new FileOutputStream(filePath);
             fout.write(file.getBytes());
@@ -99,7 +116,8 @@ public class MediaService {
             MediaRequest requestObject = new MediaRequest();
             requestObject.setOriginalName(originalFileName); // Save the unique file name
             requestObject.setExtension(fileExtension);
-            requestObject.setFolderPath("/uploads");
+//            requestObject.setFolderPath("/uploads");
+            requestObject.setFolderPath(uploadDirectory);
             requestObject.setFile(uniqueFileName); // Save unique name in DB
             requestObject.setSize(fileSizeInBytes);
             requestObject.setType(mimeType);
@@ -152,6 +170,10 @@ public class MediaService {
     public ResponseEntity<?> getMediaById(Long id) {
 
         MediaResponse getDataById = getDataById(id);
+
+        if (getDataById == null) {
+            return ResponseEntity.notFound().build();
+        }
 
         try {
             // Build the path to the file
@@ -225,21 +247,17 @@ public class MediaService {
     // Find a single record by ID
     public MediaResponse getDataById(Long id) {
 
-        Media existingData = mediaRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+//        Media existingData = mediaRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Data not found with id: " + id));
+
+        Optional<Media> existingData = mediaRepository.findById(id);
 
         MediaResponse response = new MediaResponse();
-        BeanUtils.copyProperties(existingData, response);
 
-        // try {
-        // Path filePath = Paths.get(UPLOAD_DIR + existingData.getFile()).normalize();
-        // Resource resource = new UrlResource(filePath.toUri());
-        // response.setResource(resource);
-        // // handle resource
-        // } catch (MalformedURLException e) {
-        // // handle the exception
-        // }
-
+        if (existingData.isPresent()) {
+            Media media = existingData.get();
+            BeanUtils.copyProperties(media, response);
+        }
         return response;
     }
 

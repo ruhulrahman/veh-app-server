@@ -38,4 +38,7 @@ public class VehicleTaxToken extends RecordAudit {
     @Column(name = "tt_valid_end_date")
     private LocalDateTime ttValidEndDate;
 
+    @Column(name = "tax_token_certificate_number")
+    private String taxTokenCertificateNumber;
+
 }

@@ -6,7 +6,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.ibas.brta.vehims.configurations.model.Status;
+import com.ibas.brta.vehims.configurations.repository.StatusRepository;
+import com.ibas.brta.vehims.drivingLicense.model.DLInformation;
+import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
+import com.ibas.brta.vehims.drivingLicense.model.DrivingLicenseClass;
+import com.ibas.brta.vehims.drivingLicense.repository.DLInformationRepository;
+import com.ibas.brta.vehims.drivingLicense.repository.DLServiceRequestRepository;
+import com.ibas.brta.vehims.drivingLicense.repository.DrivingLicenseClassRepository;
+import com.ibas.brta.vehims.serviceFees.model.VehicleServiceFees;
+import com.ibas.brta.vehims.serviceFees.payload.response.DrivingRelatedSpecificServiceFeesResponse;
+import com.ibas.brta.vehims.serviceFees.payload.response.VehicleSpecificServiceFeesResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +51,19 @@ public class DrivingRelatedServiceFeesService {
 
     @Autowired
     private ServiceEconomicCodeRepository serviceEconomicCodeRepository;
+
+    @Autowired
+    DLServiceRequestRepository dlServiceRequestRepository;
+
+    @Autowired
+    DLInformationRepository dlInformationRepository;
+
+    @Autowired
+    StatusRepository statusRepository;
+
+    @Autowired
+    DrivingLicenseClassRepository drivingLicenseClassRepository;
+
 
     public DrivingRelatedServiceFeesResponse createData(DrivingRelatedServiceFeesRequest request) {
 
@@ -108,13 +133,56 @@ public class DrivingRelatedServiceFeesService {
     }
 
     // List all records
-    public List<DrivingRelatedServiceFeesResponse> getServiceWithFeesByParentServiceCode(String serviceCode) {
+    public List<DrivingRelatedSpecificServiceFeesResponse> getServiceWithFeesByParentServiceCode(String serviceCode, Long serviceRequestId) {
 
         List<Long> serviceIds = serviceRepository.findChildServiceIdsByServiceCode(serviceCode);
+//        List<ServiceEntity> services = serviceRepository.getServicesByServiceIds(serviceIds);
         List<DrivingRelatedServiceFeesResponse> records = drivingRelatedServiceFeesRepository
                 .getServiceWithFeesByServiceIds(serviceIds);
 
-        return records;
+        List<DrivingRelatedSpecificServiceFeesResponse> drivingRelatedSpecificServiceFeesResponses = records.stream().map(item -> {
+            DrivingRelatedSpecificServiceFeesResponse response = new DrivingRelatedSpecificServiceFeesResponse();
+            BeanUtils.copyProperties(item, response);
+
+            ServiceEconomicCodeResponse serviceEconomicCode = getServiceEconomicCodeByServiceCode(item.getServiceCode());
+            response.setServiceEconomicCode(serviceEconomicCode);
+
+            response.setServiceFee(item.getMainFee());
+
+            if (item.getServiceCode() != null && item.getServiceCode().equals("issue_of_smart_card_driving_license")) {
+                Optional<DLServiceRequest> serviceRequest = dlServiceRequestRepository.findById(serviceRequestId);
+                if (serviceRequest.isPresent()) {
+                    Optional<DLInformation> dlInformation = dlInformationRepository.findById(serviceRequest.get().getDlInfoId());
+
+                    if (dlInformation.isPresent()) {
+                        Optional<Status> licenseType = statusRepository.findById(dlInformation.get().getLicenseTypeId());
+
+                         if (licenseType.isPresent()) {
+                             if (licenseType.get().getStatusCode().equals("dl_professional")) {
+                                 response.setServiceFee(5 * item.getMainFee());  // for 5 years
+                             } else {
+                                 response.setServiceFee(10 * item.getMainFee()); // for 10 years
+                             }
+                         }
+                    }
+                }
+            }
+
+            if (item.getServiceCode() != null && item.getServiceCode().equals("driving_license_proficiency_verification_fee")) {
+                Integer dlClassCount = drivingLicenseClassRepository.countByDlServiceRequestId(serviceRequestId);
+
+                if (dlClassCount < 2) {
+                    response.setServiceFee(1 * item.getMainFee());  // for 5 years
+                } else {
+                    response.setServiceFee(2 * item.getMainFee()); // for 10 years
+                }
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+
+        return drivingRelatedSpecificServiceFeesResponses;
+
     }
 
     public List<Long> getServicesIds() {
@@ -138,6 +206,9 @@ public class DrivingRelatedServiceFeesService {
         if (service == null) {
             return null;
         }
+
+//        log.info("service.getServiceEconomicCodeId() ============== {}", service.getServiceCode());
+//        log.info("service.getServiceEconomicCodeId() ============== {}", service.getServiceEconomicCodeId());
 
         Optional<ServiceEconomicCode> serviceEconomicCode = serviceEconomicCodeRepository
                 .findById(service.getServiceEconomicCodeId());

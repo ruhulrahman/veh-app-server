@@ -1,5 +1,6 @@
 package com.ibas.brta.vehims.userManagement.dao;
 
+import com.ibas.brta.vehims.projection.CommonProjection;
 import com.ibas.brta.vehims.serviceFees.model.VehicleServiceFees;
 import com.ibas.brta.vehims.userManagement.model.UserOfficeRole;
 import com.ibas.brta.vehims.userManagement.payload.response.UserOfficeRoleResponse;
@@ -77,5 +78,12 @@ public class UserDao {
         }
 
         return userOfficeRoles;
+    }
+
+    public List<CommonProjection> getOrganizationUsersByUserIdAndOrgId(Long authId, Long orgId) {
+        // Construct the query
+
+
+        return null;
     }
 }

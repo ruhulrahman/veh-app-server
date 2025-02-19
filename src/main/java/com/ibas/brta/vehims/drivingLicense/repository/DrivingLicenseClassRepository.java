@@ -20,6 +20,8 @@ public interface DrivingLicenseClassRepository extends JpaRepository<DrivingLice
 
     List<DrivingLicenseClass> findByDlServiceRequestId(Long dlServiceRequestId);
 
+    Integer countByDlServiceRequestId(Long dlServiceRequestId);
+
     List<DrivingLicenseClass> findByDlInfoId(Long dlInfoId);
 
     List<DrivingLicenseClass> findByDllId(Long dllId);

@@ -2,6 +2,7 @@ package com.ibas.brta.vehims.vehicle.payload.response;
 
 import java.util.Date;
 
+import com.ibas.brta.vehims.common.payload.response.AddressResponse;
 import com.ibas.brta.vehims.configurations.payload.response.StatusResponse;
 import lombok.Data;
 
@@ -35,6 +36,8 @@ public class VehicleOwnerResponse {
     private Date dateOfReceipt;
     private String remarks;
     private Boolean isPrimaryOwner;
+
+    AddressResponse addressInfo;
 
     private StatusResponse ownerType;
 }

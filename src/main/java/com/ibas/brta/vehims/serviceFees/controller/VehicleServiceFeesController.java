@@ -155,8 +155,10 @@ public class VehicleServiceFeesController {
                                 serviceCode);
                 }
 
+//                ServiceEconomicCodeResponse serviceEconomicCode = vehicleServiceFeesService
+//                        .getServiceEconomicCodeByServiceCode(serviceCode);
                 ServiceEconomicCodeResponse serviceEconomicCode = vehicleServiceFeesService
-                        .getServiceEconomicCodeByServiceCode(serviceCode);
+                        .getServiceEconomicCodeByEconomicCode("1145101");
 
                 Map<String, Object> object = new HashMap<>();
                 object.put("list", response);

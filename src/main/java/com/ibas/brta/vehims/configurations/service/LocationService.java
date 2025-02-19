@@ -148,6 +148,39 @@ public class LocationService {
         return response;
     }
 
+//    public String getFullAddressByLocationId(Long locationId) {
+//
+//        String fullAddressEn = "";
+//        String fullAddressBn = "";
+//
+//            LocationResponse thanaResponse = getLocationById(locationId);
+//
+//            LocationResponse districtResponse = getLocationById(thanaResponse.getParentId());
+//            if (districtResponse != null) {
+//                response.setDistrictId(districtResponse.getId());
+//                response.setDistrictNameEn(districtResponse.getNameEn());
+//                response.setDistrictNameBn(districtResponse.getNameBn());
+//
+//                LocationResponse divisionResponse = getLocationById(districtResponse.getParentId());
+//                if (divisionResponse != null) {
+//                    response.setDivisionId(divisionResponse.getId());
+//                    response.setDivisionNameEn(divisionResponse.getNameEn());
+//                    response.setDivisionNameBn(divisionResponse.getNameBn());
+//
+//                    response.setFullAddressEn(
+//                            response.getHoldingHouseVillage() + ", " + response.getRoadBlockSectorColony() + ", "
+//                                    + thanaResponse.getNameEn() + ", " + districtResponse.getNameEn() + ", "
+//                                    + divisionResponse.getNameEn() + "-" + response.getPostCode());
+//
+//                    response.setFullAddressBn(
+//                            response.getHoldingHouseVillage() + ", " + response.getRoadBlockSectorColony() + ", "
+//                                    + thanaResponse.getNameBn() + ", " + districtResponse.getNameBn() + ", "
+//                                    + divisionResponse.getNameBn() + "-" + response.getPostCode());
+//                }
+//            }
+//
+//    }
+
     public List<?> getActiveList() {
         List<Location> listData = locationRepository.findByIsActiveTrueOrderByNameEnAsc();
 

@@ -8,10 +8,7 @@ import java.util.*;
 import com.ibas.brta.vehims.acs.model.PaymentDetails;
 import com.ibas.brta.vehims.acs.model.PaymentInfo;
 import com.ibas.brta.vehims.acs.model.TransactionInfo;
-import com.ibas.brta.vehims.acs.payload.request.PaymentDetailsRequest;
-import com.ibas.brta.vehims.acs.payload.request.PaymentInitiateOtcRequest;
-import com.ibas.brta.vehims.acs.payload.request.PaymentInitiateRequest;
-import com.ibas.brta.vehims.acs.payload.request.PaymentUpdateRequest;
+import com.ibas.brta.vehims.acs.payload.request.*;
 import com.ibas.brta.vehims.acs.payload.response.LoginResponse;
 import com.ibas.brta.vehims.acs.payload.response.PaymentDetailsResponse;
 import com.ibas.brta.vehims.acs.payload.response.PaymentInitiateOtcResponse;
@@ -129,7 +126,8 @@ public class PaymentController {
     ResponseEntity<?> initiatePaymentV1(@CurrentUser UserPrincipal currentUser,
             @Valid @org.springframework.web.bind.annotation.RequestBody PaymentInitiateRequest paymentInitiateRequest) {
 
-        logger.error("Trying to to access payment initiate from ACS.");
+//        logger.error("Trying to to access payment initiate from ACS.");
+//        logger.info("paymentInitiateRequest -----> " + paymentInitiateRequest);
 
         UUID guid = UUID.randomUUID();
         String transactionId = currentUser.getId() + "" + Utils.datetoReportString(new Date()) + ""
@@ -139,6 +137,8 @@ public class PaymentController {
                 "clients/payment/initiate");
 
         String url = "";
+
+//        log.info("response.getResponsecode() =================="+response.getResponsecode());
 
         if (response.getResponsecode().equals("0")) {
             url = response.getResponseurl() + "?transaction_id=" + response.getTransaction_id();
@@ -158,11 +158,11 @@ public class PaymentController {
             // SAVE RESPONSE to DB for future payment confirmaiton
             _transactionInfo = transactionInfoService.save(_transactionInfo);
 
-            logger.error("Transaction Reference saved:" + url);
+//            logger.error("Transaction Reference saved:" + url);
 
         }
 
-        logger.error("Response:-->" + url);
+//        logger.error("Response:-->" + url);
         return new ResponseEntity<PaymentUrl>(new PaymentUrl(url), HttpStatus.OK);
     }
 
@@ -170,7 +170,7 @@ public class PaymentController {
     ResponseEntity<?> initiateOtcPaymentV1(@CurrentUser UserPrincipal currentUser,
             @Valid @org.springframework.web.bind.annotation.RequestBody PaymentInitiateOtcRequest paymentInitiateRequest) {
 
-        logger.error("Trying to initiate OTC payment.");
+//        logger.error("Trying to initiate OTC payment.");
 
         // GET Office Code for the bin holder
 
@@ -180,11 +180,11 @@ public class PaymentController {
 
         String _organizationCode = "";
 
-        logger.error("Organization code:-->" + _organizationCode);
+//        logger.error("Organization code:-->" + _organizationCode);
 
         paymentInitiateRequest.setOrganizationcode(_organizationCode);
 
-        logger.error("Payment Object to send to ACS:" + paymentInitiateRequest.toString());
+//        logger.error("Payment Object to send to ACS:" + paymentInitiateRequest.toString());
 
         PaymentInitiateOtcResponse response = getPaymentInitiateOtcDataSetFromAcs(paymentInitiateRequest,
                 "clients/payment/initiateOTC");
@@ -197,7 +197,7 @@ public class PaymentController {
     ResponseEntity<PaymentDetailsResponse> getPaymentDetails(@CurrentUser UserPrincipal currentUser,
             @PathVariable("paymentid") String paymentid) {
 
-        logger.error("Trying to access payment details: ");
+//        logger.error("Trying to access payment details: ");
 
         PaymentDetailsRequest detailRequest = new PaymentDetailsRequest();
         detailRequest.setPaymentid(paymentid);
@@ -210,11 +210,11 @@ public class PaymentController {
 
         Optional<PaymentDetails> _paymentDetails = paymentDetailsRepository.findByPaymentId(paymentid);
         if (_paymentDetails.isPresent()) {
-            logger.error("// Payment details info already saved. UPDATE");
+//            logger.error("// Payment details info already saved. UPDATE");
 
             PaymentDetails paymentDetails = _paymentDetails.get();
 
-            logger.error("// Payment details info already saved. UPDATE:" + paymentDetails.getPeriodKey());
+//            logger.error("// Payment details info already saved. UPDATE:" + paymentDetails.getPeriodKey());
 
             try {
                 paymentDetails.setAddress(response.getAddress());
@@ -430,14 +430,22 @@ public class PaymentController {
 
             Gson requestGson = new Gson();
 
-            String jString = requestGson.toJson(paymentRequest);
+//            log.info("paymentRequest ---> " + paymentRequest);
 
-            logger.error("Sending json-->" + jString);
+            ACSPaymentInitiateRequest acsPaymentInitiateRequest = new ACSPaymentInitiateRequest();
+            BeanUtils.copyProperties(paymentRequest, acsPaymentInitiateRequest);
+//            log.info("acsPaymentInitiateRequest ---> " + acsPaymentInitiateRequest);
+
+            String jString = requestGson.toJson(acsPaymentInitiateRequest);
+
+//            logger.error("Sending json-->" + jString);
 
             RequestBody body = RequestBody.create(jString, mediaType);
 
             OkHttpClient client = new OkHttpClient().newBuilder()
                     .build();
+
+//            log.info("Retrieved Access Token: " + loginResponse.getAccess_token());
 
             okhttp3.Request request = new okhttp3.Request.Builder()
                     .url(this.acsBaseUrl + endpoint)
@@ -450,16 +458,21 @@ public class PaymentController {
 
             Gson gson = new Gson();
 
+            if (response.body() == null) {
+                logger.error("Response body is null. Possible API issue.");
+                return null;
+            }
+
             jString = response.body().string();
 
-            logger.error("Received jSon:-->" + jString);
+//            logger.error("Received jSon:-->" + jString);
 
             PaymentInitiateResponse piresponse = gson.fromJson(jString, PaymentInitiateResponse.class);
 
             piresponse.setBearertoken(loginResponse.getAccess_token());
 
             // return response.body().string(); // response.peekBody(16000).string();
-            logger.error("Response Redirect URL:-" + piresponse.getResponseurl());
+//            logger.error("Response Redirect URL:-" + piresponse.getResponseurl());
 
             return piresponse;
 
@@ -513,7 +526,7 @@ public class PaymentController {
 
             jString = response.body().string();
 
-            logger.error("Received jSon:-->" + jString);
+//            logger.error("Received jSon:-->" + jString);
 
             PaymentInitiateOtcResponse piresponse = gson.fromJson(jString, PaymentInitiateOtcResponse.class);
 
@@ -562,6 +575,45 @@ public class PaymentController {
         return null;
     }
 
+
+    private String getPaymentVerificationFromAcs(String bearerToken, PaymentResponse paymentResponse) {
+        // logger.error("Pulling data from ACS for payment confirmation.");
+        try {
+
+            String endpoint = "clients/payment/verification";
+
+            LoginResponse loginResponse = getAccessTokenFromAcs();
+
+            // logger.error("ACS Token:" + loginResponse.getAccess_token());
+
+            MediaType mediaType = MediaType.parse("application/json");
+
+            RequestBody body = RequestBody.create("", mediaType);
+
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .build();
+
+            okhttp3.Request request = new okhttp3.Request.Builder()
+                    .url(this.acsBaseUrl + endpoint + "?access_token=" + bearerToken + "&challan_no="
+                            + paymentResponse.getChallan_no() + "&paymentid=" + paymentResponse.getPaymentid()
+                            + "&paidamount=" + paymentResponse.getPaidamount() + "&transaction_id="
+                            + paymentResponse.getTransaction_id())
+                    // .method("GET", body)
+                    .addHeader("Content-Type", "application/json")
+                    .addHeader("Authorization", "Bearer " + loginResponse.getAccess_token())
+                    .build();
+
+            okhttp3.Response response = client.newCall(request).execute();
+
+            return response.body().string();
+
+        } catch (IOException ioException) {
+            // ioException.printStackTrace();
+            logger.error("Failed to get payment confirmation from ACS:", ioException.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Get ACCESS TOKEN from ACS to be sent with subsequent API call.
      *
@@ -577,13 +629,20 @@ public class PaymentController {
 
             MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
 
-            RequestBody body = RequestBody.create(
-                    "username=" + this.acsLoginUserName + "&password=" + this.acsLoginPassword + "&grant_type=password",
-                    mediaType);
+//            log.info("this.acsLoginUserName --->"+ this.acsLoginUserName);
+//            log.info("this.acsLoginPassword --->"+ this.acsLoginPassword);
+//            log.info("mediaType --->"+ mediaType);
+            String requestBodyString = "username=" + this.acsLoginUserName + "&password=" + this.acsLoginPassword + "&grant_type=password";
+//            log.info("requestBodyString ======= {}", requestBodyString); // Log raw request body
 
+            RequestBody body = RequestBody.create(requestBodyString, mediaType);
+
+//            log.info("Request body --->"+ body);
+//            log.info("acsUsername --->" + acsUsername);
+//            log.info("acsPassword --->" + acsPassword);
             String credential = Credentials.basic(acsUsername, acsPassword);
 
-            log.info("credential ======= {}", credential);
+//            log.info("credential --->"+ credential);
 
             // logger.error("URL:-->" + acsBaseUrl + "token");
 
@@ -594,21 +653,26 @@ public class PaymentController {
                     .addHeader("Authorization", credential)
                     .build();
 
+//            log.info("okhttp3 request ======= {}", request);
+
             okhttp3.Response response = client.newCall(request).execute();
+
+//            log.info("response ======= {}", response);
 
             Gson gson = new Gson();
 
             String jString = response.body().string();
 
-            // logger.error("Response from auth:-->" + jString);
+//             logger.error("Response from auth:-->" + jString);
 
             loginResponse = gson.fromJson(jString, LoginResponse.class);
-            log.info("jString ======= {}", jString);
-            log.info("loginResponse ======= {}", loginResponse);
-            // logger.error("Response from auth:-->" + loginResponse.getAccess_token());
+//            log.info("jString ======= {}", jString);
+//            log.info("loginResponse ======= {}", loginResponse);
+//             logger.error("Response from auth:-->" + loginResponse.getAccess_token());
 
         } catch (IOException ioException) {
             // ioException.printStackTrace();
+//            logger.error("Failed to get access token:", ioException.getMessage());
             logger.error("Failed to get access token:", ioException.getMessage());
         }
 
@@ -631,6 +695,7 @@ public class PaymentController {
 
             LoginResponse loginResponse = getAccessTokenFromAcs();
 
+//            log.info("loginResponse.getAccess_token() ====== {}", loginResponse.getAccess_token());
             // MediaType mediaType = MediaType.parse("application/json");
 
             OkHttpClient client = new OkHttpClient().newBuilder()
