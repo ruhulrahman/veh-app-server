@@ -49,6 +49,8 @@ public interface CommonRepository extends JpaRepository<User, Long> {
 
         @Query(value = "SELECT status_id as id, name_en as nameEn, name_bn as nameBn, status_code as statusCode FROM c_statuses WHERE status_code = :statusCodeOrId OR CAST(status_id AS character varying) = :statusCodeOrId", nativeQuery = true)
         StatusProjection getStatusByStatusCodeOrId(@Param("statusCodeOrId") String statusCodeOrId);
+        @Query(value = "SELECT status_id as id FROM c_statuses WHERE status_code = :statusCode", nativeQuery = true)
+        Long getStatusIdByStatusCode(@Param("statusCode") String statusCode);
 
         @Query(value = "SELECT service_id as id, name_en as nameEn, name_bn as nameBn FROM c_services WHERE service_code = :codeOrId OR CAST(service_id AS character varying) = :codeOrId", nativeQuery = true)
         StatusProjection getServiceByCodeOrId(@Param("codeOrId") String codeOrId);

@@ -90,7 +90,7 @@ public class RegistrationApplicationService implements IRegistrationApplication 
 
         Optional<SUser> user = sUserRepository.findById(userId);
 
-        if (user.isPresent()) {
+        if (!user.isPresent()) {
             if (user.get().getLoggedInRoleId() == 17) {
                 inspectorId = userId;
             }

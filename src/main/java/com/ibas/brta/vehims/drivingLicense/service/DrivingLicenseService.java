@@ -2,19 +2,19 @@ package com.ibas.brta.vehims.drivingLicense.service;
 
 import com.ibas.brta.vehims.common.model.Media;
 import com.ibas.brta.vehims.common.repository.MediaRepository;
+import com.ibas.brta.vehims.drivingLicense.dao.DLDao;
+import com.ibas.brta.vehims.drivingLicense.payload.projections.DrivingLicenseApplicationProjection;
+import com.ibas.brta.vehims.drivingLicense.payload.request.*;
 import com.ibas.brta.vehims.iservice.IRegistrationDrivingLicense;
 import com.ibas.brta.vehims.projection.StatusProjection;
 import com.ibas.brta.vehims.userManagement.model.UserNidInfo;
 import com.ibas.brta.vehims.userManagement.payload.response.UserNidInfoResponse;
+import com.ibas.brta.vehims.userManagement.repository.RoleURepository;
 import com.ibas.brta.vehims.userManagement.repository.UserNidInfoRepository;
 import com.ibas.brta.vehims.drivingLicense.model.DLInformation;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceMedia;
 import com.ibas.brta.vehims.drivingLicense.model.DLServiceRequest;
 import com.ibas.brta.vehims.drivingLicense.model.DrivingLicenseClass;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage1Request;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage2Request;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
-import com.ibas.brta.vehims.drivingLicense.payload.request.LearnerLicenseRequest;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLApplicationResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLInformationResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
@@ -48,6 +48,7 @@ import com.ibas.brta.vehims.exception.FieldValidationException;
 import com.ibas.brta.vehims.util.Utility;
 import com.ibas.brta.vehims.util.Utils;
 
+import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegReportFilterRequest;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,7 +74,8 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class DrivingLicenseService implements IRegistrationDrivingLicense {
+//public class DrivingLicenseService implements IRegistrationDrivingLicense {
+public class DrivingLicenseService {
 
     @Autowired
     DLInformationRepository drivingLicenseRepository;
@@ -126,9 +129,15 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
     @Autowired
     DocumentTypeService documentTypeService;
 
-    @Override
+    @Autowired
+    DLDao dlDao;
+
+    @Autowired
+    RoleURepository roleURepository;
+
+//    @Override
     public PagedResponse<DrivingLicenseApplicationDto> searchDrivingLicenseApplications(int page, int size,
-            String serviceRequestNo, String nid, String learnerNo, String mobile, Date applicationDate, Long userId) {
+            String serviceRequestNo, String nid, String learnerNo, String mobile, Date applicationDate, Long applicationStatusId, Long userId) {
         Utils.validatePageNumberAndSize(page, size);
 
         // Retrieve
@@ -138,9 +147,48 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
 
         log.info("orgId================== {}", orgId);
 
-        Page<DrivingLicenseApplicationDto> records = drivingLicenseRepository.searchDrivingLicenseApplications(
+        //dl_exam_submission
+        Long permissionId = 68L;
+
+//        LocalDate applicationDateLocal = LocalDate.from(applicationDate.toInstant());
+
+        System.out.println("Application Date: " + applicationDate + ", Type: " + (applicationDate != null ? applicationDate.getClass() : "null"));
+
+//        Page<DrivingLicenseApplicationDto> records = drivingLicenseRepository.searchDrivingLicenseApplications(
+        Page<DrivingLicenseApplicationDto> records = dlDao.searchDrivingLicenseApplications(
                 serviceRequestNo,
-                nid, learnerNo, mobile, applicationDate, orgId, userId, pageable);
+                nid, learnerNo, mobile, applicationDate, orgId, userId, applicationStatusId, pageable);
+
+        Long count = 1L;
+        for (DrivingLicenseApplicationDto record : records.getContent()) {
+            record.setSl(count);
+            count++;
+        }
+
+        if (records.getNumberOfElements() == 0) {
+            return new PagedResponse<>(Collections.emptyList(), records.getNumber(),
+                    records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
+        }
+
+        return new PagedResponse<>(records.stream().toList(), records.getNumber(),
+                records.getSize(), records.getTotalElements(), records.getTotalPages(), records.isLast());
+    }
+
+    public PagedResponse<DrivingLicenseApplicationDto> searchDrivingLicenseApplicationsForMvi(int page, int size, GetDrivingLicenseApplicationRequest filters){
+
+        Utils.validatePageNumberAndSize(page, size);
+        Pageable pageable = PageRequest.of(page, size);
+
+        Long orgId = null;
+
+        if (filters.getApplicantId() == null) {
+            orgId = Utils.getLoggedInOrgId();
+            filters.setOrgId(orgId);
+        }
+
+        Long permissionId = 68L;
+
+        Page<DrivingLicenseApplicationDto> records = dlDao.searchDrivingLicenseApplicationsForMvi(pageable, filters);
 
         Long count = 1L;
         for (DrivingLicenseApplicationDto record : records.getContent()) {
@@ -163,6 +211,7 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
 
         // Retrieve
         Pageable pageable = PageRequest.of(page, size);
+        LocalDate applicationDateLocal = null;
 
         Page<DrivingLicenseApplicationDto> records = drivingLicenseRepository.searchDrivingLicenseApplications(
                 serviceRequestNo,
@@ -722,5 +771,52 @@ public class DrivingLicenseService implements IRegistrationDrivingLicense {
         } else {
             return null;
         }
+    }
+
+    public Object getDrivingLicenseReport(DLReportFilterRequest request) {
+        Map<String, Object> customArray = new HashMap<>();
+
+        Long orgId = request.getOrgId();
+        Long licenseTypeId = request.getLicenseTypeId();
+        String applicationDate = null;
+
+//        log.info("request.getApplicationDate() ---> {}", request.getApplicationDate());
+
+        if (!request.getApplicationDate().isEmpty()) {
+            applicationDate = request.getApplicationDate();
+        }
+
+        Long serviceId = 25L;
+        Long applicationStatusId;
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_draft");
+        Long draftedApplications = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("draftedApplications", draftedApplications);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_pending");
+        Long learnerIssued = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("learnerIssued", learnerIssued);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_primary_approved");
+        Long passedInDrivingTest = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("passedInDrivingTest", passedInDrivingTest);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_primary_rejected");
+        Long failedInDrivingTest = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("failedInDrivingTest", failedInDrivingTest);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_final_submitted");
+        Long applicationForSmartCard = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("applicationForSmartCard", applicationForSmartCard);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_final_approved");
+        Long dlApproved = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("dlApproved", dlApproved);
+
+        applicationStatusId = commonRepository.getStatusIdByStatusCode("dl_app_final_rejected");
+        Long dlRejected = drivingLicenseRepository.getDrivingLicenseReport(serviceId, applicationStatusId, orgId, licenseTypeId, applicationDate);
+        customArray.put("dlRejected", dlRejected);
+
+        return customArray;
     }
 }

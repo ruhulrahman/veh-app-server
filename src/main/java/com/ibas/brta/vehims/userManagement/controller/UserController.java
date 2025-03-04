@@ -28,6 +28,7 @@ import com.ibas.brta.vehims.util.Utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
@@ -234,31 +235,39 @@ public class UserController {
         return ResponseEntity.ok(userResponse);
     }
 
+//    @Transactional
     @PostMapping("/v1/auth/unset-logged-in-user-office-role")
-    @PreAuthorize("hasRole('USER')")
+//    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<?> unsetLoggedInUserOfficeRole(@CurrentUser UserPrincipal currentUser) throws InvocationTargetException, IllegalAccessException {
 
-        Optional<SUser> user = sUserRepository.findById(currentUser.getId());
+        try {
+            Optional<User> user = userRepository.findById(currentUser.getId());
+            UserFullResponse userResponse = new UserFullResponse();
 
-        UserResponse userResponse = new UserResponse();
+            if (user.isPresent()) {
+                User sUser = user.get();
 
-        if (user.isPresent()) {
-            SUser sUser = user.get();
-            sUser.setLastLoggedOutTime(Instant.now());
-            sUserRepository.save(sUser);
+                if (sUser.getLoggedInOrgId() != null && sUser.getLoggedInRoleId() != null) {
+                    entityManager.detach(sUser);  // Detach the entity from Hibernate session
 
-            if (sUser.getLoggedInOrgId() != null && sUser.getLoggedInRoleId() != null) {
+                    sUser.setLastLoggedOutTime(Instant.now());
+                    sUser.setLoggedInOrgId(null);
+                    sUser.setLoggedInRoleId(null);
 
-                sUser.setLoggedInOrgId(null);
-                sUser.setLoggedInRoleId(null);
-                SUser userSaved = sUserRepository.save(sUser);
-                BeanUtils.copyProperties(userSaved, userResponse);
-            } else {
-                BeanUtils.copyProperties(user.get(), userResponse);
+                    User userSaved = entityManager.merge(sUser);  // Re-attach and update
+                    BeanUtils.copyProperties(userSaved, userResponse);
+                } else {
+                    BeanUtils.copyProperties(sUser, userResponse);
+                }
+
+                return ResponseEntity.ok("User logged out successfully");
             }
-        }
 
-        return ResponseEntity.ok(userResponse);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } catch (Exception e) {
+            log.error("Error updating user office role: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating user role");
+        }
     }
 
     @GetMapping("/v1/auth/get-auth-user")

@@ -1,15 +1,12 @@
 package com.ibas.brta.vehims.drivingLicense.controller;
 
+import com.ibas.brta.vehims.drivingLicense.payload.request.*;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLApplicationResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceMediaResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceRequestDetailsResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DLServiceRequestResponse;
 import com.ibas.brta.vehims.drivingLicense.payload.response.DrivingLicenseApplicationDto;
 import com.ibas.brta.vehims.drivingLicense.payload.response.LearnerDetailsResponse;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage1Request;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLApplicationPage2Request;
-import com.ibas.brta.vehims.drivingLicense.payload.request.DLServiceMediaRequest;
-import com.ibas.brta.vehims.drivingLicense.payload.request.GetDrivingLicenseApplicationRequest;
 import com.ibas.brta.vehims.common.payload.response.ApiResponse;
 import com.ibas.brta.vehims.common.payload.response.PagedResponse;
 import com.ibas.brta.vehims.security.CurrentUser;
@@ -18,6 +15,7 @@ import com.ibas.brta.vehims.drivingLicense.service.DrivingLicenseService;
 import com.ibas.brta.vehims.drivingLicense.service.LearnerLicenseService;
 import com.ibas.brta.vehims.util.AppConstants;
 import com.ibas.brta.vehims.util.Utils;
+import com.ibas.brta.vehims.vehicle.payload.request.VehicleRegReportFilterRequest;
 import com.ibas.brta.vehims.vehicle.payload.response.VServiceRequestResponse;
 
 import jakarta.validation.Valid;
@@ -51,25 +49,55 @@ public class DrivingLicenseController {
             @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
             @Valid @RequestBody GetDrivingLicenseApplicationRequest filters) {
 
+        Long applicationStatusId = 53L;
         PagedResponse<DrivingLicenseApplicationDto> applications = drivingLicenseService
                 .searchDrivingLicenseApplications(page, size, filters.getServiceRequestNo(), filters.getNid(),
-                        filters.getLearnerNo(), filters.getMobile(), filters.getApplicationDate(), null);
+                        filters.getLearnerNo(), filters.getMobile(), filters.getApplicationDate(), applicationStatusId, null);
+        return ResponseEntity.ok(applications);
+    }
+
+    @PostMapping("/driving-license/v1/application-list-for-mvi")
+    public ResponseEntity<?> searchVehicleRegistrationApplicationsForMviV1(@AuthenticationPrincipal UserPrincipal currentUser,
+                                                                     @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                     @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+                                                                     @Valid @RequestBody GetDrivingLicenseApplicationRequest filters) {
+
+        Long applicationStatusId = 53L;
+        filters.setApplicationStatusId(applicationStatusId);
+        filters.setInspectorId(currentUser.getId());
+        PagedResponse<DrivingLicenseApplicationDto> applications = drivingLicenseService
+                .searchDrivingLicenseApplicationsForMvi(page, size, filters);
+        return ResponseEntity.ok(applications);
+    }
+    @PostMapping("/driving-license/v1/application-list-for-applicant")
+    public ResponseEntity<?> searchDLApplicationsForApplicantV1(@AuthenticationPrincipal UserPrincipal currentUser,
+                                                                     @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+                                                                     @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+                                                                     @Valid @RequestBody GetDrivingLicenseApplicationRequest filters) {
+
+        Long applicationStatusId = 53L;
+//        filters.setApplicationStatusId(applicationStatusId);
+//        filters.setInspectorId(currentUser.getId());
+        filters.setApplicantId(currentUser.getId());
+        PagedResponse<DrivingLicenseApplicationDto> applications = drivingLicenseService
+                .searchDrivingLicenseApplicationsForMvi(page, size, filters);
         return ResponseEntity.ok(applications);
     }
 
     // @PostMapping("/driving-license/v1/driving-license")
-    @PostMapping("/driving-license/v1/application-list-for-applicant")
-    public ResponseEntity<?> searchDLApplicationsForApplicantV1(@AuthenticationPrincipal UserPrincipal currentUser,
-            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
-            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
-            @Valid @RequestBody GetDrivingLicenseApplicationRequest filters) {
-
-        PagedResponse<DrivingLicenseApplicationDto> applications = drivingLicenseService
-                .searchDrivingLicenseApplicationsForApplicant(page, size, filters.getServiceRequestNo(),
-                        filters.getNid(),
-                        filters.getLearnerNo(), filters.getMobile(), filters.getApplicationDate(), null);
-        return ResponseEntity.ok(applications);
-    }
+//    @PostMapping("/driving-license/v1/application-list-for-applicant")
+//    public ResponseEntity<?> searchDLApplicationsForApplicantV1(@AuthenticationPrincipal UserPrincipal currentUser,
+//            @RequestParam(value = "page", defaultValue = AppConstants.DEFAULT_PAGE_NUMBER) int page,
+//            @RequestParam(value = "size", defaultValue = AppConstants.DEFAULT_PAGE_SIZE) int size,
+//            @Valid @RequestBody GetDrivingLicenseApplicationRequest filters) {
+//
+//
+//        PagedResponse<DrivingLicenseApplicationDto> applications = drivingLicenseService
+//                .searchDrivingLicenseApplicationsForApplicant(page, size, filters.getServiceRequestNo(),
+//                        filters.getNid(),
+//                        filters.getLearnerNo(), filters.getMobile(), filters.getApplicationDate(), null);
+//        return ResponseEntity.ok(applications);
+//    }
 
     @PostMapping("/driving-license/v1/application-page1")
     public ResponseEntity<?> storeDLApplicationPage1(
@@ -162,6 +190,13 @@ public class DrivingLicenseController {
                 .getLearnerDetailsByServiceRequestNo(serviceRequestNo);
 
         return ResponseEntity.ok(learnerDetails);
+    }
+
+    @GetMapping("/v1/driving-license/report")
+    public ResponseEntity<?> getDrivingLicenseReport(@ModelAttribute DLReportFilterRequest request) {
+
+        Object response = drivingLicenseService.getDrivingLicenseReport(request);
+        return ResponseEntity.ok(response);
     }
 
 }

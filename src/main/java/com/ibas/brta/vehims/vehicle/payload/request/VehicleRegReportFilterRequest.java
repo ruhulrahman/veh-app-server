@@ -15,15 +15,9 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApplicationFilterRequest {
-    String serviceRequestNo;
-    String chassisNumber;
-    String engineNumber;
-    String nid;
-    String mobile;
-    Date applicationDate;
-    Long inspectorId;
-    Long applicantId;
-    Long applicationStatusId;
+public class VehicleRegReportFilterRequest {
     Long orgId;
+    Long vehicleTypeId;
+    Long ownerTypeId;
+    String applicationDate;
 }
